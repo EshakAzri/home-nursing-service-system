@@ -1,12 +1,12 @@
-package com.example.demo; // pastikan sama dengan structure projek
+package com.example.homenursing; // pastikan sama dengan structure projek
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DemoApplication { // nama boleh ikut projek
+public class HomeNursingApplication { 
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(HomeNursingApplication.class, args);
     }
 }
