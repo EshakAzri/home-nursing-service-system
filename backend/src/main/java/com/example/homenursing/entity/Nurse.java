@@ -17,53 +17,53 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "patients")
+@Table(name = "nurses")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Patient {
-    
+public class Nurse {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(nullable = false)
     private String firstName;
-    
+
     @Column(nullable = false)
     private String lastName;
-    
+
     @Column(nullable = false, unique = true)
     private String email;
-    
+
     @Column(nullable = false)
     private String phoneNumber;
-    
+
+    @Column(nullable = false)
+    private String licenseNumber;
+
+    @Column(nullable = false)
+    private LocalDate licenseExpiryDate;
+
+    @Column(nullable = false)
+    private String specialization;
+
+    @Column(nullable = false)
+    private Integer yearsOfExperience;
+
+    @Column(length = 500)
+    private String bio;
+
+    @Column(nullable = false)
+    private Double hourlyRate;
+
+    @Column(nullable = false)
+    private Boolean isAvailable;
+
     @Column(nullable = false)
     private LocalDate dateOfBirth;
-    
-    @Column(length = 500)
-    private String address;
-    
-    @Column(nullable = false, unique = true)
-    private String medicalRecordNumber;
-    
-    @Column
-    private String emergencyContactName;
-    
-    @Column
-    private String emergencyContactPhone;
-    
-    @Column(length = 500)
-    private String medicalHistory;
-    
-    @Column(nullable = false)
-    private String insuranceProvider;
-    
-    @Column(nullable = false)
-    private String insurancePolicyNumber;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
