@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.homenursing.entity.Branch;
 import com.example.homenursing.service.BranchService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @RequestMapping("/api/branches")
+@CrossOrigin(origins = "http://localhost:5173")
 public class BranchController {
 
     @Autowired

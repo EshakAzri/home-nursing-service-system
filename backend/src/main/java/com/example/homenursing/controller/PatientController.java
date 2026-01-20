@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.homenursing.entity.Patient;
 import com.example.homenursing.service.PatientService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @RequestMapping("/api/patients")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PatientController {
 
     @Autowired
