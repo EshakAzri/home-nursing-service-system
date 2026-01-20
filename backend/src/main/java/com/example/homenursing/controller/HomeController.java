@@ -10,9 +10,4 @@ public class HomeController {
     public String home() {
         return "Home Nursing Service API is running!";
     }
-
-    @GetMapping("/api/bookings")
-    public String bookings() {
-        return "Booking endpoint works!";
-    }
 }
