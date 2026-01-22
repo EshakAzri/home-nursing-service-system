@@ -20,6 +20,9 @@ public class NurseService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    @Autowired
+    private ServiceConfigurationService serviceConfigurationService;
+
     // Create
     public Nurse createNurse(Nurse nurse) {
         return nurseRepository.save(nurse);
@@ -77,5 +80,10 @@ public class NurseService {
         
         // Assuming 10% commission
         return totalEarnings * 0.10;
+    }
+
+    // Get nurses by service type and branch using service configurations
+    public List<Nurse> getNursesByServiceTypeAndBranch(Long serviceTypeId, Long branchId) {
+        return serviceConfigurationService.getNursesByServiceTypeAndBranch(serviceTypeId, branchId);
     }
 }

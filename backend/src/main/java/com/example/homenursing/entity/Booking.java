@@ -33,8 +33,8 @@ public class Booking {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nurse_id", nullable = false)
@@ -43,27 +43,25 @@ public class Booking {
     @Column(nullable = false)
     private LocalDateTime bookingDateTime;
     
-    @Column(nullable = false)
-    private LocalDateTime serviceStartTime;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_type_id", nullable = false)
+    private ServiceType serviceType;
     
     @Column(nullable = false)
-    private LocalDateTime serviceEndTime;
-    
-    @Column(nullable = false)
-    private String serviceType;
+    private Double duration;
     
     @Column(length = 500)
     private String notes;
-    
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private BookingStatus status;
     
     @Column(nullable = false)
     private Double estimatedCost;
     
     @Column
     private Double finalCost;
+    
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
     
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

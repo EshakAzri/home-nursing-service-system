@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,5 +66,34 @@ public class AuthController {
     public ResponseEntity<?> checkEmail(@RequestParam String email) {
         boolean available = userService.isEmailAvailable(email);
         return ResponseEntity.ok(Map.of("available", available));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+            String username = null;
+            
+            if (principal instanceof String) {
+                username = (String) principal;
+            } else if (principal instanceof User) {
+                username = ((User) principal).getUsername();
+            } else if (principal instanceof org.springframework.security.core.userdetails.User) {
+                username = ((org.springframework.security.core.userdetails.User) principal).getUsername();
+            }
+            
+            if (username != null) {
+                Optional<User> userOpt = userService.findByUsername(username);
+                if (userOpt.isPresent()) {
+                    User user = userOpt.get();
+                    return ResponseEntity.ok(Map.of(
+                        "username", user.getUsername(),
+                        "email", user.getEmail()
+                    ));
+                }
+            }
+        }
+        return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
     }
 }

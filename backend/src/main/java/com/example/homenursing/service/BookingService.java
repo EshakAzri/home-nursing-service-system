@@ -45,12 +45,12 @@ public class BookingService {
 
             // Update fields
             existingBooking.setBookingDateTime(bookingDetails.getBookingDateTime());
-            existingBooking.setServiceStartTime(bookingDetails.getServiceStartTime());
-            existingBooking.setServiceEndTime(bookingDetails.getServiceEndTime());
             existingBooking.setServiceType(bookingDetails.getServiceType());
+            existingBooking.setDuration(bookingDetails.getDuration());
             existingBooking.setNotes(bookingDetails.getNotes());
             existingBooking.setEstimatedCost(bookingDetails.getEstimatedCost());
             existingBooking.setFinalCost(bookingDetails.getFinalCost());
+            existingBooking.setStatus(bookingDetails.getStatus());
 
             // Validate updated times
             validateBookingTimes(existingBooking);
@@ -83,12 +83,14 @@ public class BookingService {
 
     // Business logic validation methods
     private void validateBookingTimes(Booking booking) {
-        if (booking.getServiceStartTime().isAfter(booking.getServiceEndTime())) {
-            throw new IllegalArgumentException("Service start time must be before end time");
+        // Basic validation - booking date/time should be in the future
+        if (booking.getBookingDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Booking date/time must be in the future");
         }
 
-        if (booking.getBookingDateTime().isAfter(booking.getServiceStartTime())) {
-            throw new IllegalArgumentException("Booking date/time must be before service start time");
+        // Duration should be positive
+        if (booking.getDuration() <= 0) {
+            throw new IllegalArgumentException("Duration must be positive");
         }
     }
 

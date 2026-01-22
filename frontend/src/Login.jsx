@@ -91,9 +91,17 @@ const Login = () => {
       });
       setShowModal(true);
       
+      // Role-based navigation
+      let redirectPath = '/booking'; // default for patients
+      if (role === 'NURSE') {
+        redirectPath = '/nurse-dashboard';
+      } else if (role === 'ADMIN') {
+        redirectPath = '/admin-dashboard';
+      }
+      
       setTimeout(() => {
         setShowModal(false);
-        navigate('/booking');
+        navigate(redirectPath);
       }, 2000);
     } catch (error) {
       let errorMsg = 'Login failed. Please check your credentials.';
