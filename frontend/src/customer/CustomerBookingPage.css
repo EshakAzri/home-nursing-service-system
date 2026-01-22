@@ -224,6 +224,14 @@
   border-color: #dc2626;
 }
 
+.booking-error-text {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  display: block;
+}
+
 .booking-input.readonly {
   background: #f9fafb;
   color: #6b7280;
