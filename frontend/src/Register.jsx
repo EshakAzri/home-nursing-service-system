@@ -98,6 +98,8 @@ const Register = () => {
   const [emailAvailable, setEmailAvailable] = useState(null);
   const [checkingEmail, setCheckingEmail] = useState(false);
 
+  const navigate = useNavigate();
+
   const roleIcons = {
     PATIENT: Users,
     NURSE: Stethoscope,
