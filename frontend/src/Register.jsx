@@ -11,6 +11,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
+    confirmPassword: '',
     email: '',
     role: 'PATIENT'
   });
@@ -81,6 +82,11 @@ const Register = () => {
       case 'username':
         if (value.length < 3) {
           errors.username = 'Username must be at least 3 characters';
+        }
+        break;
+      case 'confirmPassword':
+        if (value !== formData.password) {
+          errors.confirmPassword = 'Passwords do not match';
         }
         break;
       default:
@@ -180,9 +186,6 @@ const Register = () => {
       <div style={styles.formGroup}>
         <label style={styles.label}>
           {label}
-          {error && isTouched && (
-            <span style={styles.errorText}> • {error}</span>
-          )}
         </label>
         <div style={{
           ...styles.inputWrapper,
@@ -205,6 +208,8 @@ const Register = () => {
               setIsFocused(false);
               handleBlur(e);
             }}
+            aria-describedby={error && isTouched ? `${props.name}-error` : undefined}
+            aria-invalid={error && isTouched ? 'true' : 'false'}
           />
           {isPassword && (
             <button
@@ -219,6 +224,11 @@ const Register = () => {
             </button>
           )}
         </div>
+        {error && isTouched && (
+          <div id={`${props.name}-error`} style={styles.errorTextBelow}>
+            {error}
+          </div>
+        )}
       </div>
     );
   };
@@ -283,6 +293,18 @@ const Register = () => {
             autoComplete="new-password"
           />
 
+          <InputField
+            label="Confirm Password"
+            icon={Lock}
+            type="password"
+            name="confirmPassword"
+            placeholder="••••••••"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            autoComplete="new-password"
+          />
+
           {/* Password Strength Indicator */}
           {formData.password && (
             <div style={styles.passwordStrengthContainer}>
@@ -307,7 +329,8 @@ const Register = () => {
                       <span style={{
                         ...styles.requirementText,
                         color: meetsRequirement ? '#22c55e' : '#94a3b8'
-                      }}>
+                      }}
+                      title={req.label}>
                         {req.label}
                       </span>
                     </div>
@@ -364,11 +387,11 @@ const Register = () => {
             />
             <label htmlFor="terms" style={styles.termsText}>
               I agree to the{' '}
-              <Link to="/terms" style={styles.termsLink}>
+              <Link to="/terms" style={styles.termsLink} target="_blank" rel="noopener noreferrer">
                 Terms of Service
               </Link>{' '}
               and{' '}
-              <Link to="/privacy" style={styles.termsLink}>
+              <Link to="/privacy" style={styles.termsLink} target="_blank" rel="noopener noreferrer">
                 Privacy Policy
               </Link>
             </label>
@@ -414,7 +437,7 @@ const Register = () => {
 
         {/* Social Login Options (Optional) */}
         <div style={styles.socialContainer}>
-          <button type="button" style={styles.socialButton}>
+          <button type="button" style={styles.socialButton} disabled>
             <img 
               src="https://www.google.com/favicon.ico" 
               alt="Google" 
@@ -422,7 +445,7 @@ const Register = () => {
             />
             Google
           </button>
-          <button type="button" style={styles.socialButton}>
+          <button type="button" style={styles.socialButton} disabled>
             <img 
               src="https://static.xx.fbcdn.net/rsrc.php/yT/r/aGT3gskzWBf.ico" 
               alt="Facebook" 
@@ -431,6 +454,9 @@ const Register = () => {
             Facebook
           </button>
         </div>
+        <p style={styles.socialNote}>
+          Social login options will be available soon.
+        </p>
 
         {/* Footer */}
         <p style={styles.footerText}>
@@ -438,6 +464,9 @@ const Register = () => {
           <Link to="/login" style={styles.link}>
             <strong>Sign in here</strong>
           </Link>
+        </p>
+        <p style={styles.copyright}>
+          © 2026 CareLink. All rights reserved.
         </p>
       </div>
 
@@ -602,6 +631,13 @@ const styles = {
     fontSize: '12px',
     fontWeight: '500',
     marginLeft: '8px',
+  },
+  errorTextBelow: {
+    color: '#ef4444',
+    fontSize: '12px',
+    fontWeight: '500',
+    marginTop: '4px',
+    marginLeft: '4px',
   },
   inputWrapper: {
     position: 'relative',
@@ -862,9 +898,11 @@ const styles = {
       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
     },
   },
-  socialIcon: {
-    width: '20px',
-    height: '20px',
+  socialNote: {
+    textAlign: 'center',
+    color: '#94a3b8',
+    fontSize: '12px',
+    marginBottom: '32px',
   },
   footerText: {
     textAlign: 'center',
@@ -881,6 +919,12 @@ const styles = {
     '&:hover': {
       textDecoration: 'underline',
     },
+  },
+  copyright: {
+    textAlign: 'center',
+    color: '#94a3b8',
+    fontSize: '12px',
+    marginTop: '16px',
   },
 };
 
