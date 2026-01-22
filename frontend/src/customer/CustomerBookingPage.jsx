@@ -160,8 +160,8 @@ const CustomerBookingPage = () => {
       }
     }
 
-    if (name === 'duration' && value && (isNaN(value) || parseFloat(value) <= 0)) {
-      errors.duration = 'Please enter a valid duration greater than 0';
+    if (name === 'duration' && value && (isNaN(value) || parseFloat(value) <= 0 || ![1,2,3,4,5].includes(parseInt(value)))) {
+      errors.duration = 'Please select a valid duration (1-5 hours)';
     }
 
     return errors;
@@ -325,7 +325,7 @@ const CustomerBookingPage = () => {
           <div className="booking-form-grid">
             {/* Branch Selection - First Step */}
             <div className="booking-form-group full-width">
-              <label className="booking-label">🏥 Select Branch</label>
+              <label className="booking-label required">🏥 Select Branch</label>
               <div className="booking-select-wrapper">
                 <MapPin className="booking-select-icon" size={18} />
                 <select
@@ -351,7 +351,7 @@ const CustomerBookingPage = () => {
 
             {/* Service Type Selection - Second Step */}
             <div className="booking-form-group full-width">
-              <label className="booking-label">🩺 Select Service Type</label>
+              <label className="booking-label required">🩺 Select Service Type</label>
               <div className="booking-select-wrapper">
                 <MapPin className="booking-select-icon" size={18} />
                 <select
@@ -377,7 +377,7 @@ const CustomerBookingPage = () => {
 
             {/* Nurse Selection - Based on Branch AND Service Type */}
             <div className="booking-form-group full-width">
-              <label className="booking-label">👩‍⚕️ Select Nurse</label>
+              <label className="booking-label required">👩‍⚕️ Select Nurse</label>
               <div className="booking-select-wrapper">
                 <Stethoscope className="booking-select-icon" size={18} />
                 <select
@@ -410,7 +410,7 @@ const CustomerBookingPage = () => {
 
           <div className="booking-form-grid">
             <div className="booking-form-group">
-              <label className="booking-label">Booking Date</label>
+              <label className="booking-label required">Booking Date</label>
               <div className="booking-input-wrapper">
                 <Calendar className="booking-input-icon" size={18} />
                 <input
@@ -429,7 +429,7 @@ const CustomerBookingPage = () => {
             </div>
 
             <div className="booking-form-group">
-              <label className="booking-label">Booking Time</label>
+              <label className="booking-label required">Booking Time</label>
               <div className="booking-input-wrapper">
                 <Clock className="booking-input-icon" size={18} />
                 <input
@@ -448,21 +448,24 @@ const CustomerBookingPage = () => {
             </div>
 
             <div className="booking-form-group">
-              <label className="booking-label">Duration (hours)</label>
-              <div className="booking-input-wrapper">
-                <Clock className="booking-input-icon" size={18} />
-                <input
-                  type="number"
+              <label className="booking-label required">Duration (hours)</label>
+              <div className="booking-select-wrapper">
+                <Clock className="booking-select-icon" size={18} />
+                <select
                   name="duration"
                   value={formData.duration}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={`booking-input ${formErrors.duration && touched.duration ? 'error' : ''}`}
-                  min="0.5"
-                  step="0.5"
-                  placeholder="e.g., 2.5"
+                  className={`booking-select ${formErrors.duration && touched.duration ? 'error' : ''}`}
                   required
-                />
+                >
+                  <option value="">Select duration</option>
+                  <option value="1">1 hour</option>
+                  <option value="2">2 hours</option>
+                  <option value="3">3 hours</option>
+                  <option value="4">4 hours</option>
+                  <option value="5">5 hours</option>
+                </select>
               </div>
               {formErrors.duration && touched.duration && (
                 <span className="booking-error-text">{formErrors.duration}</span>

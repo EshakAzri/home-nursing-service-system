@@ -173,6 +173,13 @@
   margin-bottom: 8px;
 }
 
+.booking-label.required::after {
+  content: '*';
+  color: #dc2626;
+  margin-left: 2px;
+  font-weight: bold;
+}
+
 .booking-select-wrapper, .booking-input-wrapper {
   position: relative;
   display: flex;
