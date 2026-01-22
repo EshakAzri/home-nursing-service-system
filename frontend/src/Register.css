@@ -129,9 +129,26 @@
   display: block;
 }
 
+.register-input-status {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-success-text {
+  color: #16a34a;
+  font-size: 12px;
+  margin-top: 6px;
+  display: block;
+}
+
 .register-password-toggle {
   position: absolute;
-  right: 16px;
+  right: 40px;
   background: none;
   border: none;
   cursor: pointer;
@@ -477,5 +494,102 @@
 
   .register-password-toggle {
     right: 14px;
+  }
+}
+
+/* Modal Popup Styles */
+.register-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.register-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 300px;
+  width: 50%;
+  margin: 20px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.register-modal-content {
+  padding: 32px;
+  text-align: center;
+}
+
+.register-modal-content.success {
+  border-top: 4px solid #16a34a;
+}
+
+.register-modal-content.error {
+  border-top: 4px solid #dc2626;
+}
+
+.register-modal-icon {
+  margin-bottom: 16px;
+}
+
+.register-modal-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+
+.register-modal-message {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.register-modal-close {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.register-modal-close:hover {
+  background-color: #2563eb;
+}
+
+.register-modal-close:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

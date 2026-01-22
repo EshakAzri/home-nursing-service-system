@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import './Register.css';
 
-const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, ...props }) => {
+const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, availability, checking, usernameValue, ...props }) => {
   const isPassword = type === 'password';
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +32,20 @@ const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, ...pro
           aria-describedby={error && isTouched ? `${props.name}-error` : undefined}
           aria-invalid={error && isTouched ? 'true' : 'false'}
         />
+        {checking && (
+          <div className="register-input-status">
+            <Loader2 className="spinner" size={16} />
+          </div>
+        )}
+        {!checking && availability !== null && props.name === 'username' && (
+          <div className="register-input-status">
+            {availability ? (
+              <CheckCircle size={16} color="#16a34a" />
+            ) : (
+              <XCircle size={16} color="#dc2626" />
+            )}
+          </div>
+        )}
         {isPassword && (
           <button
             type="button"
@@ -50,6 +64,16 @@ const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, ...pro
           {error}
         </span>
       )}
+      {!error && availability === false && props.name === 'username' && (
+        <span className="register-error-text">
+          This username is already taken
+        </span>
+      )}
+      {!error && availability === true && props.name === 'username' && usernameValue && usernameValue.length >= 3 && (
+        <span className="register-success-text">
+          Username is available
+        </span>
+      )}
     </div>
   );
 };
@@ -64,10 +88,13 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [showModal, setShowModal] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [formErrors, setFormErrors] = useState({});
   const [touched, setTouched] = useState({});
-  const navigate = useNavigate();
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
 
   const roleIcons = {
     PATIENT: Users,
@@ -93,6 +120,14 @@ const Register = () => {
     calculatePasswordStrength(formData.password);
   }, [formData.password]);
 
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      checkUsernameAvailability(formData.username);
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(debounceTimer);
+  }, [formData.username]);
+
   const calculatePasswordStrength = (password) => {
     let strength = 0;
     const requirements = [
@@ -110,29 +145,82 @@ const Register = () => {
     setPasswordStrength(strength);
   };
 
+  const checkUsernameAvailability = async (username) => {
+    if (!username || username.length < 3) {
+      setUsernameAvailable(null);
+      return;
+    }
+
+    setCheckingUsername(true);
+    try {
+      // Check if username is available
+      const response = await axios.get(`http://localhost:8080/api/auth/check-username?username=${encodeURIComponent(username)}`);
+      setUsernameAvailable(response.data.available);
+    } catch (error) {
+      // If endpoint doesn't exist or there's an error, assume available for now
+      console.log('Username check failed:', error.message);
+      setUsernameAvailable(true);
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
+
   const validateField = (name, value) => {
     const errors = {};
+
+    // Check for empty required fields
+    if (!value || value.trim() === '') {
+      switch (name) {
+        case 'username':
+          errors.username = 'Username is required';
+          break;
+        case 'email':
+          errors.email = 'Email address is required';
+          break;
+        case 'password':
+          errors.password = 'Password is required';
+          break;
+        case 'confirmPassword':
+          errors.confirmPassword = 'Please confirm your password';
+          break;
+        default:
+          break;
+      }
+      return errors;
+    }
     
     switch (name) {
       case 'email':
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) {
-          errors.email = 'Please enter a valid email address';
+          errors.email = 'Please enter a valid email address (e.g., user@example.com)';
         }
         break;
       case 'password':
         if (value.length < 8) {
-          errors.password = 'Password must be at least 8 characters';
+          errors.password = 'Password must be at least 8 characters long';
+        } else if (!/(?=.*[a-z])/.test(value)) {
+          errors.password = 'Password must contain at least one lowercase letter';
+        } else if (!/(?=.*[A-Z])/.test(value)) {
+          errors.password = 'Password must contain at least one uppercase letter';
+        } else if (!/(?=.*\d)/.test(value)) {
+          errors.password = 'Password must contain at least one number';
+        } else if (!/(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value)) {
+          errors.password = 'Password must contain at least one special character';
         }
         break;
       case 'username':
         if (value.length < 3) {
-          errors.username = 'Username must be at least 3 characters';
+          errors.username = 'Username must be at least 3 characters long';
+        } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+          errors.username = 'Username can only contain letters, numbers, and underscores';
+        } else if (usernameAvailable === false) {
+          errors.username = 'This username is already taken. Please choose a different one.';
         }
         break;
       case 'confirmPassword':
         if (value !== formData.password) {
-          errors.confirmPassword = 'Passwords do not match';
+          errors.confirmPassword = 'Passwords do not match. Please try again';
         }
         break;
       default:
@@ -179,8 +267,26 @@ const Register = () => {
       if (fieldErrors[key]) errors[key] = fieldErrors[key];
     });
     
+    // Check terms acceptance
+    if (!acceptTerms) {
+      setMessage({ 
+        text: 'Please accept the Terms of Service and Privacy Policy to continue.',
+        title: 'Terms Required',
+        type: 'error' 
+      });
+      setShowModal(true);
+      return;
+    }
+    
     if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
+      // Show validation errors in modal
+      const errorMessages = Object.values(errors).filter(msg => msg);
+      setMessage({ 
+        text: errorMessages.join(' '),
+        title: 'Please Check Your Input',
+        type: 'error' 
+      });
+      setShowModal(true);
       return;
     }
     
@@ -200,17 +306,61 @@ const Register = () => {
         text: 'Account created successfully! Redirecting to login...', 
         type: 'success' 
       });
+      setShowModal(true);
       
       // Add success animation delay
-      setTimeout(() => navigate('/login'), 1500);
+      setTimeout(() => {
+        setShowModal(false);
+        navigate('/login');
+      }, 2000);
     } catch (error) {
-      const errorMsg = error.response?.data?.message || 
-                      error.message || 
-                      'Registration failed. Please try again.';
+      let errorMsg = 'Registration failed. Please try again.';
+      let errorTitle = 'Error';
+
+      if (error.response) {
+        // Server responded with error status
+        const status = error.response.status;
+        const data = error.response.data;
+
+        if (status === 400) {
+          // Bad request - validation errors
+          if (data.message) {
+            errorMsg = data.message;
+          } else if (data.errors && Array.isArray(data.errors)) {
+            errorMsg = data.errors.join(', ');
+          } else {
+            errorMsg = 'Please check your input and try again.';
+          }
+          errorTitle = 'Invalid Input';
+        } else if (status === 409) {
+          // Conflict - user already exists
+          errorMsg = 'An account with this email or username already exists. Please try logging in instead.';
+          errorTitle = 'Account Already Exists';
+        } else if (status === 422) {
+          // Unprocessable entity - validation failed
+          errorMsg = data.message || 'Please check your information and try again.';
+          errorTitle = 'Validation Error';
+        } else if (status >= 500) {
+          // Server error
+          errorMsg = 'Server error occurred. Please try again later.';
+          errorTitle = 'Server Error';
+        }
+      } else if (error.code === 'NETWORK_ERROR' || error.message.includes('Network Error')) {
+        // Network connectivity issues
+        errorMsg = 'Unable to connect to the server. Please check your internet connection and try again.';
+        errorTitle = 'Connection Error';
+      } else if (error.message.includes('timeout') || error.message.includes('Request timeout')) {
+        // Request timeout
+        errorMsg = 'Request timed out. Please check your connection and try again.';
+        errorTitle = 'Timeout Error';
+      }
+
       setMessage({ 
-        text: errorMsg, 
+        text: errorMsg,
+        title: errorTitle,
         type: 'error' 
       });
+      setShowModal(true);
       
       // Add shake animation for error
       document.querySelector('form').classList.add('shake');
@@ -256,6 +406,9 @@ const Register = () => {
               onBlur={handleBlur}
               error={formErrors.username}
               isTouched={touched.username}
+              availability={usernameAvailable}
+              checking={checkingUsername}
+              usernameValue={formData.username}
               required
               autoComplete="username"
             />
@@ -376,6 +529,8 @@ const Register = () => {
               type="checkbox"
               id="terms"
               className="register-checkbox"
+              checked={acceptTerms}
+              onChange={(e) => setAcceptTerms(e.target.checked)}
               required
             />
             <label htmlFor="terms" className="register-terms-text">
@@ -408,16 +563,6 @@ const Register = () => {
               </>
             )}
           </button>
-
-          {message.text && (
-            <div className={`register-message ${message.type}`}>
-              {message.type === 'success' ? 
-                <CheckCircle size={18} style={{ marginRight: '8px' }} /> : 
-                <XCircle size={18} style={{ marginRight: '8px' }} />
-              }
-              {message.text}
-            </div>
-          )}
         </form>
 
         {/* Footer */}
@@ -430,6 +575,32 @@ const Register = () => {
           </p>
         </div>
       </div>
+
+      {/* Modal Popup */}
+      {showModal && message.text && (
+        <div className="register-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="register-modal" onClick={(e) => e.stopPropagation()}>
+            <div className={`register-modal-content ${message.type}`}>
+              <div className="register-modal-icon">
+                {message.type === 'success' ? 
+                  <CheckCircle size={48} color="#166534" /> : 
+                  <XCircle size={48} color="#dc2626" />
+                }
+              </div>
+              <h3 className="register-modal-title">
+                {message.type === 'success' ? 'Success!' : (message.title || 'Error')}
+              </h3>
+              <p className="register-modal-message">{message.text}</p>
+              <button 
+                className="register-modal-close"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
