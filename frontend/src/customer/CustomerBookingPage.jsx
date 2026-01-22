@@ -213,7 +213,7 @@ const CustomerBookingPage = () => {
         nurse: { id: parseInt(formData.nurseId) },
         bookingDate: formData.bookingDate,
         bookingTime: formData.bookingTime,
-        serviceType: formData.serviceType,
+        serviceType: parseInt(formData.serviceType),
         duration: parseFloat(formData.duration),
         estimatedCost: parseFloat(formData.estimatedCost),
         notes: formData.notes
@@ -236,6 +236,7 @@ const CustomerBookingPage = () => {
         setShowModal(false);
       }, 3000);
     } catch (error) {
+      console.error('Booking error:', error, error.response?.data);
       let errorMsg = 'Failed to create booking. Please try again.';
       let errorTitle = 'Booking Error';
 

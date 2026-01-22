@@ -1,8 +1,8 @@
 package com.example.homenursing.controller;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -76,7 +76,8 @@ public class BookingController {
             User currentUser = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
             // Parse the booking data
-            Long nurseId = Long.valueOf(bookingData.get("nurse").toString().split(":")[1].replace("}", "").trim());
+            Map<String, Object> nurseMap = (Map<String, Object>) bookingData.get("nurse");
+            Long nurseId = Long.valueOf(nurseMap.get("id").toString());
             Long serviceTypeId = Long.valueOf(bookingData.get("serviceType").toString());
             LocalDate bookingDate = LocalDate.parse(bookingData.get("bookingDate").toString());
             LocalTime bookingTime = LocalTime.parse(bookingData.get("bookingTime").toString());
