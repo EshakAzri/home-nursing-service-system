@@ -1,5 +1,7 @@
 package com.example.homenursing.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.homenursing.entity.User;
 import com.example.homenursing.repository.UserRepository;
-
-import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -33,6 +33,18 @@ public class UserService implements UserDetailsService {
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public boolean isUsernameAvailable(String username) {
+        return userRepository.findByUsername(username).isEmpty();
+    }
+
+    public boolean isEmailAvailable(String email) {
+        return userRepository.findByEmail(email).isEmpty();
     }
 
     public boolean checkPassword(String rawPassword, String encodedPassword) {
