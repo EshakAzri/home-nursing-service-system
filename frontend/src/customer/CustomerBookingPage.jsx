@@ -11,17 +11,17 @@ import './CustomerBookingPage.css';
 
 const CustomerBookingPage = () => {
   const [formData, setFormData] = useState({
-    patientId: '',
     nurseId: '',
-    bookingDateTime: '',
-    serviceStartTime: '',
-    serviceEndTime: '',
+    bookingDate: '',
+    bookingTime: '',
     serviceType: '',
+    duration: '',
     estimatedCost: '',
     notes: ''
   });
   const [nurses, setNurses] = useState([]);
-  const [patients, setPatients] = useState([]);
+  const [serviceTypes, setServiceTypes] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [message, setMessage] = useState({ text: '', type: '' });
@@ -43,12 +43,13 @@ const CustomerBookingPage = () => {
     const fetchData = async () => {
       try {
         setFetchLoading(true);
-        const [nursesRes, patientsRes] = await Promise.all([
-          axios.get('http://localhost:8080/api/nurses', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:8080/api/patients', { headers: { Authorization: `Bearer ${token}` } })
-        ]);
+        const nursesRes = await axios.get('http://localhost:8080/api/nurses', { headers: { Authorization: `Bearer ${token}` } });
+        const serviceTypesRes = await axios.get('http://localhost:8080/api/service-types', { headers: { Authorization: `Bearer ${token}` } });
         setNurses(nursesRes.data);
-        setPatients(patientsRes.data);
+        setServiceTypes(serviceTypesRes.data);
+        // TODO: Fetch available slots from backend
+        // const slotsRes = await axios.get('http://localhost:8080/api/bookings/available-slots', { headers: { Authorization: `Bearer ${token}` } });
+        // setAvailableSlots(slotsRes.data);
       } catch (error) {
         console.log('Error fetching data:', error.response || error);
         setMessage({
@@ -151,12 +152,11 @@ const CustomerBookingPage = () => {
 
     try {
       await axios.post('http://localhost:8080/api/bookings', {
-        patient: { id: formData.patientId },
         nurse: { id: formData.nurseId },
-        bookingDateTime: formData.bookingDateTime,
-        serviceStartTime: formData.serviceStartTime,
-        serviceEndTime: formData.serviceEndTime,
+        bookingDate: formData.bookingDate,
+        bookingTime: formData.bookingTime,
         serviceType: formData.serviceType,
+        duration: formData.duration,
         estimatedCost: parseFloat(formData.estimatedCost),
         notes: formData.notes
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -169,8 +169,7 @@ const CustomerBookingPage = () => {
       setShowModal(true);
 
       setFormData({
-        patientId: '', nurseId: '', bookingDateTime: '', serviceStartTime: '',
-        serviceEndTime: '', serviceType: '', estimatedCost: '', notes: ''
+        nurseId: '', bookingDate: '', bookingTime: '', serviceType: '', duration: '', estimatedCost: '', notes: ''
       });
       setTouched({});
 
@@ -223,20 +222,6 @@ const CustomerBookingPage = () => {
     navigate('/login');
   };
 
-  if (fetchLoading) {
-    return (
-      <div className="customer-layout">
-        <CustomerSidebar onLogout={handleLogout} />
-        <div className="customer-main">
-          <div className="booking-loading">
-            <Loader2 className="spinner" size={48} />
-            <p>Loading booking data...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="customer-layout">
       <CustomerSidebar onLogout={handleLogout} isOpen={sidebarOpen} onToggle={toggleSidebar} />
@@ -265,31 +250,6 @@ const CustomerBookingPage = () => {
         <form onSubmit={handleSubmit}>
           <div className="booking-form-grid">
             <div className="booking-form-group">
-              <label className="booking-label">Select Patient</label>
-              <div className="booking-select-wrapper">
-                <Users className="booking-select-icon" size={18} />
-                <select
-                  name="patientId"
-                  value={formData.patientId}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`booking-select ${formErrors.patientId && touched.patientId ? 'error' : ''}`}
-                  required
-                >
-                  <option value="">Choose a patient</option>
-                  {patients.map(patient => (
-                    <option key={patient.id} value={patient.id}>
-                      {patient.firstName} {patient.lastName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {formErrors.patientId && touched.patientId && (
-                <span className="booking-error-text">{formErrors.patientId}</span>
-              )}
-            </div>
-
-            <div className="booking-form-group">
               <label className="booking-label">Select Nurse</label>
               <div className="booking-select-wrapper">
                 <Stethoscope className="booking-select-icon" size={18} />
@@ -317,21 +277,40 @@ const CustomerBookingPage = () => {
 
           <div className="booking-form-grid">
             <div className="booking-form-group">
-              <label className="booking-label">Booking Date & Time</label>
+              <label className="booking-label">Booking Date</label>
               <div className="booking-input-wrapper">
                 <Calendar className="booking-input-icon" size={18} />
                 <input
-                  type="datetime-local"
-                  name="bookingDateTime"
-                  value={formData.bookingDateTime}
+                  type="date"
+                  name="bookingDate"
+                  value={formData.bookingDate}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={`booking-input ${formErrors.bookingDateTime && touched.bookingDateTime ? 'error' : ''}`}
+                  className={`booking-input ${formErrors.bookingDate && touched.bookingDate ? 'error' : ''}`}
                   required
                 />
               </div>
-              {formErrors.bookingDateTime && touched.bookingDateTime && (
-                <span className="booking-error-text">{formErrors.bookingDateTime}</span>
+              {formErrors.bookingDate && touched.bookingDate && (
+                <span className="booking-error-text">{formErrors.bookingDate}</span>
+              )}
+            </div>
+
+            <div className="booking-form-group">
+              <label className="booking-label">Booking Time</label>
+              <div className="booking-input-wrapper">
+                <Clock className="booking-input-icon" size={18} />
+                <input
+                  type="time"
+                  name="bookingTime"
+                  value={formData.bookingTime}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`booking-input ${formErrors.bookingTime && touched.bookingTime ? 'error' : ''}`}
+                  required
+                />
+              </div>
+              {formErrors.bookingTime && touched.bookingTime && (
+                <span className="booking-error-text">{formErrors.bookingTime}</span>
               )}
             </div>
 
@@ -348,58 +327,37 @@ const CustomerBookingPage = () => {
                   required
                 >
                   <option value="">Select service type</option>
-                  <option value="GENERAL_CHECKUP">General Checkup</option>
-                  <option value="WOUND_CARE">Wound Care</option>
-                  <option value="MEDICATION_ADMIN">Medication Administration</option>
-                  <option value="PHYSIOTHERAPY">Physiotherapy</option>
-                  <option value="POST_SURGERY">Post-Surgery Care</option>
-                  <option value="CHRONIC_CARE">Chronic Disease Management</option>
-                  <option value="PALLIATIVE_CARE">Palliative Care</option>
-                  <option value="OTHER">Other</option>
+                  {serviceTypes.map(serviceType => (
+                    <option key={serviceType.id} value={serviceType.id}>
+                      {serviceType.name} - RM{serviceType.basePricePerHour}/hour
+                    </option>
+                  ))}
                 </select>
               </div>
               {formErrors.serviceType && touched.serviceType && (
                 <span className="booking-error-text">{formErrors.serviceType}</span>
               )}
             </div>
-          </div>
 
-          <div className="booking-form-grid">
             <div className="booking-form-group">
-              <label className="booking-label">Service Start Time</label>
+              <label className="booking-label">Duration (hours)</label>
               <div className="booking-input-wrapper">
                 <Clock className="booking-input-icon" size={18} />
                 <input
-                  type="datetime-local"
-                  name="serviceStartTime"
-                  value={formData.serviceStartTime}
+                  type="number"
+                  name="duration"
+                  value={formData.duration}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={`booking-input ${formErrors.serviceStartTime && touched.serviceStartTime ? 'error' : ''}`}
+                  className={`booking-input ${formErrors.duration && touched.duration ? 'error' : ''}`}
+                  min="0.5"
+                  step="0.5"
+                  placeholder="e.g., 2.5"
                   required
                 />
               </div>
-              {formErrors.serviceStartTime && touched.serviceStartTime && (
-                <span className="booking-error-text">{formErrors.serviceStartTime}</span>
-              )}
-            </div>
-
-            <div className="booking-form-group">
-              <label className="booking-label">Service End Time</label>
-              <div className="booking-input-wrapper">
-                <Clock className="booking-input-icon" size={18} />
-                <input
-                  type="datetime-local"
-                  name="serviceEndTime"
-                  value={formData.serviceEndTime}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`booking-input ${formErrors.serviceEndTime && touched.serviceEndTime ? 'error' : ''}`}
-                  required
-                />
-              </div>
-              {formErrors.serviceEndTime && touched.serviceEndTime && (
-                <span className="booking-error-text">{formErrors.serviceEndTime}</span>
+              {formErrors.duration && touched.duration && (
+                <span className="booking-error-text">{formErrors.duration}</span>
               )}
             </div>
           </div>
