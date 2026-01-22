@@ -117,11 +117,8 @@ const CustomerBookingPage = () => {
         // Nurse hourly rate * duration
         const nurseCost = nurse.hourlyRate * duration;
         
-        // Fuel charge (assume RM10 per visit)
-        const fuelCharge = 10;
-        
-        // Total cost
-        const totalCost = baseCost + nurseCost + fuelCharge;
+        // Total cost (fuel charge not included)
+        const totalCost = baseCost + nurseCost;
         
         setFormData(prev => ({ 
           ...prev, 
@@ -489,7 +486,7 @@ const CustomerBookingPage = () => {
             {formData.estimatedCost && (
               <div className="cost-breakdown">
                 <small style={{ color: '#666', fontSize: '12px' }}>
-                  Includes service fee, nurse hourly rate, and fuel charge (RM10)
+                  Includes service fee and nurse hourly rate. Fuel charge not included.
                 </small>
               </div>
             )}
