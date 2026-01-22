@@ -4,7 +4,6 @@
 .customer-layout {
   display: flex;
   min-height: 100vh;
-  background: #f8fafc;
 }
 
 .customer-main {
@@ -402,5 +401,74 @@
   .booking-card {
     margin: 10px;
     padding: 20px;
+  }
+
+  .booking-form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .booking-title {
+    font-size: 24px;
+  }
+
+  .booking-subtitle {
+    font-size: 14px;
+  }
+
+  .booking-button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+
+/* Tablet responsiveness */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .customer-main {
+    margin-left: 250px;
+  }
+
+  .booking-card {
+    max-width: 700px;
+    padding: 30px;
+  }
+
+  .booking-form-grid {
+    gap: 20px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  .booking-card {
+    padding: 16px;
+    margin: 5px;
+  }
+
+  .booking-title {
+    font-size: 20px;
+  }
+
+  .booking-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .booking-logo-text {
+    font-size: 20px;
+  }
+
+  .sidebar-toggle {
+    top: 10px;
+    left: 10px;
+    padding: 8px;
+    font-size: 16px;
+  }
+}
+
+/* Hide toggle on mobile since sidebar is bottom bar */
+@media (max-width: 768px) {
+  .sidebar-toggle {
+    display: none;
   }
 }

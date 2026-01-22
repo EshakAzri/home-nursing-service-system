@@ -46,7 +46,7 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
     <div className={`customer-sidebar ${!isOpen ? 'hidden' : ''}`}>
       <div className="customer-sidebar-header">
         <div className="customer-sidebar-logo">
-          <Heart size={24} color="#ffffff" />
+          <Heart size={24} color="#374151" />
         </div>
         <span className="customer-sidebar-title">CareLink</span>
         <span className="customer-sidebar-subtitle">Customer Portal</span>

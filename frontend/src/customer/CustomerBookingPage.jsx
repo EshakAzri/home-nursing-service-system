@@ -30,9 +30,6 @@ const CustomerBookingPage = () => {
   const [touched, setTouched] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  //const token = localStorage.getItem('token');
-  //const navigate = useNavigate();
-
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();

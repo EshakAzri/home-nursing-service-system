@@ -1,8 +1,8 @@
 .customer-sidebar {
   width: 280px;
   height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #b4dbf8;
+  color: #374151;
   position: fixed;
   left: 0;
   top: 0;
@@ -18,20 +18,21 @@
 
 .customer-sidebar-header {
   padding: 24px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #e2e8f0;
   text-align: center;
 }
 
 .customer-sidebar-logo {
   width: 48px;
   height: 48px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #ffffff;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 12px;
   backdrop-filter: blur(10px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .customer-sidebar-title {
@@ -44,7 +45,7 @@
 .customer-sidebar-subtitle {
   display: block;
   font-size: 12px;
-  opacity: 0.8;
+  opacity: 0.7;
   font-weight: 500;
 }
 
@@ -54,7 +55,7 @@
   right: 10px;
   background: none;
   border: none;
-  color: white;
+  color: #6b7280;
   font-size: 20px;
   cursor: pointer;
   opacity: 0.7;
@@ -77,7 +78,7 @@
   padding: 14px 24px;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.8);
+  color: #6b7280;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -87,15 +88,15 @@
 }
 
 .customer-sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: #f9fafb;
+  color: #374151;
   transform: translateX(4px);
 }
 
 .customer-sidebar-item.active {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border-right: 3px solid #ffffff;
+  background: #e2e8f0;
+  color: #374151;
+  border-right: 3px solid #3b82f6;
   font-weight: 600;
 }
 
@@ -105,7 +106,7 @@
 
 .customer-sidebar-footer {
   padding: 20px 24px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid #e2e8f0;
 }
 
 .customer-sidebar-logout {
@@ -113,10 +114,10 @@
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #f3f4f6;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  color: white;
+  color: #374151;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -126,10 +127,11 @@
 }
 
 .customer-sidebar-logout:hover {
-  background: rgba(239, 68, 68, 0.8);
-  border-color: rgba(239, 68, 68, 0.8);
+  background: #dc2626;
+  border-color: #dc2626;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  color: white;
 }
 
 /* Responsive Design */
@@ -170,5 +172,12 @@
   .customer-sidebar-logout {
     padding: 10px;
     font-size: 12px;
+  }
+}
+
+/* Tablet adjustments */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .customer-sidebar {
+    width: 250px;
   }
 }
