@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import {
   Calendar,
   User,
@@ -14,6 +15,39 @@ import './CustomerSidebar.css';
 const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userInfo, setUserInfo] = useState({ username: '', email: '' });
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // First, try to get basic info from token
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUserInfo({
+          username: payload.username || payload.sub || payload.name || 'User',
+          email: payload.email || payload.userEmail || payload.mail || ''
+        });
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        setUserInfo({ username: 'User', email: '' });
+      }
+
+      // Then fetch full user details from API
+      axios.get('http://localhost:8080/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(response => {
+        setUserInfo({
+          username: response.data.username || response.data.name || 'User',
+          email: response.data.email || ''
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching user details:', error);
+        // Keep the token-based info as fallback
+      });
+    }
+  }, []);
 
   const menuItems = [
     {
@@ -50,6 +84,10 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
         </div>
         <span className="customer-sidebar-title">CareLink</span>
         <span className="customer-sidebar-subtitle">Customer Portal</span>
+        <div className="customer-sidebar-user">
+          <div className="customer-sidebar-username">{userInfo.username}</div>
+          <div className="customer-sidebar-email">{userInfo.email || 'Loading...'}</div>
+        </div>
         <button className="sidebar-close" onClick={onToggle}><Menu size={20} /></button>
       </div>
 
