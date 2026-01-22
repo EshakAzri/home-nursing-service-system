@@ -6,6 +6,7 @@ import {
   UserCheck, Loader2, CheckCircle, XCircle, LogOut,
   ArrowRight, Users, Stethoscope
 } from 'lucide-react';
+import CustomerSidebar from './CustomerSidebar';
 import './CustomerBookingPage.css';
 
 const CustomerBookingPage = () => {
@@ -27,7 +28,12 @@ const CustomerBookingPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [touched, setTouched] = useState({});
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  //const token = localStorage.getItem('token');
+  //const navigate = useNavigate();
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
@@ -222,11 +228,12 @@ const CustomerBookingPage = () => {
 
   if (fetchLoading) {
     return (
-      <div className="booking-container">
-        <div className="booking-card">
-          <div style={{ textAlign: 'center', padding: '40px' }}>
+      <div className="customer-layout">
+        <CustomerSidebar onLogout={handleLogout} />
+        <div className="customer-main">
+          <div className="booking-loading">
             <Loader2 className="spinner" size={48} />
-            <p style={{ marginTop: '16px', color: '#64748b' }}>Loading booking data...</p>
+            <p>Loading booking data...</p>
           </div>
         </div>
       </div>
@@ -234,13 +241,17 @@ const CustomerBookingPage = () => {
   }
 
   return (
-    <div className="booking-container">
-      {/* Background elements */}
-      <div className="booking-blob1"></div>
-      <div className="booking-blob2"></div>
-      <div className="booking-blob3"></div>
+    <div className="customer-layout">
+      <CustomerSidebar onLogout={handleLogout} isOpen={sidebarOpen} onToggle={toggleSidebar} />
+      <div className={`customer-main ${!sidebarOpen ? 'sidebar-closed' : ''}`}>
+        {!sidebarOpen && <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>}
+        <div className="booking-container">
+          {/* Background elements */}
+          <div className="booking-blob1"></div>
+          <div className="booking-blob2"></div>
+          <div className="booking-blob3"></div>
 
-      <div className="booking-card">
+          <div className="booking-card">
         <div className="booking-header">
           <div className="booking-logo-container">
             <div className="booking-logo">
@@ -448,17 +459,6 @@ const CustomerBookingPage = () => {
             )}
           </button>
         </form>
-
-        <div className="booking-actions">
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="booking-logout-btn"
-          >
-            <LogOut size={16} style={{ marginRight: '8px' }} />
-            Logout
-          </button>
-        </div>
       </div>
 
       {/* Modal Popup */}
@@ -486,6 +486,8 @@ const CustomerBookingPage = () => {
           </div>
         </div>
       )}
+      </div>
+    </div>
     </div>
   );
 };
