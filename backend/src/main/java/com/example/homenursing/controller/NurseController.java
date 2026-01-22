@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.homenursing.entity.Nurse;
@@ -94,6 +95,19 @@ public class NurseController {
         try {
             Double commission = nurseService.calculateCommission(id);
             return ResponseEntity.ok(commission);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // GET /api/nurses/available - Get nurses by service type and branch using service configurations
+    @GetMapping("/available")
+    public ResponseEntity<List<Nurse>> getNursesByServiceTypeAndBranch(
+            @RequestParam Long serviceTypeId,
+            @RequestParam Long branchId) {
+        try {
+            List<Nurse> nurses = nurseService.getNursesByServiceTypeAndBranch(serviceTypeId, branchId);
+            return ResponseEntity.ok(nurses);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

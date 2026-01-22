@@ -236,6 +236,14 @@
   grid-column: 1 / -1;
 }
 
+.booking-warning {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #fef3c7;
+  border-radius: 6px;
+  border-left: 3px solid #f59e0b;
+}
+
 .booking-button {
   width: 100%;
   background: linear-gradient(135deg, #4f46e5, #7c3aed);

@@ -72,26 +72,36 @@ const CustomerBookingPage = () => {
     fetchData();
   }, [token, navigate]);
 
-  // Filter nurses based on selected branch AND service type
+  // Filter nurses based on selected branch AND service type using service configurations
   useEffect(() => {
-    if (formData.branchId && formData.serviceType) {
-      const selectedService = serviceTypes.find(st => st.id === parseInt(formData.serviceType));
-      const filtered = nurses.filter(nurse => 
-        nurse.branch && nurse.branch.id === parseInt(formData.branchId) && 
-        nurse.isAvailable &&
-        nurse.specialization && selectedService && 
-        nurse.specialization.toLowerCase().includes(selectedService.name.toLowerCase().split(' ')[0])
-      );
-      setFilteredNurses(filtered);
-      // Reset nurse selection if current nurse is not in the filtered list
-      if (formData.nurseId && !filtered.find(n => n.id === parseInt(formData.nurseId))) {
+    const filterNurses = async () => {
+      if (formData.branchId && formData.serviceType) {
+        try {
+          const response = await axios.get('http://localhost:8080/api/nurses/available', {
+            params: {
+              serviceTypeId: formData.serviceType,
+              branchId: formData.branchId
+            },
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setFilteredNurses(response.data);
+          // Reset nurse selection if current nurse is not in the filtered list
+          if (formData.nurseId && !response.data.find(n => n.id === parseInt(formData.nurseId))) {
+            setFormData(prev => ({ ...prev, nurseId: '' }));
+          }
+        } catch (error) {
+          console.error('Error fetching available nurses:', error);
+          setFilteredNurses([]);
+          setFormData(prev => ({ ...prev, nurseId: '' }));
+        }
+      } else {
+        setFilteredNurses([]);
         setFormData(prev => ({ ...prev, nurseId: '' }));
       }
-    } else {
-      setFilteredNurses([]);
-      setFormData(prev => ({ ...prev, nurseId: '' }));
-    }
-  }, [formData.branchId, formData.serviceType, nurses, serviceTypes]);
+    };
+
+    filterNurses();
+  }, [formData.branchId, formData.serviceType, token]);
 
   // Auto-calculate estimated cost
   useEffect(() => {
@@ -310,7 +320,7 @@ const CustomerBookingPage = () => {
           </div>
           <h1 className="booking-title">Book Home Nursing Service</h1>
           <p className="booking-subtitle">
-            Schedule professional healthcare services at your convenience
+            Step 1: Choose location → Step 2: Select service → Step 3: Pick qualified nurse → Auto pricing
           </p>
         </div>
 
@@ -342,7 +352,33 @@ const CustomerBookingPage = () => {
               )}
             </div>
 
-            {/* Nurse Selection - Based on Branch */}
+            {/* Service Type Selection - Second Step */}
+            <div className="booking-form-group full-width">
+              <label className="booking-label">🩺 Select Service Type</label>
+              <div className="booking-select-wrapper">
+                <MapPin className="booking-select-icon" size={18} />
+                <select
+                  name="serviceType"
+                  value={formData.serviceType}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`booking-select ${formErrors.serviceType && touched.serviceType ? 'error' : ''}`}
+                  required
+                >
+                  <option value="">Choose service type</option>
+                  {serviceTypes.map(serviceType => (
+                    <option key={serviceType.id} value={serviceType.id}>
+                      {serviceType.name} - RM{serviceType.basePricePerHour}/hour ({serviceType.estimatedDurationHours}hrs estimated)
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {formErrors.serviceType && touched.serviceType && (
+                <span className="booking-error-text">{formErrors.serviceType}</span>
+              )}
+            </div>
+
+            {/* Nurse Selection - Based on Branch AND Service Type */}
             <div className="booking-form-group full-width">
               <label className="booking-label">👩‍⚕️ Select Nurse</label>
               <div className="booking-select-wrapper">
@@ -353,11 +389,14 @@ const CustomerBookingPage = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   className={`booking-select ${formErrors.nurseId && touched.nurseId ? 'error' : ''}`}
-                  disabled={!formData.branchId}
+                  disabled={!formData.branchId || !formData.serviceType}
                   required
                 >
                   <option value="">
-                    {formData.branchId ? 'Choose a nurse' : 'Please select branch first'}
+                    {!formData.branchId ? 'Please select branch first' : 
+                     !formData.serviceType ? 'Please select service type first' : 
+                     filteredNurses.length === 0 ? 'No nurses available for this service' :
+                     'Choose a nurse'}
                   </option>
                   {filteredNurses.map(nurse => (
                     <option key={nurse.id} value={nurse.id}>
@@ -408,31 +447,6 @@ const CustomerBookingPage = () => {
               </div>
               {formErrors.bookingTime && touched.bookingTime && (
                 <span className="booking-error-text">{formErrors.bookingTime}</span>
-              )}
-            </div>
-
-            <div className="booking-form-group">
-              <label className="booking-label">Service Type</label>
-              <div className="booking-input-wrapper">
-                <MapPin className="booking-input-icon" size={18} />
-                <select
-                  name="serviceType"
-                  value={formData.serviceType}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`booking-select ${formErrors.serviceType && touched.serviceType ? 'error' : ''}`}
-                  required
-                >
-                  <option value="">Select service type</option>
-                  {serviceTypes.map(serviceType => (
-                    <option key={serviceType.id} value={serviceType.id}>
-                      {serviceType.name} - RM{serviceType.basePricePerHour}/hour
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {formErrors.serviceType && touched.serviceType && (
-                <span className="booking-error-text">{formErrors.serviceType}</span>
               )}
             </div>
 
