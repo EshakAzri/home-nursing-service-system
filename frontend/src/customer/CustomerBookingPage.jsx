@@ -11,6 +11,7 @@ import './CustomerBookingPage.css';
 
 const CustomerBookingPage = () => {
   const [formData, setFormData] = useState({
+    branchId: '',
     nurseId: '',
     bookingDate: '',
     bookingTime: '',
@@ -19,7 +20,9 @@ const CustomerBookingPage = () => {
     estimatedCost: '',
     notes: ''
   });
+  const [branches, setBranches] = useState([]);
   const [nurses, setNurses] = useState([]);
+  const [filteredNurses, setFilteredNurses] = useState([]);
   const [serviceTypes, setServiceTypes] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -43,17 +46,19 @@ const CustomerBookingPage = () => {
     const fetchData = async () => {
       try {
         setFetchLoading(true);
-        const nursesRes = await axios.get('http://localhost:8080/api/nurses');
-        const serviceTypesRes = await axios.get('http://localhost:8080/api/service-types');
+        const [nursesRes, serviceTypesRes, branchesRes] = await Promise.all([
+          axios.get('http://localhost:8080/api/nurses'),
+          axios.get('http://localhost:8080/api/service-types'),
+          axios.get('http://localhost:8080/api/branches')
+        ]);
         console.log('Fetched nurses:', nursesRes.data);
         console.log('Fetched service types:', serviceTypesRes.data);
+        console.log('Fetched branches:', branchesRes.data);
         setNurses(nursesRes.data);
         setServiceTypes(serviceTypesRes.data);
-        // TODO: Fetch available slots from backend
-        // const slotsRes = await axios.get('http://localhost:8080/api/bookings/available-slots', { headers: { Authorization: `Bearer ${token}` } });
-        // setAvailableSlots(slotsRes.data);
+        setBranches(branchesRes.data);
       } catch (error) {
-        //console.log('Error fetching data:', error.response || error);
+        console.log('Error fetching data:', error.response || error);
         setMessage({
           text: 'Failed to load data. Please try refreshing the page.',
           title: 'Data Loading Error',
@@ -67,45 +72,89 @@ const CustomerBookingPage = () => {
     fetchData();
   }, [token, navigate]);
 
+  // Filter nurses based on selected branch AND service type
+  useEffect(() => {
+    if (formData.branchId && formData.serviceType) {
+      const selectedService = serviceTypes.find(st => st.id === parseInt(formData.serviceType));
+      const filtered = nurses.filter(nurse => 
+        nurse.branch && nurse.branch.id === parseInt(formData.branchId) && 
+        nurse.isAvailable &&
+        nurse.specialization && selectedService && 
+        nurse.specialization.toLowerCase().includes(selectedService.name.toLowerCase().split(' ')[0])
+      );
+      setFilteredNurses(filtered);
+      // Reset nurse selection if current nurse is not in the filtered list
+      if (formData.nurseId && !filtered.find(n => n.id === parseInt(formData.nurseId))) {
+        setFormData(prev => ({ ...prev, nurseId: '' }));
+      }
+    } else {
+      setFilteredNurses([]);
+      setFormData(prev => ({ ...prev, nurseId: '' }));
+    }
+  }, [formData.branchId, formData.serviceType, nurses, serviceTypes]);
+
+  // Auto-calculate estimated cost
+  useEffect(() => {
+    const calculateCost = () => {
+      const serviceType = serviceTypes.find(st => st.id === parseInt(formData.serviceType));
+      const nurse = nurses.find(n => n.id === parseInt(formData.nurseId));
+      const duration = parseFloat(formData.duration);
+
+      if (serviceType && nurse && duration && duration > 0) {
+        // Base cost = service price per hour * duration
+        const baseCost = serviceType.basePricePerHour * duration;
+        
+        // Nurse hourly rate * duration
+        const nurseCost = nurse.hourlyRate * duration;
+        
+        // Fuel charge (assume RM10 per visit)
+        const fuelCharge = 10;
+        
+        // Total cost
+        const totalCost = baseCost + nurseCost + fuelCharge;
+        
+        setFormData(prev => ({ 
+          ...prev, 
+          estimatedCost: totalCost.toFixed(2) 
+        }));
+      } else {
+        setFormData(prev => ({ ...prev, estimatedCost: '' }));
+      }
+    };
+
+    calculateCost();
+  }, [formData.serviceType, formData.nurseId, formData.duration, serviceTypes, nurses]);
+
   const validateField = (name, value) => {
     const errors = {};
 
     if (!value || value.trim() === '') {
       switch (name) {
-        case 'patientId':
-          errors.patientId = 'Please select a patient';
+        case 'branchId':
+          errors.branchId = 'Please select a branch';
           break;
         case 'nurseId':
           errors.nurseId = 'Please select a nurse';
           break;
-        case 'bookingDateTime':
-          errors.bookingDateTime = 'Booking date and time is required';
+        case 'bookingDate':
+          errors.bookingDate = 'Booking date is required';
           break;
-        case 'serviceStartTime':
-          errors.serviceStartTime = 'Service start time is required';
-          break;
-        case 'serviceEndTime':
-          errors.serviceEndTime = 'Service end time is required';
+        case 'bookingTime':
+          errors.bookingTime = 'Booking time is required';
           break;
         case 'serviceType':
           errors.serviceType = 'Service type is required';
           break;
-        case 'estimatedCost':
-          errors.estimatedCost = 'Estimated cost is required';
+        case 'duration':
+          errors.duration = 'Duration is required';
           break;
         default:
           break;
       }
     }
 
-    if (name === 'estimatedCost' && value && (isNaN(value) || parseFloat(value) <= 0)) {
-      errors.estimatedCost = 'Please enter a valid cost greater than 0';
-    }
-
-    if (name === 'serviceStartTime' && name === 'serviceEndTime' && formData.serviceStartTime && formData.serviceEndTime) {
-      if (new Date(formData.serviceEndTime) <= new Date(formData.serviceStartTime)) {
-        errors.serviceEndTime = 'End time must be after start time';
-      }
+    if (name === 'duration' && value && (isNaN(value) || parseFloat(value) <= 0)) {
+      errors.duration = 'Please enter a valid duration greater than 0';
     }
 
     return errors;
@@ -154,11 +203,11 @@ const CustomerBookingPage = () => {
 
     try {
       await axios.post('http://localhost:8080/api/bookings', {
-        nurse: { id: formData.nurseId },
+        nurse: { id: parseInt(formData.nurseId) },
         bookingDate: formData.bookingDate,
         bookingTime: formData.bookingTime,
         serviceType: formData.serviceType,
-        duration: formData.duration,
+        duration: parseFloat(formData.duration),
         estimatedCost: parseFloat(formData.estimatedCost),
         notes: formData.notes
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -171,7 +220,8 @@ const CustomerBookingPage = () => {
       setShowModal(true);
 
       setFormData({
-        nurseId: '', bookingDate: '', bookingTime: '', serviceType: '', duration: '', estimatedCost: '', notes: ''
+        branchId: '', nurseId: '', bookingDate: '', bookingTime: '', 
+        serviceType: '', duration: '', estimatedCost: '', notes: ''
       });
       setTouched({});
 
@@ -266,8 +316,35 @@ const CustomerBookingPage = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="booking-form-grid">
-            <div className="booking-form-group">
-              <label className="booking-label">Select Nurse</label>
+            {/* Branch Selection - First Step */}
+            <div className="booking-form-group full-width">
+              <label className="booking-label">🏥 Select Branch</label>
+              <div className="booking-select-wrapper">
+                <MapPin className="booking-select-icon" size={18} />
+                <select
+                  name="branchId"
+                  value={formData.branchId}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`booking-select ${formErrors.branchId && touched.branchId ? 'error' : ''}`}
+                  required
+                >
+                  <option value="">Choose a branch location</option>
+                  {branches.map(branch => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name} - {branch.city}, {branch.state}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {formErrors.branchId && touched.branchId && (
+                <span className="booking-error-text">{formErrors.branchId}</span>
+              )}
+            </div>
+
+            {/* Nurse Selection - Based on Branch */}
+            <div className="booking-form-group full-width">
+              <label className="booking-label">👩‍⚕️ Select Nurse</label>
               <div className="booking-select-wrapper">
                 <Stethoscope className="booking-select-icon" size={18} />
                 <select
@@ -276,12 +353,15 @@ const CustomerBookingPage = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   className={`booking-select ${formErrors.nurseId && touched.nurseId ? 'error' : ''}`}
+                  disabled={!formData.branchId}
                   required
                 >
-                  <option value="">Choose a nurse</option>
-                  {nurses.filter(nurse => nurse.isAvailable).map(nurse => (
+                  <option value="">
+                    {formData.branchId ? 'Choose a nurse' : 'Please select branch first'}
+                  </option>
+                  {filteredNurses.map(nurse => (
                     <option key={nurse.id} value={nurse.id}>
-                      {nurse.firstName} {nurse.lastName} - {nurse.specialization}
+                      {nurse.firstName} {nurse.lastName} - {nurse.specialization} (RM{nurse.hourlyRate}/hr)
                     </option>
                   ))}
                 </select>
@@ -380,24 +460,24 @@ const CustomerBookingPage = () => {
           </div>
 
           <div className="booking-form-group">
-            <label className="booking-label">Estimated Cost (RM)</label>
+            <label className="booking-label">💰 Estimated Cost (Auto-calculated)</label>
             <div className="booking-input-wrapper">
               <DollarSign className="booking-input-icon" size={18} />
               <input
-                type="number"
+                type="text"
                 name="estimatedCost"
-                placeholder="0.00"
-                value={formData.estimatedCost}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={`booking-input ${formErrors.estimatedCost && touched.estimatedCost ? 'error' : ''}`}
-                min="0"
-                step="0.01"
-                required
+                value={formData.estimatedCost ? `RM ${formData.estimatedCost}` : 'Select service details to calculate'}
+                readOnly
+                className="booking-input readonly"
+                placeholder="Auto-calculated based on service and duration"
               />
             </div>
-            {formErrors.estimatedCost && touched.estimatedCost && (
-              <span className="booking-error-text">{formErrors.estimatedCost}</span>
+            {formData.estimatedCost && (
+              <div className="cost-breakdown">
+                <small style={{ color: '#666', fontSize: '12px' }}>
+                  Includes service fee, nurse hourly rate, and fuel charge (RM10)
+                </small>
+              </div>
             )}
           </div>
 

@@ -217,10 +217,23 @@
   border-color: #dc2626;
 }
 
-.booking-error-text {
-  color: #dc2626;
-  font-size: 14px;
-  margin-top: 4px;
+.booking-input.readonly {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+  border-color: #d1d5db;
+}
+
+.cost-breakdown {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #f0f9ff;
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
+}
+
+.full-width {
+  grid-column: 1 / -1;
 }
 
 .booking-button {
