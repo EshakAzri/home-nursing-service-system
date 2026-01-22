@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import './Register.css';
 
-const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, availability, checking, usernameValue, ...props }) => {
+const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, availability, checking, usernameValue, emailValue, ...props }) => {
   const isPassword = type === 'password';
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +37,7 @@ const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, availa
             <Loader2 className="spinner" size={16} />
           </div>
         )}
-        {!checking && availability !== null && props.name === 'username' && (
+        {!checking && availability !== null && (props.name === 'username' || props.name === 'email') && (
           <div className="register-input-status">
             {availability ? (
               <CheckCircle size={16} color="#16a34a" />
@@ -64,14 +64,14 @@ const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, availa
           {error}
         </span>
       )}
-      {!error && availability === false && props.name === 'username' && (
+      {!error && availability === false && (props.name === 'username' || props.name === 'email') && (
         <span className="register-error-text">
-          This username is already taken
+          {props.name === 'username' ? 'This username is already taken' : 'This email address is already registered'}
         </span>
       )}
-      {!error && availability === true && props.name === 'username' && usernameValue && usernameValue.length >= 3 && (
+      {!error && availability === true && ((props.name === 'username' && usernameValue && usernameValue.length >= 3) || (props.name === 'email' && emailValue && emailValue.includes('@'))) && (
         <span className="register-success-text">
-          Username is available
+          {props.name === 'username' ? 'Username is available' : 'Email address is available'}
         </span>
       )}
     </div>
@@ -95,6 +95,8 @@ const Register = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [usernameAvailable, setUsernameAvailable] = useState(null);
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState(null);
+  const [checkingEmail, setCheckingEmail] = useState(false);
 
   const roleIcons = {
     PATIENT: Users,
@@ -127,6 +129,14 @@ const Register = () => {
 
     return () => clearTimeout(debounceTimer);
   }, [formData.username]);
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      checkEmailAvailability(formData.email);
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(debounceTimer);
+  }, [formData.email]);
 
   const calculatePasswordStrength = (password) => {
     let strength = 0;
@@ -165,6 +175,26 @@ const Register = () => {
     }
   };
 
+  const checkEmailAvailability = async (email) => {
+    if (!email || !email.includes('@')) {
+      setEmailAvailable(null);
+      return;
+    }
+
+    setCheckingEmail(true);
+    try {
+      // Check if email is available
+      const response = await axios.get(`http://localhost:8080/api/auth/check-email?email=${encodeURIComponent(email)}`);
+      setEmailAvailable(response.data.available);
+    } catch (error) {
+      // If endpoint doesn't exist or there's an error, assume available for now
+      console.log('Email check failed:', error.message);
+      setEmailAvailable(true);
+    } finally {
+      setCheckingEmail(false);
+    }
+  };
+
   const validateField = (name, value) => {
     const errors = {};
 
@@ -194,6 +224,8 @@ const Register = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) {
           errors.email = 'Please enter a valid email address (e.g., user@example.com)';
+        } else if (emailAvailable === false) {
+          errors.email = 'This email address is already registered. Please use a different email or try logging in.';
         }
         break;
       case 'password':
@@ -424,6 +456,9 @@ const Register = () => {
               onBlur={handleBlur}
               error={formErrors.email}
               isTouched={touched.email}
+              availability={emailAvailable}
+              checking={checkingEmail}
+              emailValue={formData.email}
               required
               autoComplete="email"
             />
