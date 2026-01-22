@@ -43,15 +43,17 @@ const CustomerBookingPage = () => {
     const fetchData = async () => {
       try {
         setFetchLoading(true);
-        const nursesRes = await axios.get('http://localhost:8080/api/nurses', { headers: { Authorization: `Bearer ${token}` } });
-        const serviceTypesRes = await axios.get('http://localhost:8080/api/service-types', { headers: { Authorization: `Bearer ${token}` } });
+        const nursesRes = await axios.get('http://localhost:8080/api/nurses');
+        const serviceTypesRes = await axios.get('http://localhost:8080/api/service-types');
+        console.log('Fetched nurses:', nursesRes.data);
+        console.log('Fetched service types:', serviceTypesRes.data);
         setNurses(nursesRes.data);
         setServiceTypes(serviceTypesRes.data);
         // TODO: Fetch available slots from backend
         // const slotsRes = await axios.get('http://localhost:8080/api/bookings/available-slots', { headers: { Authorization: `Bearer ${token}` } });
         // setAvailableSlots(slotsRes.data);
       } catch (error) {
-        console.log('Error fetching data:', error.response || error);
+        //console.log('Error fetching data:', error.response || error);
         setMessage({
           text: 'Failed to load data. Please try refreshing the page.',
           title: 'Data Loading Error',
@@ -221,6 +223,21 @@ const CustomerBookingPage = () => {
     localStorage.removeItem('role');
     navigate('/login');
   };
+
+    if (fetchLoading) {
+    return (
+      <div className="customer-layout">
+        <CustomerSidebar onLogout={handleLogout} />
+        <div className="customer-main">
+          <div className="booking-loading">
+            <Loader2 className="spinner" size={48} />
+            <p>Loading booking data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="customer-layout">

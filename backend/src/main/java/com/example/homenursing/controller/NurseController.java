@@ -3,9 +3,12 @@ package com.example.homenursing.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,12 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.homenursing.entity.Nurse;
 import com.example.homenursing.service.NurseService;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @RequestMapping("/api/nurses")
 @CrossOrigin(origins = "http://localhost:5173")
 public class NurseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(NurseController.class);
 
     @Autowired
     private NurseService nurseService;
@@ -31,6 +35,10 @@ public class NurseController {
     @GetMapping
     public ResponseEntity<List<Nurse>> getAllNurses() {
         List<Nurse> nurses = nurseService.getAllNurses();
+        logger.info("Fetching all nurses, count: {}", nurses.size());
+        if (nurses.isEmpty()) {
+            logger.warn("No nurses found in the database");
+        }
         return ResponseEntity.ok(nurses);
     }
 
