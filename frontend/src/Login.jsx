@@ -92,7 +92,7 @@ const Login = () => {
       setShowModal(true);
       
       // Role-based navigation
-      let redirectPath = '/customer/booking'; // default for patients
+      let redirectPath = '/customer/dashboard'; // default for patients
       if (role === 'NURSE') {
         redirectPath = '/nurse-dashboard';
       } else if (role === 'ADMIN') {

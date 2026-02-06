@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Clock, MapPin, User, Check, X, DollarSign } from 'lucide-react';
+import { Clock, MapPin, User, Check, X, DollarSign, Download, Filter, Search, Calendar } from 'lucide-react';
+import CustomerSidebar from './CustomerSidebar';
 import './CustomerBookingHistory.css';
 
 const CustomerBookingHistory = () => {
@@ -9,7 +10,53 @@ const CustomerBookingHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    navigate('/login');
+  };
+
+  const handleViewDetails = (booking) => {
+    // TODO: Implement view details modal or navigation
+    console.log('View booking details:', booking);
+  };
+
+  const exportToCSV = () => {
+    const headers = ['ID', 'Date & Time', 'Service Type', 'Nurse', 'Duration', 'Cost', 'Status', 'Notes'];
+    const csvData = filteredBookings.map(booking => [
+      booking.id,
+      formatDate(booking.bookingDateTime),
+      booking.serviceType?.name || 'N/A',
+      booking.nurse ? `${booking.nurse.firstName} ${booking.nurse.lastName}` : 'Not Assigned',
+      booking.duration ? `${booking.duration}h` : 'N/A',
+      `RM${booking.estimatedCost?.toFixed(2) || '0.00'}`,
+      booking.status || 'Pending',
+      booking.notes || ''
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `bookings_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -79,9 +126,47 @@ const CustomerBookingHistory = () => {
     }
   };
 
-  const filteredBookings = filterStatus === 'all' 
-    ? bookings 
-    : bookings.filter(booking => booking.status?.toLowerCase() === filterStatus);
+  const filteredBookings = useMemo(() => {
+    return bookings.filter(booking => {
+      // Status filter
+      if (filterStatus !== 'all' && booking.status?.toLowerCase() !== filterStatus) {
+        return false;
+      }
+
+      // Date range filter
+      if (dateFrom) {
+        const bookingDate = new Date(booking.bookingDateTime);
+        const fromDate = new Date(dateFrom);
+        if (bookingDate < fromDate) return false;
+      }
+
+      if (dateTo) {
+        const bookingDate = new Date(booking.bookingDateTime);
+        const toDate = new Date(dateTo);
+        toDate.setHours(23, 59, 59, 999); // Include the entire day
+        if (bookingDate > toDate) return false;
+      }
+
+      // Search filter
+      if (searchTerm) {
+        const search = searchTerm.toLowerCase();
+        const nurseName = booking.nurse ? `${booking.nurse.firstName} ${booking.nurse.lastName}`.toLowerCase() : '';
+        const serviceType = booking.serviceType?.name?.toLowerCase() || '';
+        const id = booking.id.toString();
+        
+        return nurseName.includes(search) || serviceType.includes(search) || id.includes(search);
+      }
+
+      return true;
+    });
+  }, [bookings, filterStatus, dateFrom, dateTo, searchTerm]);
+
+  const clearFilters = () => {
+    setFilterStatus('all');
+    setDateFrom('');
+    setDateTo('');
+    setSearchTerm('');
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -96,52 +181,92 @@ const CustomerBookingHistory = () => {
 
   if (loading) {
     return (
-      <div className="booking-history-container">
-        <div className="loading">Loading your booking history...</div>
+      <div className="customer-layout">
+        <CustomerSidebar onLogout={handleLogout} isOpen={sidebarOpen} onToggle={toggleSidebar} />
+        <div className="customer-main">
+          <div className="booking-history-container">
+            <div className="loading">Loading your booking history...</div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="booking-history-container">
+    <div className="customer-layout">
+      <CustomerSidebar onLogout={handleLogout} isOpen={sidebarOpen} onToggle={toggleSidebar} />
+      <div className={`customer-main ${!sidebarOpen ? 'sidebar-closed' : ''}`}>
+        {!sidebarOpen && <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>}
+        <div className="booking-history-container">
       <div className="booking-history-header">
-        <h1>My Bookings</h1>
-        <p>View and manage your service bookings</p>
+        <div className="header-left">
+          <h1>My Bookings</h1>
+          <p>View and manage your service bookings</p>
+        </div>
+        <button className="btn-export" onClick={exportToCSV} disabled={filteredBookings.length === 0}>
+          <Download size={18} />
+          Export CSV
+        </button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
-      <div className="filter-tabs">
-        <button 
-          className={`filter-tab ${filterStatus === 'all' ? 'active' : ''}`}
-          onClick={() => setFilterStatus('all')}
-        >
-          All Bookings ({bookings.length})
-        </button>
-        <button 
-          className={`filter-tab ${filterStatus === 'pending' ? 'active' : ''}`}
-          onClick={() => setFilterStatus('pending')}
-        >
-          Pending
-        </button>
-        <button 
-          className={`filter-tab ${filterStatus === 'in-progress' ? 'active' : ''}`}
-          onClick={() => setFilterStatus('in-progress')}
-        >
-          In Progress
-        </button>
-        <button 
-          className={`filter-tab ${filterStatus === 'completed' ? 'active' : ''}`}
-          onClick={() => setFilterStatus('completed')}
-        >
-          Completed
-        </button>
-        <button 
-          className={`filter-tab ${filterStatus === 'cancelled' ? 'active' : ''}`}
-          onClick={() => setFilterStatus('cancelled')}
-        >
-          Cancelled
-        </button>
+      <div className="filters-section">
+        <div className="filters-container">
+          <div className="filter-group">
+            <label><Filter size={16} /> Status</label>
+            <select 
+              className="filter-select"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <option value="all">All Status ({bookings.length})</option>
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label><Calendar size={16} /> From Date</label>
+            <input 
+              type="date"
+              className="filter-input"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label><Calendar size={16} /> To Date</label>
+            <input 
+              type="date"
+              className="filter-input"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+            />
+          </div>
+
+          <div className="filter-group filter-search">
+            <label><Search size={16} /> Search</label>
+            <input 
+              type="text"
+              className="filter-input"
+              placeholder="Search by nurse, service, or ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <button className="btn-clear-filters" onClick={clearFilters}>
+            Clear Filters
+          </button>
+        </div>
+
+        <div className="results-info">
+          Showing {filteredBookings.length} of {bookings.length} bookings
+        </div>
       </div>
 
       {filteredBookings.length === 0 ? (
@@ -149,77 +274,76 @@ const CustomerBookingHistory = () => {
           <p>No {filterStatus !== 'all' ? filterStatus : ''} bookings found</p>
         </div>
       ) : (
-        <div className="bookings-grid">
-          {filteredBookings.map((booking) => (
-            <div key={booking.id} className={`booking-card ${getStatusColor(booking.status)}`}>
-              <div className="booking-card-header">
-                <div className="booking-status">
-                  <span className={`status-badge ${getStatusColor(booking.status)}`}>
-                    {getStatusIcon(booking.status)}
-                    {booking.status || 'Pending'}
-                  </span>
-                </div>
-                <div className="booking-id">#{booking.id}</div>
-              </div>
-
-              <div className="booking-card-body">
-                <div className="booking-detail">
-                  <Clock size={18} />
-                  <div>
-                    <span className="detail-label">Service Date</span>
-                    <span className="detail-value">{formatDate(booking.bookingDateTime)}</span>
-                  </div>
-                </div>
-
-                <div className="booking-detail">
-                  <User size={18} />
-                  <div>
-                    <span className="detail-label">Service Type</span>
-                    <span className="detail-value">{booking.serviceType?.name || 'N/A'}</span>
-                  </div>
-                </div>
-
-                <div className="booking-detail">
-                  <MapPin size={18} />
-                  <div>
-                    <span className="detail-label">Nurse</span>
-                    <span className="detail-value">
-                      {booking.nurse ? `${booking.nurse.firstName} ${booking.nurse.lastName}` : 'N/A'}
+        <div className="table-container">
+          <table className="bookings-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date & Time</th>
+                <th>Service Type</th>
+                <th>Nurse</th>
+                <th>Duration</th>
+                <th>Cost</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredBookings.map((booking) => (
+                <tr key={booking.id}>
+                  <td data-label="ID">
+                    <span className="booking-id-badge">{booking.id}</span>
+                  </td>
+                  <td data-label="Date & Time">
+                    <div className="date-cell">
+                      <span>{formatDate(booking.bookingDateTime)}</span>
+                    </div>
+                  </td>
+                  <td data-label="Service Type">
+                    <div className="service-cell">
+                      <span>{booking.serviceType?.name || 'N/A'}</span>
+                    </div>
+                  </td>
+                  <td data-label="Nurse">
+                    <div className="nurse-cell">
+                      <div>
+                        <div className="nurse-name">
+                          {booking.nurse ? `${booking.nurse.firstName} ${booking.nurse.lastName}` : 'Not Assigned'}
+                        </div>
+                        {booking.nurse?.specialization && (
+                          <div className="nurse-specialization">{booking.nurse.specialization}</div>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td data-label="Duration">
+                    <span className="duration-badge">
+                      {booking.duration ? `${booking.duration}h` : 'N/A'}
                     </span>
-                  </div>
-                </div>
-
-                <div className="booking-detail">
-                  <DollarSign size={18} />
-                  <div>
-                    <span className="detail-label">Duration</span>
-                    <span className="detail-value">{booking.duration ? `${booking.duration} hour${booking.duration > 1 ? 's' : ''}` : 'N/A'}</span>
-                  </div>
-                </div>
-
-                <div className="booking-detail">
-                  <DollarSign size={18} />
-                  <div>
-                    <span className="detail-label">Estimated Cost</span>
-                    <span className="detail-value">${booking.estimatedCost?.toFixed(2) || '0.00'}</span>
-                  </div>
-                </div>
-
-                {booking.notes && (
-                  <div className="booking-description">
-                    <span className="detail-label">Notes</span>
-                    <span className="detail-value">{booking.notes}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="booking-card-footer">
-                <button className="btn-details">View Details</button>
-              </div>
-            </div>
-          ))}
+                  </td>
+                  <td data-label="Cost">
+                    <div className="cost-cell">
+                      <span className="cost-amount">RM{booking.estimatedCost?.toFixed(2) || '0.00'}</span>
+                    </div>
+                  </td>
+                  <td data-label="Status">
+                    <span className={`status-badge ${getStatusColor(booking.status)}`}>
+                      {booking.status || 'Pending'}
+                    </span>
+                  </td>
+                  <td data-label="Actions">
+                    <button className="btn-view" onClick={() => handleViewDetails(booking)}>
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 };
