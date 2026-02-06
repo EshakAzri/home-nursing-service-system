@@ -6,6 +6,11 @@ import CustomerDashboard from './customer/CustomerDashboard';
 import CustomerBookingPage from './customer/CustomerBookingPage';
 import CustomerBookingHistory from './customer/CustomerBookingHistory';
 import CustomerProfile from './customer/CustomerProfile';
+import AdminDashboard from './admin/AdminDashboard';
+import AdminBookings from './admin/AdminBookings';
+import AdminNurses from './admin/AdminNurses';
+import AdminUsers from './admin/AdminUsers';
+import AdminReports from './admin/AdminReports';
 import './App.css';
 
 function App() {
@@ -20,7 +25,12 @@ function App() {
           <Route path="/customer/bookings" element={<CustomerBookingHistory />} />
           <Route path="/customer/profile" element={<CustomerProfile />} />
           <Route path="/nurse-dashboard" element={<div><h1>Nurse Dashboard</h1><p>Coming soon...</p></div>} />
-          <Route path="/admin-dashboard" element={<div><h1>Admin Dashboard</h1><p>Coming soon...</p></div>} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/nurses" element={<AdminNurses />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/" element={<div><h1>Welcome to Home Nursing Service</h1><a href="/login">Login</a> | <a href="/register">Register</a></div>} />
         </Routes>
       </div>
