@@ -1,15 +1,18 @@
 package com.example.homenursing.service;
 
-import com.example.homenursing.entity.Booking;
-import com.example.homenursing.entity.Booking.BookingStatus;
-import com.example.homenursing.repository.BookingRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.homenursing.entity.Booking;
+import com.example.homenursing.entity.Booking.BookingStatus;
+import com.example.homenursing.entity.User;
+import com.example.homenursing.repository.BookingRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -92,6 +95,11 @@ public class BookingService {
         if (booking.getDuration() <= 0) {
             throw new IllegalArgumentException("Duration must be positive");
         }
+    }
+
+    // Get all bookings for a specific user
+    public List<Booking> getUserBookings(User user) {
+        return bookingRepository.findByUserOrderByBookingDateTimeDesc(user);
     }
 
     // Additional query methods can be added here as needed

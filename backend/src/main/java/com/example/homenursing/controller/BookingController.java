@@ -135,4 +135,35 @@ public class BookingController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // GET /api/bookings/my-bookings - Get current user's bookings
+    @GetMapping("/my-bookings")
+    public ResponseEntity<?> getMyBookings() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            
+            // Check if user is authenticated
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated"));
+            }
+            
+            Object principal = authentication.getPrincipal();
+            if ("anonymousUser".equals(principal)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated"));
+            }
+            
+            String username = authentication.getName();
+            System.out.println("Fetching bookings for user: " + username);
+            
+            User currentUser = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+            List<Booking> bookings = bookingService.getUserBookings(currentUser);
+            System.out.println("Found " + bookings.size() + " bookings for user: " + username);
+            
+            return ResponseEntity.ok(bookings);
+        } catch (Exception e) {
+            System.out.println("Error fetching bookings: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
+        }
+    }
 }
