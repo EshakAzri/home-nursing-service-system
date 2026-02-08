@@ -50,23 +50,76 @@
 }
 
 .customer-sidebar-user {
-  margin-top: 12px;
-  padding: 8px 0;
+  margin-top: 16px;
+  padding: 16px;
   border-top: 1px solid #e2e8f0;
-  text-align: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
+  border-radius: 12px;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+  text-align: left;
+}
+
+.welcome-text {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  opacity: 0.8;
 }
 
 .customer-sidebar-username {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: #374151;
   margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.customer-sidebar-username::after {
+  content: '👋';
+  font-size: 14px;
+  animation: wave 2s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(20deg); }
+  75% { transform: rotate(-10deg); }
 }
 
 .customer-sidebar-email {
   font-size: 12px;
   color: #6b7280;
   opacity: 0.8;
+  font-weight: 400;
 }
 
 .sidebar-close {

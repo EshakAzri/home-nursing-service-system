@@ -85,8 +85,13 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
         <span className="customer-sidebar-title">CareLink</span>
         <span className="customer-sidebar-subtitle">Customer Portal</span>
         <div className="customer-sidebar-user">
-          <div className="customer-sidebar-username">{userInfo.username}</div>
-          <div className="customer-sidebar-email">{userInfo.email || 'Loading...'}</div>
+          <div className="user-avatar">
+            {userInfo.username.charAt(0).toUpperCase()}
+          </div>
+          <div className="user-info">
+            <div className="customer-sidebar-username">{userInfo.username}</div>
+            <div className="customer-sidebar-email">{userInfo.email || 'Loading...'}</div>
+          </div>
         </div>
         <button className="sidebar-close" onClick={onToggle}><Menu size={20} /></button>
       </div>
