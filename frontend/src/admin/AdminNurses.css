@@ -81,13 +81,15 @@
 }
 
 .availability-badge.available {
-  background: rgba(16, 185, 129, 0.2);
-  color: #065f46;
+  background: #10b981;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .availability-badge.unavailable {
-  background: rgba(239, 68, 68, 0.2);
-  color: #991b1b;
+  background: #ef4444;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .nurse-card-body {
@@ -99,6 +101,7 @@
   font-weight: 700;
   color: #111827;
   margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .specialization {

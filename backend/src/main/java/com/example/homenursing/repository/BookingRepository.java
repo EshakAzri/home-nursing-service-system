@@ -3,6 +3,7 @@ package com.example.homenursing.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.homenursing.entity.Booking;
@@ -12,4 +13,8 @@ import com.example.homenursing.entity.User;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Find all bookings for a specific user
     List<Booking> findByUserOrderByBookingDateTimeDesc(User user);
+    
+    // Find all bookings with nurse and branch data loaded
+    @Query("SELECT b FROM Booking b JOIN FETCH b.nurse n JOIN FETCH n.branch")
+    List<Booking> findAllWithNurseAndBranch();
 }

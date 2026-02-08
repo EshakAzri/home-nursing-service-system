@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.homenursing.entity.Booking;
@@ -51,8 +52,10 @@ public class BookingController {
 
     // GET /api/bookings - Get all bookings
     @GetMapping
-    public ResponseEntity<List<Booking>> getAllBookings() {
-        List<Booking> bookings = bookingService.getAllBookings();
+    public ResponseEntity<List<Booking>> getAllBookings(
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate) {
+        List<Booking> bookings = bookingService.getAllBookings(fromDate, toDate);
         return ResponseEntity.ok(bookings);
     }
 
@@ -118,6 +121,27 @@ public class BookingController {
         try {
             Booking updatedBooking = bookingService.updateBooking(id, bookingDetails);
             return ResponseEntity.ok(updatedBooking);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // PUT /api/bookings/{id}/status - Update booking status
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Booking> updateBookingStatus(@PathVariable Long id, @RequestBody Map<String, String> statusData) {
+        try {
+            String statusString = statusData.get("status");
+            if (statusString == null || statusString.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
+            Booking.BookingStatus status = Booking.BookingStatus.valueOf(statusString.toUpperCase());
+            Booking updatedBooking = bookingService.updateBookingStatus(id, status);
+            return ResponseEntity.ok(updatedBooking);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

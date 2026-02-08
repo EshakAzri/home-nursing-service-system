@@ -16,7 +16,6 @@ const AdminSidebar = ({ isOpen, toggleSidebar, onLogout }) => {
     { path: '/admin/bookings', icon: Calendar, label: 'Bookings' },
     { path: '/admin/nurses', icon: UserCog, label: 'Nurses' },
     { path: '/admin/users', icon: Users, label: 'Users' },
-    { path: '/admin/reports', icon: FileText, label: 'Reports' },
   ];
 
   const handleLogout = () => {
@@ -27,14 +26,16 @@ const AdminSidebar = ({ isOpen, toggleSidebar, onLogout }) => {
 
   return (
     <>
-      <button className="admin-sidebar-toggle" onClick={toggleSidebar}>
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
-
       <aside className={`admin-sidebar ${isOpen ? 'open' : 'closed'}`}>
         <div className="admin-sidebar-header">
-          <Activity className="admin-sidebar-logo" size={32} />
-          <h2 className="admin-sidebar-title">Admin Panel</h2>
+          <div className="admin-sidebar-logo">
+            <Activity size={24} />
+          </div>
+          <span className="admin-sidebar-title">Admin Panel</span>
+          <span className="admin-sidebar-subtitle">Management Portal</span>
+          <button className="sidebar-close" onClick={toggleSidebar}>
+            <Menu size={20} />
+          </button>
         </div>
 
         <nav className="admin-sidebar-nav">
@@ -48,7 +49,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, onLogout }) => {
                 to={item.path}
                 className={`admin-sidebar-item ${isActive ? 'active' : ''}`}
               >
-                <Icon size={20} />
+                <Icon size={18} />
                 <span>{item.label}</span>
               </Link>
             );
@@ -60,12 +61,11 @@ const AdminSidebar = ({ isOpen, toggleSidebar, onLogout }) => {
             className="admin-sidebar-logout"
             onClick={handleLogout}
           >
-            <LogOut size={20} />
+            <LogOut size={18} />
             <span>Logout</span>
           </button>
         </div>
       </aside>
-
       {isOpen && <div className="admin-sidebar-overlay" onClick={toggleSidebar} />}
     </>
   );

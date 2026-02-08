@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.homenursing.entity.Booking;
 import com.example.homenursing.entity.Nurse;
+import com.example.homenursing.entity.User;
 import com.example.homenursing.repository.BookingRepository;
 import com.example.homenursing.repository.NurseRepository;
+import com.example.homenursing.repository.UserRepository;
 
 @Service
 public class NurseService {
@@ -23,8 +25,29 @@ public class NurseService {
     @Autowired
     private ServiceConfigurationService serviceConfigurationService;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
+
     // Create
     public Nurse createNurse(Nurse nurse) {
+        // Check if user with this email already exists
+        if (userRepository.findByUsername(nurse.getEmail()).isPresent()) {
+            throw new RuntimeException("A user with this email already exists");
+        }
+
+        // Create User account for the nurse
+        User user = User.builder()
+            .username(nurse.getEmail()) // Use email as username
+            .password(userService.encodePassword("defaultpassword")) // Default password
+            .email(nurse.getEmail())
+            .role(User.Role.NURSE)
+            .build();
+        userRepository.save(user);
+
+        // Save the nurse
         return nurseRepository.save(nurse);
     }
 

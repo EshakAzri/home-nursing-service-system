@@ -1,5 +1,6 @@
 package com.example.homenursing.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,40 @@ public class BookingService {
     private final BookingRepository bookingRepository;
 
     public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+        return bookingRepository.findAllWithNurseAndBranch();
+    }
+
+    public List<Booking> getAllBookings(String fromDate, String toDate) {
+        List<Booking> bookings = bookingRepository.findAllWithNurseAndBranch();
+        
+        // Apply date filtering if dates are provided
+        if ((fromDate != null && !fromDate.isEmpty()) || (toDate != null && !toDate.isEmpty())) {
+            LocalDateTime startDate = null;
+            LocalDateTime endDate = null;
+            
+            if (fromDate != null && !fromDate.isEmpty()) {
+                startDate = LocalDate.parse(fromDate).atStartOfDay();
+            }
+            
+            if (toDate != null && !toDate.isEmpty()) {
+                endDate = LocalDate.parse(toDate).atTime(23, 59, 59);
+            }
+            
+            final LocalDateTime finalStartDate = startDate;
+            final LocalDateTime finalEndDate = endDate;
+            
+            bookings = bookings.stream()
+                .filter(booking -> {
+                    boolean afterStart = finalStartDate == null || 
+                        booking.getBookingDateTime().isAfter(finalStartDate.minusSeconds(1));
+                    boolean beforeEnd = finalEndDate == null || 
+                        booking.getBookingDateTime().isBefore(finalEndDate.plusSeconds(1));
+                    return afterStart && beforeEnd;
+                })
+                .collect(java.util.stream.Collectors.toList());
+        }
+        
+        return bookings;
     }
 
     public Optional<Booking> getBookingById(Long id) {

@@ -149,9 +149,9 @@ const AdminBookings = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('ms-MY', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MYR'
     }).format(amount);
   };
 
@@ -179,6 +179,7 @@ const AdminBookings = () => {
       <AdminSidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       
       <main className={`admin-dashboard-main ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        {!sidebarOpen && <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>}
         <div className="admin-page-header">
           <div>
             <h1>Manage Bookings</h1>
@@ -244,7 +245,7 @@ const AdminBookings = () => {
                 ) : (
                   filteredBookings.map(booking => (
                     <tr key={booking.id}>
-                      <td>#{booking.id}</td>
+                      <td>{booking.id}</td>
                       <td>{booking.user?.username || 'N/A'}</td>
                       <td>
                         {booking.nurse 

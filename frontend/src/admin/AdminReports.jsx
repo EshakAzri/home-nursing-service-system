@@ -168,9 +168,9 @@ const AdminReports = () => {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('ms-MY', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MYR'
     }).format(amount);
   };
 
@@ -221,6 +221,7 @@ ${topNurses.map((n, i) => `${i + 1},${n.nurse.firstName} ${n.nurse.lastName},${n
       <AdminSidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       
       <main className={`admin-dashboard-main ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        {!sidebarOpen && <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>}
         <div className="admin-page-header">
           <div>
             <h1>Reports & Analytics</h1>

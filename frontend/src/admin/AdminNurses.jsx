@@ -216,9 +216,9 @@ const AdminNurses = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('ms-MY', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MYR'
     }).format(amount);
   };
 
@@ -244,6 +244,7 @@ const AdminNurses = () => {
       <AdminSidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       
       <main className={`admin-dashboard-main ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        {!sidebarOpen && <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>}
         <div className="admin-page-header">
           <div>
             <h1>Manage Nurses</h1>
