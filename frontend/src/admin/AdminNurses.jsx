@@ -3,7 +3,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { 
   Search, UserPlus, Edit, Trash2, Eye, 
-  CheckCircle, XCircle, Phone, Mail, Award
+  CheckCircle, XCircle, Phone, Mail, Award,
+  Heart, Stethoscope, Activity, Baby, Shield,
+  CheckSquare
 } from 'lucide-react';
 import AdminSidebar from './AdminSidebar';
 import './AdminNurses.css';
@@ -13,12 +15,16 @@ const AdminNurses = () => {
   const [nurses, setNurses] = useState([]);
   const [filteredNurses, setFilteredNurses] = useState([]);
   const [branches, setBranches] = useState([]);
+  const [serviceTypes, setServiceTypes] = useState([]);
+  const [nurseServiceConfigurations, setNurseServiceConfigurations] = useState([]);
+  const [selectedServiceTypeIds, setSelectedServiceTypeIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedNurse, setSelectedNurse] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -35,6 +41,13 @@ const AdminNurses = () => {
     branchId: ''
   });
   const navigate = useNavigate();
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 4000);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -59,14 +72,16 @@ const AdminNurses = () => {
         headers: { Authorization: `Bearer ${token}` }
       };
 
-      const [nursesRes, branchesRes] = await Promise.all([
+      const [nursesRes, branchesRes, serviceTypesRes] = await Promise.all([
         axios.get('http://localhost:8080/api/nurses', config),
-        axios.get('http://localhost:8080/api/branches', config)
+        axios.get('http://localhost:8080/api/branches', config),
+        axios.get('http://localhost:8080/api/service-types', config)
       ]);
 
       setNurses(nursesRes.data);
       setFilteredNurses(nursesRes.data);
       setBranches(branchesRes.data);
+      setServiceTypes(serviceTypesRes.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -100,7 +115,7 @@ const AdminNurses = () => {
     setShowModal(true);
   };
 
-  const handleEditNurse = (nurse) => {
+  const handleEditNurse = async (nurse) => {
     setSelectedNurse(nurse);
     setFormData({
       firstName: nurse.firstName,
@@ -117,6 +132,28 @@ const AdminNurses = () => {
       dateOfBirth: nurse.dateOfBirth,
       branchId: nurse.branch?.id || ''
     });
+
+    // Fetch service configurations for this nurse
+    try {
+      const token = localStorage.getItem('token');
+      //console.log('Token from localStorage:', token);
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      //console.log('Making request to:', `http://localhost:8080/api/service-configurations/nurse/${nurse.id}`);
+      const response = await axios.get(`http://localhost:8080/api/service-configurations/nurse/${nurse.id}`, config);
+      //console.log('Service configurations response:', response.data);
+      setNurseServiceConfigurations(response.data);
+      const activeServiceTypeIds = response.data.filter(sc => sc.isActive).map(sc => sc.serviceType.id);
+      //console.log('Active service type IDs:', activeServiceTypeIds);
+      setSelectedServiceTypeIds(activeServiceTypeIds);
+    } catch (error) {
+      console.error('Error fetching service configurations:', error);
+      console.error('Error response:', error.response);
+      setNurseServiceConfigurations([]);
+      setSelectedServiceTypeIds([]);
+    }
+
     setShowEditModal(true);
   };
 
@@ -136,6 +173,7 @@ const AdminNurses = () => {
       dateOfBirth: '',
       branchId: ''
     });
+    setSelectedServiceTypeIds([]);
     setShowAddModal(true);
   };
 
@@ -145,6 +183,64 @@ const AdminNurses = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleServiceTypeChange = (serviceTypeId, checked) => {
+    if (checked) {
+      setSelectedServiceTypeIds(prev => [...prev, serviceTypeId]);
+    } else {
+      setSelectedServiceTypeIds(prev => prev.filter(id => id !== serviceTypeId));
+    }
+  };
+
+  const updateServiceConfigurations = async (nurseId, selectedIds) => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+
+    // Get current active configurations
+    const currentActive = nurseServiceConfigurations.filter(sc => sc.isActive).map(sc => sc.serviceType.id);
+
+    // Find to deactivate
+    const toDeactivate = currentActive.filter(id => !selectedIds.includes(id));
+    // Find to activate/add
+    const toActivate = selectedIds.filter(id => !currentActive.includes(id));
+
+    // Deactivate
+    for (const serviceTypeId of toDeactivate) {
+      const sc = nurseServiceConfigurations.find(sc => sc.serviceType.id === serviceTypeId);
+      if (sc) {
+        const payload = {
+          id: sc.id,
+          nurse: { id: nurseId },
+          serviceType: { id: sc.serviceType.id },
+          isActive: false
+        };
+        await axios.put(`http://localhost:8080/api/service-configurations/${sc.id}`, payload, config);
+      }
+    }
+
+    // Activate or add
+    for (const serviceTypeId of toActivate) {
+      const existing = nurseServiceConfigurations.find(sc => sc.serviceType.id === serviceTypeId);
+      if (existing) {
+        const payload = {
+          id: existing.id,
+          nurse: { id: nurseId },
+          serviceType: { id: existing.serviceType.id },
+          isActive: true
+        };
+        await axios.put(`http://localhost:8080/api/service-configurations/${existing.id}`, payload, config);
+      } else {
+        const payload = {
+          nurse: { id: nurseId },
+          serviceType: { id: serviceTypeId },
+          isActive: true
+        };
+        await axios.post('http://localhost:8080/api/service-configurations', payload, config);
+      }
+    }
   };
 
   const handleSubmitAdd = async (e) => {
@@ -162,12 +258,19 @@ const AdminNurses = () => {
         branch: { id: parseInt(formData.branchId) }
       };
 
-      await axios.post('http://localhost:8080/api/nurses', payload, config);
+      const response = await axios.post('http://localhost:8080/api/nurses', payload, config);
+      const newNurseId = response.data.id;
       await fetchData();
+
+      // Add service configurations for new nurse
+      if (selectedServiceTypeIds.length > 0) {
+        await updateServiceConfigurations(newNurseId, selectedServiceTypeIds);
+      }
+
       setShowAddModal(false);
     } catch (error) {
       console.error('Error adding nurse:', error);
-      alert('Failed to add nurse: ' + (error.response?.data?.message || error.message));
+      showNotification('Failed to add nurse: ' + (error.response?.data?.message || error.message), 'error');
     }
   };
 
@@ -175,6 +278,13 @@ const AdminNurses = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+      
+      if (!token) {
+        showNotification('No authentication token found. Please log in again.', 'error');
+        navigate('/login');
+        return;
+      }
+
       const config = {
         headers: { Authorization: `Bearer ${token}` }
       };
@@ -187,12 +297,26 @@ const AdminNurses = () => {
       };
 
       await axios.put(`http://localhost:8080/api/nurses/${selectedNurse.id}`, payload, config);
+      
       await fetchData();
+
+      // Update service configurations
+      await updateServiceConfigurations(selectedNurse.id, selectedServiceTypeIds);
+
       setShowEditModal(false);
       setSelectedNurse(null);
+      showNotification('Nurse updated successfully!', 'success');
     } catch (error) {
       console.error('Error updating nurse:', error);
-      alert('Failed to update nurse: ' + (error.response?.data?.message || error.message));
+      if (error.response?.status === 403) {
+        showNotification('Authentication failed. Please log in again.', 'error');
+        navigate('/login');
+      } else if (error.response?.status === 401) {
+        showNotification('Your session has expired. Please log in again.', 'error');
+        navigate('/login');
+      } else {
+        showNotification('Failed to update nurse: ' + (error.response?.data?.message || error.message), 'error');
+      }
     }
   };
 
@@ -209,9 +333,10 @@ const AdminNurses = () => {
 
       await axios.delete(`http://localhost:8080/api/nurses/${nurseId}`, config);
       await fetchData();
+      showNotification('Nurse deleted successfully!', 'success');
     } catch (error) {
       console.error('Error deleting nurse:', error);
-      alert('Failed to delete nurse: ' + (error.response?.data?.message || error.message));
+      showNotification('Failed to delete nurse: ' + (error.response?.data?.message || error.message), 'error');
     }
   };
 
@@ -220,6 +345,15 @@ const AdminNurses = () => {
       style: 'currency',
       currency: 'MYR'
     }).format(amount);
+  };
+
+  const getServiceTypeIcon = (serviceTypeName) => {
+    const name = serviceTypeName.toLowerCase();
+    if (name.includes('cardiac') || name.includes('heart')) return Heart;
+    if (name.includes('pediatric') || name.includes('child')) return Baby;
+    if (name.includes('emergency') || name.includes('critical')) return Shield;
+    if (name.includes('general') || name.includes('checkup')) return Stethoscope;
+    return Activity; // default icon
   };
 
   const formatDate = (dateString) => {
@@ -429,11 +563,11 @@ const AdminNurses = () => {
 
       {/* Add/Edit Form Modal */}
       {(showAddModal || showEditModal) && (
-        <div className="modal-overlay" onClick={() => { setShowAddModal(false); setShowEditModal(false); }}>
+          <div className="modal-overlay" onClick={() => { setShowAddModal(false); setShowEditModal(false); setSelectedServiceTypeIds([]); }}>
           <div className="modal-content large" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>{showAddModal ? 'Add New Nurse' : 'Edit Nurse'}</h2>
-              <button onClick={() => { setShowAddModal(false); setShowEditModal(false); }} className="close-btn">×</button>
+              <button onClick={() => { setShowAddModal(false); setShowEditModal(false); setSelectedServiceTypeIds([]); }} className="close-btn">×</button>
             </div>
             <form onSubmit={showAddModal ? handleSubmitAdd : handleSubmitEdit}>
               <div className="modal-body">
@@ -568,6 +702,35 @@ const AdminNurses = () => {
                       ))}
                     </select>
                   </div>
+                  <div className="form-group full-width">
+                    <div className="service-config-header">
+                      <CheckSquare size={20} />
+                      <label>Service Configurations</label>
+                      <span className="config-subtitle">Select the services this nurse can provide</span>
+                    </div>
+                    <div className="service-types-grid">
+                      {serviceTypes.map(serviceType => {
+                        const IconComponent = getServiceTypeIcon(serviceType.name);
+                        const isSelected = selectedServiceTypeIds.includes(serviceType.id);
+                        return (
+                          <label key={serviceType.id} className={`service-type-card ${isSelected ? 'selected' : ''}`}>
+                            <div className="service-card-header">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={(e) => handleServiceTypeChange(serviceType.id, e.target.checked)}
+                              />
+                              <IconComponent size={24} className="service-icon" />
+                            </div>
+                            <div className="service-card-content">
+                              <span className="service-name">{serviceType.name}</span>
+                              <small className="service-description">{serviceType.description}</small>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
                   <div className="form-group checkbox-group">
                     <label>
                       <input
@@ -593,7 +756,7 @@ const AdminNurses = () => {
                 </div>
               </div>
               <div className="modal-footer">
-                <button type="button" onClick={() => { setShowAddModal(false); setShowEditModal(false); }} className="btn-secondary">
+                <button type="button" onClick={() => { setShowAddModal(false); setShowEditModal(false); setSelectedServiceTypeIds([]); }} className="btn-secondary">
                   Cancel
                 </button>
                 <button type="submit" className="btn-primary">
@@ -601,6 +764,17 @@ const AdminNurses = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Notification Toast */}
+      {notification.show && (
+        <div className={`notification-toast ${notification.type}`}>
+          <div className="notification-content">
+            {notification.type === 'success' && <CheckCircle size={20} />}
+            {notification.type === 'error' && <XCircle size={20} />}
+            <span>{notification.message}</span>
           </div>
         </div>
       )}

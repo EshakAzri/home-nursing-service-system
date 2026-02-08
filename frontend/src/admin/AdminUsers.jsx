@@ -162,6 +162,37 @@ const AdminUsers = () => {
           </div>
         </div>
 
+        {/* Summary Cards */}
+        <div className="users-summary">
+          <div className="summary-card patient">
+            <div className="summary-icon">
+              <Shield size={24} />
+            </div>
+            <div className="summary-content">
+              <h4>Patients</h4>
+              <p className="summary-count">{users.filter(u => u.role === 'PATIENT').length}</p>
+            </div>
+          </div>
+          <div className="summary-card nurse">
+            <div className="summary-icon">
+              <Shield size={24} />
+            </div>
+            <div className="summary-content">
+              <h4>Nurses</h4>
+              <p className="summary-count">{users.filter(u => u.role === 'NURSE').length}</p>
+            </div>
+          </div>
+          <div className="summary-card admin">
+            <div className="summary-icon">
+              <Shield size={24} />
+            </div>
+            <div className="summary-content">
+              <h4>Admins</h4>
+              <p className="summary-count">{users.filter(u => u.role === 'ADMIN').length}</p>
+            </div>
+          </div>
+        </div>
+
         {/* Users Grid */}
         <div className="users-grid-view">
           {filteredUsers.length === 0 ? (
@@ -216,37 +247,6 @@ const AdminUsers = () => {
               </div>
             ))
           )}
-        </div>
-
-        {/* Summary Cards */}
-        <div className="users-summary">
-          <div className="summary-card patient">
-            <div className="summary-icon">
-              <Shield size={24} />
-            </div>
-            <div className="summary-content">
-              <h4>Patients</h4>
-              <p className="summary-count">{users.filter(u => u.role === 'PATIENT').length}</p>
-            </div>
-          </div>
-          <div className="summary-card nurse">
-            <div className="summary-icon">
-              <Shield size={24} />
-            </div>
-            <div className="summary-content">
-              <h4>Nurses</h4>
-              <p className="summary-count">{users.filter(u => u.role === 'NURSE').length}</p>
-            </div>
-          </div>
-          <div className="summary-card admin">
-            <div className="summary-icon">
-              <Shield size={24} />
-            </div>
-            <div className="summary-content">
-              <h4>Admins</h4>
-              <p className="summary-count">{users.filter(u => u.role === 'ADMIN').length}</p>
-            </div>
-          </div>
         </div>
       </main>
 

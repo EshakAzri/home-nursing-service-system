@@ -12,13 +12,15 @@ import com.example.homenursing.entity.ServiceConfiguration;
 @Repository
 public interface ServiceConfigurationRepository extends JpaRepository<ServiceConfiguration, Long> {
 
-    List<ServiceConfiguration> findByNurseIdAndIsActiveTrue(Long nurseId);
+    @Query("SELECT sc FROM ServiceConfiguration sc JOIN FETCH sc.serviceType WHERE sc.nurse.id = :nurseId AND sc.isActive = true")
+    List<ServiceConfiguration> findByNurseIdAndIsActiveTrue(@Param("nurseId") Long nurseId);
 
-    List<ServiceConfiguration> findByServiceTypeIdAndIsActiveTrue(Long serviceTypeId);
+    @Query("SELECT sc FROM ServiceConfiguration sc JOIN FETCH sc.serviceType WHERE sc.serviceType.id = :serviceTypeId AND sc.isActive = true")
+    List<ServiceConfiguration> findByServiceTypeIdAndIsActiveTrue(@Param("serviceTypeId") Long serviceTypeId);
 
-    @Query("SELECT sc FROM ServiceConfiguration sc WHERE sc.nurse.id = :nurseId AND sc.serviceType.id = :serviceTypeId AND sc.isActive = true")
+    @Query("SELECT sc FROM ServiceConfiguration sc JOIN FETCH sc.serviceType WHERE sc.nurse.id = :nurseId AND sc.serviceType.id = :serviceTypeId AND sc.isActive = true")
     ServiceConfiguration findByNurseAndServiceType(@Param("nurseId") Long nurseId, @Param("serviceTypeId") Long serviceTypeId);
 
-    @Query("SELECT DISTINCT sc.nurse FROM ServiceConfiguration sc WHERE sc.serviceType.id = :serviceTypeId AND sc.nurse.branch.id = :branchId AND sc.nurse.isAvailable = true AND sc.isActive = true")
+    @Query("SELECT DISTINCT sc.nurse FROM ServiceConfiguration sc JOIN FETCH sc.nurse.branch WHERE sc.serviceType.id = :serviceTypeId AND sc.nurse.branch.id = :branchId AND sc.nurse.isAvailable = true AND sc.isActive = true")
     List<com.example.homenursing.entity.Nurse> findNursesByServiceTypeAndBranch(@Param("serviceTypeId") Long serviceTypeId, @Param("branchId") Long branchId);
 }
