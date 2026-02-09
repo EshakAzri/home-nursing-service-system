@@ -243,7 +243,7 @@ const CustomerProfile = () => {
           <div className="profile-content">
             {/* Profile Info Card */}
             <div className="profile-card">
-              <div className="profile-card-header">
+              <div className="profile-card-header-user">
                 <h2>Personal Information</h2>
                 <button 
                   className={`btn-edit ${editMode ? 'cancel' : ''}`}
@@ -340,7 +340,7 @@ const CustomerProfile = () => {
 
             {/* Password Card */}
             <div className="profile-card">
-              <div className="profile-card-header">
+              <div className="profile-card-header-user">
                 <h2>Password & Security</h2>
                 <button 
                   className="btn-edit"
@@ -452,7 +452,7 @@ const CustomerProfile = () => {
 
             {/* Account Stats */}
             <div className="profile-card stats-card">
-              <div className="profile-card-header">
+              <div className="profile-card-header-user">
                 <h2>Account Statistics</h2>
               </div>
               <div className="profile-card-body">

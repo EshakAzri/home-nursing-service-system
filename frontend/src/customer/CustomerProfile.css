@@ -205,7 +205,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.profile-card-header {
+.profile-card-header-user {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -215,7 +215,7 @@
   color: white;
 }
 
-.profile-card-header h2 {
+.profile-card-header-user h2 {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
