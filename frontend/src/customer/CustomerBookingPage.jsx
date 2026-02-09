@@ -407,7 +407,7 @@ const CustomerBookingPage = () => {
           <div className="booking-form-grid">
             {/* Branch Selection - First Step */}
             <div className="booking-form-group full-width">
-              <label className="booking-label required">🏥 Select Branch</label>
+              <label className="booking-label required">Select Branch</label>
               <div className="booking-select-wrapper">
                 <MapPin className="booking-select-icon" size={18} />
                 <select
@@ -433,7 +433,7 @@ const CustomerBookingPage = () => {
 
             {/* Service Type Selection - Second Step */}
             <div className="booking-form-group full-width">
-              <label className="booking-label required">🩺 Select Service Type</label>
+              <label className="booking-label required">Select Service Type</label>
               <div className="booking-select-wrapper">
                 <MapPin className="booking-select-icon" size={18} />
                 <select
@@ -459,7 +459,7 @@ const CustomerBookingPage = () => {
 
             {/* Nurse Selection - Based on Branch AND Service Type */}
             <div className="booking-form-group full-width">
-              <label className="booking-label required">👩‍⚕️ Select Nurse</label>
+              <label className="booking-label required">Select Nurse</label>
               <div className="booking-select-wrapper">
                 <Stethoscope className="booking-select-icon" size={18} />
                 {nurseFilterLoading && <Loader2 className="spinner-small" size={16} />}
@@ -559,7 +559,7 @@ const CustomerBookingPage = () => {
           </div>
 
           <div className="booking-form-group">
-            <label className="booking-label">💰 Estimated Cost (Auto-calculated)</label>
+            <label className="booking-label">Estimated Cost (Auto-calculated)</label>
             <div className="booking-input-wrapper">
               <DollarSign className="booking-input-icon" size={18} />
               <input
@@ -625,7 +625,7 @@ const CustomerBookingPage = () => {
 
         {/* Booking Summary Card */}
         <div className="booking-summary-card">
-          <h3 className="summary-title">📋 Booking Summary</h3>
+          <h3 className="summary-title">Booking Summary</h3>
           <div className="summary-content">
             {formData.branchId ? (
               <div className="summary-item">
@@ -711,7 +711,7 @@ const CustomerBookingPage = () => {
         <div className="booking-modal-overlay" onClick={() => setShowConfirmModal(false)}>
           <div className="booking-modal confirmation-modal" onClick={(e) => e.stopPropagation()}>
             <div className="booking-modal-content">
-              <h3 className="booking-modal-title">🔍 Confirm Your Booking</h3>
+              <h3 className="booking-modal-title">Confirm Your Booking</h3>
               <div className="confirmation-details">
                 <div className="confirm-row">
                   <strong>Branch:</strong>
