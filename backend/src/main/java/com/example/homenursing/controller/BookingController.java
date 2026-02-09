@@ -99,8 +99,10 @@ public class BookingController {
             // Calculate bookingDateTime
             LocalDateTime bookingDateTime = LocalDateTime.of(bookingDate, bookingTime);
 
-            // Calculate estimated cost based on service type and duration
-            Double calculatedCost = serviceType.getBasePricePerHour().doubleValue() * duration;
+            // Calculate estimated cost based on service type base price + nurse hourly rate * duration
+            Double serviceCost = serviceType.getBasePricePerHour().doubleValue() * duration;
+            Double nurseCost = nurse.getHourlyRate().doubleValue() * duration;
+            Double calculatedCost = serviceCost + nurseCost;
 
             Booking booking = Booking.builder()
                 .user(currentUser)

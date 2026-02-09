@@ -508,3 +508,399 @@
     display: none;
   }
 }
+
+/* Progress Indicator Styles */
+.booking-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 20px 0;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active {
+  opacity: 1;
+}
+
+.progress-step.completed .progress-circle {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: white;
+}
+
+.progress-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .progress-circle {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.progress-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.progress-step.active .progress-label {
+  color: #4f46e5;
+}
+
+.progress-step.completed .progress-label {
+  color: #16a34a;
+}
+
+.progress-line {
+  width: 40px;
+  height: 2px;
+  background: #e5e7eb;
+  margin: 0 -8px;
+  margin-bottom: 28px;
+}
+
+/* Two-Column Layout */
+.booking-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 32px;
+  align-items: start;
+}
+
+.booking-form-section {
+  width: 100%;
+}
+
+/* Booking Summary Card */
+.booking-summary-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  padding: 24px;
+  border: 2px solid #e2e8f0;
+  position: sticky;
+  top: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.summary-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  border-left: 3px solid #4f46e5;
+}
+
+.summary-icon {
+  color: #4f46e5;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.summary-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.summary-value {
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.summary-sublabel {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.summary-item-cost {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 8px;
+  border: 2px solid #fbbf24;
+  margin-top: 8px;
+}
+
+.summary-item-cost .summary-icon {
+  color: #d97706;
+}
+
+.summary-cost {
+  font-size: 24px;
+  color: #92400e;
+  font-weight: 800;
+}
+
+.summary-placeholder {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 32px 16px;
+  font-style: italic;
+}
+
+/* Enhanced Cost Breakdown */
+.cost-breakdown-detailed {
+  margin-top: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+}
+
+.cost-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #1e293b;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.cost-item:last-child {
+  border-bottom: none;
+}
+
+.cost-item.total {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 2px solid #3b82f6;
+  border-bottom: none;
+  font-size: 16px;
+  color: #0c4a6e;
+}
+
+/* Confirmation Modal */
+.confirmation-modal {
+  max-width: 500px;
+}
+
+.confirmation-details {
+  text-align: left;
+  margin: 24px 0;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.confirm-row:last-child {
+  border-bottom: none;
+}
+
+.confirm-row strong {
+  color: #475569;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.confirm-row span {
+  color: #1e293b;
+  font-size: 14px;
+  text-align: right;
+}
+
+.confirm-row-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0 0;
+  margin-top: 12px;
+  border-top: 2px solid #cbd5e1;
+}
+
+.confirm-row-total strong {
+  font-size: 16px;
+  color: #1e293b;
+}
+
+.confirm-cost {
+  font-size: 20px;
+  color: #0c4a6e;
+  font-weight: 800;
+}
+
+.confirmation-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.booking-modal-cancel {
+  flex: 1;
+  background: #e5e7eb;
+  color: #374151;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.booking-modal-cancel:hover {
+  background: #d1d5db;
+}
+
+.booking-modal-confirm {
+  flex: 2;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.booking-modal-confirm:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+.booking-modal-confirm:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Small Spinner for Loading States */
+.spinner-small {
+  animation: spin 1s linear infinite;
+  position: absolute;
+  right: 12px;
+}
+
+/* Responsive Adjustments for New Layout */
+@media (max-width: 1024px) {
+  .booking-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .booking-summary-card {
+    position: relative;
+    top: 0;
+    order: -1;
+  }
+
+  .booking-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-progress {
+    gap: 4px;
+    padding: 16px 0;
+  }
+
+  .progress-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .progress-label {
+    font-size: 10px;
+  }
+
+  .progress-line {
+    width: 20px;
+    margin-bottom: 22px;
+  }
+
+  .booking-summary-card {
+    padding: 16px;
+  }
+
+  .summary-title {
+    font-size: 16px;
+  }
+
+  .confirmation-modal {
+    max-width: 90%;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .progress-label {
+    display: none;
+  }
+
+  .progress-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .progress-line {
+    width: 16px;
+  }
+
+  .confirmation-details {
+    padding: 12px;
+  }
+
+  .confirm-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .confirm-row span {
+    text-align: left;
+  }
+}

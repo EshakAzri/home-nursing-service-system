@@ -49,9 +49,9 @@ const CustomerBookingHistory = () => {
   };
 
   const exportToCSV = () => {
-    const headers = ['ID', 'Date & Time', 'Service Type', 'Nurse', 'Duration', 'Cost', 'Status', 'Notes'];
-    const csvData = filteredBookings.map(booking => [
-      booking.id,
+    const headers = ['No.', 'Date & Time', 'Service Type', 'Nurse', 'Duration', 'Cost', 'Status', 'Notes'];
+    const csvData = filteredBookings.map((booking, index) => [
+      index + 1,
       formatDate(booking.bookingDateTime),
       booking.serviceType?.name || 'N/A',
       booking.nurse ? `${booking.nurse.firstName} ${booking.nurse.lastName}` : 'Not Assigned',
@@ -129,6 +129,8 @@ const CustomerBookingHistory = () => {
         return 'status-cancelled';
       case 'in-progress':
         return 'status-in-progress';
+      case 'confirmed':
+        return 'status-confirmed';
       default:
         return 'status-default';
     }
@@ -140,6 +142,8 @@ const CustomerBookingHistory = () => {
         return <Check size={16} />;
       case 'cancelled':
         return <X size={16} />;
+      case 'confirmed':
+        return <Check size={16} />;
       default:
         return <Clock size={16} />;
     }
@@ -254,6 +258,7 @@ const CustomerBookingHistory = () => {
             >
               <option value="all">All Status ({bookings.length})</option>
               <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
               <option value="in-progress">In Progress</option>
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
@@ -310,7 +315,7 @@ const CustomerBookingHistory = () => {
           <table className="bookings-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>No.</th>
                 <th>Date & Time</th>
                 <th>Service Type</th>
                 <th>Nurse</th>
@@ -321,10 +326,10 @@ const CustomerBookingHistory = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredBookings.map((booking) => (
+              {filteredBookings.map((booking, index) => (
                 <tr key={booking.id}>
-                  <td data-label="ID">
-                    <span className="booking-id-badge">{booking.id}</span>
+                  <td data-label="No.">
+                    <span className="booking-id-badge">{index + 1}</span>
                   </td>
                   <td data-label="Date & Time">
                     <div className="date-cell">

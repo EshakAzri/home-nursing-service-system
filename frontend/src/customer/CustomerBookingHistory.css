@@ -367,6 +367,12 @@
   border: 1px solid #bfdbfe;
 }
 
+.status-badge.status-confirmed {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
 .status-badge.status-default {
   background-color: #f3f4f6;
   color: #6b7280;
