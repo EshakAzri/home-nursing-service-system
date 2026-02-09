@@ -264,7 +264,7 @@ const CustomerProfile = () => {
               </div>
 
               <div className="profile-card-body">
-                <div className="profile-field">
+                <div className="profile-field-user">
                   <label>
                     <User size={18} />
                     Username
@@ -282,7 +282,7 @@ const CustomerProfile = () => {
                   )}
                 </div>
 
-                <div className="profile-field">
+                <div className="profile-field-user">
                   <label>
                     <Mail size={18} />
                     Email
@@ -300,7 +300,7 @@ const CustomerProfile = () => {
                   )}
                 </div>
 
-                <div className="profile-field">
+                <div className="profile-field-user">
                   <label>
                     <MapPin size={18} />
                     Address
@@ -319,7 +319,7 @@ const CustomerProfile = () => {
                   )}
                 </div>
 
-                <div className="profile-field">
+                <div className="profile-field-user">
                   <label>
                     <Shield size={18} />
                     Role

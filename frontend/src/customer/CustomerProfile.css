@@ -258,13 +258,13 @@
 }
 
 /* Profile Field */
-.profile-field {
+.profile-field-user {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.profile-field label {
+.profile-field-user label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -275,7 +275,7 @@
   letter-spacing: 0.5px;
 }
 
-.profile-field label svg {
+.profile-field-user label svg {
   color: #667eea;
 }
 
