@@ -174,11 +174,12 @@
 
 .assignments-table th {
   padding: 0.625rem;
-  text-align: left;
+  text-align: center;
   font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  vertical-align: middle;
 }
 
 .assignments-table tbody tr {
