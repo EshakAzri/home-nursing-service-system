@@ -73,7 +73,7 @@ const CustomerDashboard = () => {
         cancelled: bookingsData.filter(b => b.status === 'CANCELLED').length,
         totalSpent: bookingsData
           .filter(b => b.status === 'COMPLETED')
-          .reduce((sum, b) => sum + (b.estimatedCost || 0), 0)
+          .reduce((sum, b) => sum + (b.finalCost || 0), 0)
       };
 
       setStats(statistics);

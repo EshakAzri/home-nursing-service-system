@@ -72,7 +72,7 @@ const NurseDashboard = () => {
         inProgress: assignmentsData.filter(b => b.status === 'IN_PROGRESS').length,
         totalEarnings: assignmentsData
           .filter(b => b.status === 'COMPLETED')
-          .reduce((sum, b) => sum + (b.estimatedCost || 0), 0)
+          .reduce((sum, b) => sum + ((b.nurseRate || 0) * (b.duration || 0)), 0)
       };
 
       setStats(statistics);
@@ -151,7 +151,7 @@ const NurseDashboard = () => {
       months[monthKey] = { bookings: 0, earnings: 0, date };
     }
 
-    // Aggregate data
+    // Aggregate data - only count COMPLETED bookings for earnings
     assignments.forEach(assignment => {
       const bookingDate = new Date(assignment.bookingDateTime);
       const monthKey = bookingDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
@@ -159,7 +159,8 @@ const NurseDashboard = () => {
       if (months[monthKey]) {
         months[monthKey].bookings += 1;
         if (assignment.status === 'COMPLETED') {
-          months[monthKey].earnings += (assignment.estimatedCost || 0);
+          const earning = (assignment.nurseRate || 0) * (assignment.duration || 0);
+          months[monthKey].earnings += earning;
         }
       }
     });
@@ -324,7 +325,7 @@ const NurseDashboard = () => {
                           </div>
                           <div className="info-row">
                             <DollarSign size={16} />
-                            <span>Fee: RM {assignment.estimatedCost?.toFixed(2) || '0.00'}</span>
+                            <span>Your Earning: RM {((assignment.nurseRate || 0) * (assignment.duration || 0)).toFixed(2)}</span>
                           </div>
                         </div>
                       </div>

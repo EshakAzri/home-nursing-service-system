@@ -275,7 +275,7 @@ const NurseAssignments = () => {
                     <th>Patient</th>
                     <th>Service Type</th>
                     <th>Duration</th>
-                    <th>Fee</th>
+                    <th>Your Earning</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -307,9 +307,9 @@ const NurseAssignments = () => {
                           {assignment.duration ? `${assignment.duration}h` : 'N/A'}
                         </span>
                       </td>
-                      <td data-label="Fee">
+                      <td data-label="Your Earning">
                         <div className="fee-cell">
-                          <span className="fee-amount">RM{assignment.estimatedCost?.toFixed(2) || '0.00'}</span>
+                          <span className="fee-amount">RM{((assignment.nurseRate || 0) * (assignment.duration || 0)).toFixed(2)}</span>
                         </div>
                       </td>
                       <td data-label="Status">
@@ -410,8 +410,8 @@ const NurseAssignments = () => {
                   <span className="detail-value">{selectedAssignment.duration ? `${selectedAssignment.duration}h` : 'N/A'}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="detail-label">Fee:</span>
-                  <span className="detail-value">RM{selectedAssignment.estimatedCost?.toFixed(2) || '0.00'}</span>
+                  <span className="detail-label">Your Earning:</span>
+                  <span className="detail-value">RM{((selectedAssignment.nurseRate || 0) * (selectedAssignment.duration || 0)).toFixed(2)}</span>
                 </div>
               </div>
 
