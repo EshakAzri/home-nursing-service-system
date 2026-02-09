@@ -270,93 +270,89 @@ const NurseDashboard = () => {
             </div>
           </div>
 
-          {/* Upcoming Assignments */}
-          <div className="dashboard-section">
-            <div className="section-header">
-              <h2>Upcoming Assignments</h2>
-              <button 
-                className="btn-view-all"
-                onClick={() => navigate('/nurse/assignments')}
-              >
-                View All
-                <ArrowRight size={16} />
-              </button>
+          {/* Upcoming Assignments & Quick Actions Row */}
+          <div className="dashboard-row">
+            {/* Upcoming Assignments */}
+            <div className="dashboard-section">
+              <div className="section-header">
+                <h2>Upcoming Assignments</h2>
+              </div>
+
+              {upcomingAssignments.length === 0 ? (
+                <div className="empty-state">
+                  <Calendar size={48} color="#9ca3af" />
+                  <p>No upcoming assignments</p>
+                </div>
+              ) : (
+                <div className="assignments-list">
+                  {upcomingAssignments.map((assignment) => (
+                    <div key={assignment.id} className="assignment-card">
+                      <div className="assignment-header">
+                        <div className="assignment-date">
+                          <Calendar size={20} />
+                          <span>{formatDate(assignment.bookingDateTime)}</span>
+                        </div>
+                        {getStatusBadge(assignment.status)}
+                      </div>
+                      
+                      <div className="assignment-body">
+                        <div className="assignment-info">
+                          <div className="info-row">
+                            <User size={16} />
+                            <span>Patient: {assignment.user?.username || 'N/A'}</span>
+                          </div>
+                          <div className="info-row">
+                            <FileText size={16} />
+                            <span>Service: {assignment.serviceType?.name || 'N/A'}</span>
+                          </div>
+                          <div className="info-row">
+                            <Clock size={16} />
+                            <span>Duration: {assignment.duration}h</span>
+                          </div>
+                          <div className="info-row">
+                            <DollarSign size={16} />
+                            <span>Fee: RM {assignment.estimatedCost?.toFixed(2) || '0.00'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {assignment.notes && (
+                        <div className="assignment-notes">
+                          <strong>Notes:</strong> {assignment.notes}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {upcomingAssignments.length === 0 ? (
-              <div className="empty-state">
-                <Calendar size={48} color="#9ca3af" />
-                <p>No upcoming assignments</p>
+            {/* Quick Actions */}
+            <div className="dashboard-section">
+              <h2>Quick Actions</h2>
+              <div className="quick-actions">
+                <button 
+                  className="action-card"
+                  onClick={() => navigate('/nurse/assignments')}
+                >
+                  <Briefcase size={24} />
+                  <span>View All Assignments</span>
+                </button>
+                <button 
+                  className="action-card"
+                  onClick={() => navigate('/nurse/schedule')}
+                >
+                  <Calendar size={24} />
+                  <span>My Schedule</span>
+                </button>
+                <button 
+                  className="action-card"
+                  onClick={() => navigate('/nurse/profile')}
+                >
+                  <User size={24} />
+                  <span>Update Profile</span>
+                </button>
               </div>
-            ) : (
-              <div className="assignments-list">
-                {upcomingAssignments.map((assignment) => (
-                  <div key={assignment.id} className="assignment-card">
-                    <div className="assignment-header">
-                      <div className="assignment-date">
-                        <Calendar size={20} />
-                        <span>{formatDate(assignment.bookingDateTime)}</span>
-                      </div>
-                      {getStatusBadge(assignment.status)}
-                    </div>
-                    
-                    <div className="assignment-body">
-                      <div className="assignment-info">
-                        <div className="info-row">
-                          <User size={16} />
-                          <span>Patient: {assignment.user?.username || 'N/A'}</span>
-                        </div>
-                        <div className="info-row">
-                          <FileText size={16} />
-                          <span>Service: {assignment.serviceType?.name || 'N/A'}</span>
-                        </div>
-                        <div className="info-row">
-                          <Clock size={16} />
-                          <span>Duration: {assignment.duration}h</span>
-                        </div>
-                        <div className="info-row">
-                          <DollarSign size={16} />
-                          <span>Fee: RM {assignment.estimatedCost?.toFixed(2) || '0.00'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {assignment.notes && (
-                      <div className="assignment-notes">
-                        <strong>Notes:</strong> {assignment.notes}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="dashboard-section">
-            <h2>Quick Actions</h2>
-            <div className="quick-actions">
-              <button 
-                className="action-card"
-                onClick={() => navigate('/nurse/assignments')}
-              >
-                <Briefcase size={24} />
-                <span>View All Assignments</span>
-              </button>
-              <button 
-                className="action-card"
-                onClick={() => navigate('/nurse/schedule')}
-              >
-                <Calendar size={24} />
-                <span>My Schedule</span>
-              </button>
-              <button 
-                className="action-card"
-                onClick={() => navigate('/nurse/profile')}
-              >
-                <User size={24} />
-                <span>Update Profile</span>
-              </button>
             </div>
           </div>
         </div>

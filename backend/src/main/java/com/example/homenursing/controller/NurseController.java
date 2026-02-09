@@ -54,6 +54,17 @@ public class NurseController {
         }
     }
 
+    // GET /api/nurses/email/{email} - Get nurses by email (must be before /{id})
+    @GetMapping("/email/{email}")
+    public ResponseEntity<List<Nurse>> getNurseByEmail(@PathVariable String email) {
+        try {
+            List<Nurse> nurses = nurseService.getNurseByEmail(email);
+            return ResponseEntity.ok(nurses);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     // POST /api/nurses - Create a new nurse
     @PostMapping
     public ResponseEntity<Nurse> createNurse(@RequestBody Nurse nurse) {
