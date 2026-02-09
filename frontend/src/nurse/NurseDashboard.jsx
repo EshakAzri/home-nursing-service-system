@@ -99,6 +99,13 @@ const NurseDashboard = () => {
     });
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return { text: 'Good Morning', emoji: '🌅' };
+    if (hour < 18) return { text: 'Good Afternoon', emoji: '☀️' };
+    return { text: 'Good Evening', emoji: '🌙' };
+  };
+
   const getStatusBadge = (status) => {
     const statusConfig = {
       'PENDING': { color: '#f59e0b', bg: '#fef3c7', icon: AlertCircle },
@@ -191,10 +198,16 @@ const NurseDashboard = () => {
         
         <div className="nurse-dashboard">
           {/* Header */}
-          <div className="dashboard-header">
-            <div>
-              <h1>Welcome back, {userInfo.username}!</h1>
-              <p>Here's an overview of your assignments</p>
+          <div className="dashboard-header-wrapper">
+            <div className="dashboard-header-content">
+              <div className="greeting-section">
+                <span className="greeting-emoji">{getGreeting().emoji}</span>
+                <div className="greeting-text">
+                  <h2 className="greeting-message">{getGreeting().text},</h2>
+                  <h1 className="nurse-name">{userInfo.username}!</h1>
+                  <p className="overview-subtitle">Here's an overview of your assignments</p>
+                </div>
+              </div>
             </div>
           </div>
 

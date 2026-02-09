@@ -43,6 +43,85 @@
   margin: 0 auto;
 }
 
+.dashboard-header-wrapper {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-header-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.dashboard-header-content {
+  position: relative;
+  z-index: 1;
+  text-align: left;
+}
+
+.greeting-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  margin-bottom: 0.35rem;
+}
+
+.greeting-emoji {
+  font-size: 2.25rem;
+  line-height: 1;
+  animation: wave 2s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  75% { transform: rotate(-10deg); }
+}
+
+.greeting-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  align-items: flex-start;
+}
+
+.greeting-message {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-align: center;
+  width: 100%;
+}
+
+.nurse-name {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.overview-subtitle {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  font-weight: 500;
+}
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -317,6 +396,32 @@
 
   .nurse-dashboard {
     padding: 1rem;
+  }
+
+  .dashboard-header-wrapper {
+    padding: 0.875rem 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .greeting-section {
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .greeting-emoji {
+    font-size: 2rem;
+  }
+
+  .nurse-name {
+    font-size: 1.25rem;
+  }
+
+  .greeting-message {
+    font-size: 0.7rem;
+  }
+
+  .overview-subtitle {
+    font-size: 0.75rem;
   }
 
   .dashboard-header h1 {
