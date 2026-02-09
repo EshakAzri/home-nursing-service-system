@@ -12,6 +12,7 @@ const NurseProfile = () => {
   const [profile, setProfile] = useState({
     firstName: '',
     lastName: '',
+    username: '',
     email: '',
     phoneNumber: '',
     specialization: '',
@@ -83,20 +84,33 @@ const NurseProfile = () => {
         headers: { Authorization: `Bearer ${token}` }
       };
 
+      console.log('Attempting to fetch user profile with token:', token.substring(0, 20) + '...');
       const userResponse = await axios.get('http://localhost:8080/api/auth/me', config);
+      console.log('User response:', userResponse.data);
       const email = userResponse.data.email;
+      const username = userResponse.data.username || '';
 
       // Fetch nurse profile by email - this endpoint is public, so don't send token
       const nurseResponse = await axios.get(`http://localhost:8080/api/nurses/email/${email}`);
       
       if (nurseResponse.data && nurseResponse.data.length > 0) {
-        setProfile(nurseResponse.data[0]);
+        setProfile(prev => ({
+          ...nurseResponse.data[0],
+          username: username
+        }));
       }
       
       setLoading(false);
     } catch (err) {
       console.error('Error fetching profile:', err);
-      showFeedback('Failed to load profile: ' + (err.response?.data?.error || err.message), 'error');
+      if (err.response?.status === 403) {
+        showFeedback('Authentication failed. Please log in again.', 'error');
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        setTimeout(() => navigate('/login'), 2000);
+      } else {
+        showFeedback('Failed to load profile: ' + (err.response?.data?.error || err.message), 'error');
+      }
       setLoading(false);
     }
   };
@@ -118,10 +132,30 @@ const NurseProfile = () => {
         headers: { Authorization: `Bearer ${token}` }
       };
 
-      await axios.put(`http://localhost:8080/api/nurses/${profile.id}`, profile, config);
+      // Separate profile and auth data
+      const profileToSave = { ...profile };
+      const username = profileToSave.username;
+      delete profileToSave.username;
+
+      // Update nurse profile
+      await axios.put(`http://localhost:8080/api/nurses/${profile.id}`, profileToSave, config);
+      
+      // Update username if it changed (through auth endpoint)
+      if (username) {
+        const authData = {
+          username: username,
+          email: profile.email
+        };
+        await axios.put('http://localhost:8080/api/auth/profile', authData, config);
+      }
       
       setEditMode(false);
       showFeedback('Profile updated successfully!', 'success');
+      
+      // Refresh profile to ensure data is synced
+      setTimeout(() => {
+        fetchNurseProfile();
+      }, 500);
     } catch (err) {
       console.error('Error updating profile:', err);
       showFeedback('Failed to update profile: ' + (err.response?.data?.error || err.message), 'error');
@@ -267,6 +301,21 @@ const NurseProfile = () => {
                     type="text"
                     name="lastName"
                     value={profile.lastName}
+                    onChange={handleChange}
+                    disabled={!editMode}
+                    className="profile-input"
+                  />
+                </div>
+
+                <div className="profile-field">
+                  <label>
+                    <User size={16} />
+                    Username
+                  </label>
+                  <input 
+                    type="text"
+                    name="username"
+                    value={profile.username}
                     onChange={handleChange}
                     disabled={!editMode}
                     className="profile-input"
