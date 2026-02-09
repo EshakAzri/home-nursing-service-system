@@ -182,100 +182,45 @@
 
 .stat-card {
   background: white;
-  padding: 1.75rem;
+  padding: 0.875rem;
   border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  transition: width 0.3s ease;
+  gap: 0.75rem;
+  border-left: 4px solid;
+  transition: all 0.2s ease;
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
-.stat-card:hover::before {
-  width: 8px;
-}
-
-.stat-total::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.stat-upcoming::before { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-.stat-completed::before { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-.stat-spent::before { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
 
 .stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
   flex-shrink: 0;
 }
 
-.stat-total .stat-icon {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  color: #667eea;
-}
-
-.stat-upcoming .stat-icon {
-  background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
-  color: #f5576c;
-}
-
-.stat-completed .stat-icon {
-  background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
-  color: #4facfe;
-}
-
-.stat-spent .stat-icon {
-  background: linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(56, 249, 215, 0.1) 100%);
-  color: #43e97b;
-}
-
-.stat-content {
+.stat-info {
   flex: 1;
 }
 
-.stat-content h3 {
-  font-size: 2rem;
+.stat-label {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin-bottom: 0.15rem;
+}
+
+.stat-value {
+  font-size: 1.625rem;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 0.25rem;
-}
-
-.stat-content p {
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.stat-badge {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  padding: 0.25rem 0.75rem;
-  background-color: #f3f4f6;
-  color: #6b7280;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 /* Quick Actions */

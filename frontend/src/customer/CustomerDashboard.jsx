@@ -204,50 +204,46 @@ const CustomerDashboard = () => {
             </div>
           </div>
 
-          {/* Statistics Cards */}
+          {/* Stats Cards */}
           <div className="stats-grid">
-            <div className="stat-card stat-total">
-              <div className="stat-icon">
-                <Activity size={28} />
+            <div className="stat-card" style={{ borderLeftColor: '#3b82f6' }}>
+              <div className="stat-icon" style={{ backgroundColor: '#dbeafe', color: '#3b82f6' }}>
+                <Activity size={24} />
               </div>
-              <div className="stat-content">
-                <h3>{stats.total}</h3>
-                <p>Total Bookings</p>
+              <div className="stat-info">
+                <p className="stat-label">Total Bookings</p>
+                <h3 className="stat-value">{stats.total}</h3>
               </div>
-              <div className="stat-badge">All Time</div>
             </div>
 
-            <div className="stat-card stat-upcoming">
-              <div className="stat-icon">
-                <Clock size={28} />
+            <div className="stat-card" style={{ borderLeftColor: '#f59e0b' }}>
+              <div className="stat-icon" style={{ backgroundColor: '#fef3c7', color: '#f59e0b' }}>
+                <Clock size={24} />
               </div>
-              <div className="stat-content">
-                <h3>{stats.upcoming}</h3>
-                <p>Upcoming</p>
+              <div className="stat-info">
+                <p className="stat-label">Upcoming</p>
+                <h3 className="stat-value">{stats.upcoming}</h3>
               </div>
-              <div className="stat-badge">Scheduled</div>
             </div>
 
-            <div className="stat-card stat-completed">
-              <div className="stat-icon">
-                <CheckCircle size={28} />
+            <div className="stat-card" style={{ borderLeftColor: '#10b981' }}>
+              <div className="stat-icon" style={{ backgroundColor: '#d1fae5', color: '#10b981' }}>
+                <CheckCircle size={24} />
               </div>
-              <div className="stat-content">
-                <h3>{stats.completed}</h3>
-                <p>Completed</p>
+              <div className="stat-info">
+                <p className="stat-label">Completed</p>
+                <h3 className="stat-value">{stats.completed}</h3>
               </div>
-              <div className="stat-badge">Success</div>
             </div>
 
-            <div className="stat-card stat-spent">
-              <div className="stat-icon">
-                <DollarSign size={28} />
+            <div className="stat-card" style={{ borderLeftColor: '#8b5cf6' }}>
+              <div className="stat-icon" style={{ backgroundColor: '#ede9fe', color: '#8b5cf6' }}>
+                <DollarSign size={24} />
               </div>
-              <div className="stat-content">
-                <h3>RM{stats.totalSpent.toFixed(2)}</h3>
-                <p>Total Spent</p>
+              <div className="stat-info">
+                <p className="stat-label">Total Spent</p>
+                <h3 className="stat-value">RM {stats.totalSpent.toFixed(2)}</h3>
               </div>
-              <div className="stat-badge">Paid</div>
             </div>
           </div>
 
