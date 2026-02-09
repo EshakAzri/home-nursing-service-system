@@ -56,7 +56,7 @@ const CustomerBookingHistory = () => {
       booking.serviceType?.name || 'N/A',
       booking.nurse ? `${booking.nurse.firstName} ${booking.nurse.lastName}` : 'Not Assigned',
       booking.duration ? `${booking.duration}h` : 'N/A',
-      `RM${booking.estimatedCost?.toFixed(2) || '0.00'}`,
+      `RM${booking.finalCost?.toFixed(2) || '0.00'}`,
       booking.status || 'Pending',
       booking.notes || ''
     ]);
@@ -358,7 +358,7 @@ const CustomerBookingHistory = () => {
                   </td>
                   <td data-label="Cost">
                     <div className="cost-cell">
-                      <span className="cost-amount">RM{booking.estimatedCost?.toFixed(2) || '0.00'}</span>
+                      <span className="cost-amount">RM{booking.finalCost?.toFixed(2) || '0.00'}</span>
                     </div>
                   </td>
                   <td data-label="Status">
@@ -426,7 +426,7 @@ const CustomerBookingHistory = () => {
               </div>
               <div className="detail-row">
                 <span className="detail-label">Cost:</span>
-                <span className="detail-value">RM{selectedBooking.estimatedCost?.toFixed(2) || '0.00'}</span>
+                <span className="detail-value">RM{selectedBooking.finalCost?.toFixed(2) || '0.00'}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Status:</span>

@@ -90,7 +90,8 @@ public class BookingController {
             LocalDate bookingDate = LocalDate.parse(bookingData.get("bookingDate").toString());
             LocalTime bookingTime = LocalTime.parse(bookingData.get("bookingTime").toString());
             Double duration = Double.valueOf(bookingData.get("duration").toString());
-            Double estimatedCost = Double.valueOf(bookingData.get("estimatedCost").toString());
+            Double finalCost = Double.valueOf(bookingData.get("finalCost").toString());
+            Double fuelCost = bookingData.get("fuelCost") != null ? Double.valueOf(bookingData.get("fuelCost").toString()) : 10.0;
             String notes = (String) bookingData.get("notes");
 
             Nurse nurse = nurseService.getNurseById(nurseId).orElseThrow(() -> new RuntimeException("Nurse not found"));
@@ -102,7 +103,7 @@ public class BookingController {
             // Calculate estimated cost based on service type base price + nurse hourly rate * duration
             Double serviceCost = serviceType.getBasePricePerHour().doubleValue() * duration;
             Double nurseCost = nurse.getHourlyRate().doubleValue() * duration;
-            Double calculatedCost = serviceCost + nurseCost;
+            Double calculatedEstimatedCost = serviceCost + nurseCost;
 
             Booking booking = Booking.builder()
                 .user(currentUser)
@@ -110,7 +111,11 @@ public class BookingController {
                 .bookingDateTime(bookingDateTime)
                 .serviceType(serviceType)
                 .duration(duration)
-                .estimatedCost(calculatedCost)
+                .estimatedCost(calculatedEstimatedCost)
+                .finalCost(finalCost)
+                .fuelCost(fuelCost)
+                .nurseRate(nurse.getHourlyRate().doubleValue())
+                .serviceFee(serviceType.getBasePricePerHour().doubleValue())
                 .notes(notes)
                 .status(BookingStatus.PENDING)
                 .build();

@@ -87,6 +87,9 @@ public class BookingService {
             existingBooking.setDuration(bookingDetails.getDuration());
             existingBooking.setNotes(bookingDetails.getNotes());
             existingBooking.setEstimatedCost(bookingDetails.getEstimatedCost());
+            existingBooking.setNurseRate(bookingDetails.getNurseRate());
+            existingBooking.setServiceFee(bookingDetails.getServiceFee());
+            existingBooking.setFuelCost(bookingDetails.getFuelCost());
             existingBooking.setFinalCost(bookingDetails.getFinalCost());
             existingBooking.setStatus(bookingDetails.getStatus());
 

@@ -355,20 +355,20 @@ const CustomerInvoice = () => {
                 <tr>
                   <td>{booking.serviceType?.name || 'Nursing Service'}</td>
                   <td>{booking.duration || booking.serviceType?.estimatedDurationHours || 0} hours</td>
-                  <td>RM{booking.serviceType?.basePricePerHour || 0}/hour</td>
-                  <td>RM{(booking.serviceType?.basePricePerHour * (booking.duration || 0)).toFixed(2)}</td>
+                  <td>RM{(booking.serviceFee || booking.serviceType?.basePricePerHour || 0).toFixed(2)}/hour</td>
+                  <td>RM{((booking.serviceFee || booking.serviceType?.basePricePerHour || 0) * (booking.duration || 0)).toFixed(2)}</td>
                 </tr>
                 <tr>
                   <td>Nurse Service</td>
                   <td>{booking.duration || 0} hours</td>
-                  <td>RM{booking.nurse?.hourlyRate || 0}/hour</td>
-                  <td>RM{(booking.nurse?.hourlyRate * (booking.duration || 0)).toFixed(2)}</td>
+                  <td>RM{(booking.nurseRate || booking.nurse?.hourlyRate || 0).toFixed(2)}/hour</td>
+                  <td>RM{((booking.nurseRate || booking.nurse?.hourlyRate || 0) * (booking.duration || 0)).toFixed(2)}</td>
                 </tr>
                 <tr>
                   <td>Fuel Charge</td>
                   <td>-</td>
                   <td>Fixed</td>
-                  <td>RM{FUEL_COST.toFixed(2)}</td>
+                  <td>RM{(booking.fuelCost || FUEL_COST).toFixed(2)}</td>
                 </tr>
                 {booking.finalCost && booking.finalCost !== booking.estimatedCost && (
                   <tr>

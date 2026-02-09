@@ -329,7 +329,7 @@
 .booking-modal {
   background: white;
   border-radius: 12px;
-  padding: 32px;
+  padding: 24px;
   max-width: 400px;
   width: 90%;
   text-align: center;
@@ -360,10 +360,10 @@
 }
 
 .booking-modal-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   color: #1e293b;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
 }
 
 .booking-modal-message {
@@ -714,21 +714,22 @@
 
 /* Confirmation Modal */
 .confirmation-modal {
-  max-width: 500px;
+  max-width: 420px;
+  padding: 20px;
 }
 
 .confirmation-details {
   text-align: left;
-  margin: 24px 0;
+  margin: 16px 0;
   background: #f8fafc;
   border-radius: 8px;
-  padding: 20px;
+  padding: 16px;
 }
 
 .confirm-row {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #e2e8f0;
 }
 
@@ -739,36 +740,36 @@
 .confirm-row strong {
   color: #475569;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .confirm-row span {
   color: #1e293b;
-  font-size: 14px;
+  font-size: 13px;
   text-align: right;
 }
 
 .confirm-row-total {
   display: flex;
   justify-content: space-between;
-  padding: 16px 0 0;
-  margin-top: 12px;
+  padding: 12px 0 0;
+  margin-top: 10px;
   border-top: 2px solid #cbd5e1;
 }
 
 .confirm-breakdown {
-  margin: 12px 0;
-  padding: 12px 0;
+  margin: 10px 0;
+  padding: 10px 0;
   background: #f0f9ff;
   border-left: 3px solid #3b82f6;
-  padding-left: 12px;
+  padding-left: 10px;
 }
 
 .breakd-item {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0;
-  font-size: 13px;
+  padding: 5px 0;
+  font-size: 12px;
   color: #1e293b;
 }
 
@@ -785,20 +786,20 @@
 }
 
 .confirm-row-total strong {
-  font-size: 16px;
+  font-size: 15px;
   color: #1e293b;
 }
 
 .confirm-cost {
-  font-size: 20px;
+  font-size: 18px;
   color: #0c4a6e;
   font-weight: 800;
 }
 
 .confirmation-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .booking-modal-cancel {
@@ -806,9 +807,9 @@
   background: #e5e7eb;
   color: #374151;
   border: none;
-  padding: 12px 20px;
+  padding: 10px 16px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -823,9 +824,9 @@
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
   border: none;
-  padding: 12px 20px;
+  padding: 10px 16px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -900,7 +901,7 @@
 
   .confirmation-modal {
     max-width: 90%;
-    padding: 20px;
+    padding: 16px;
   }
 }
 

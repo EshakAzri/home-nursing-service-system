@@ -19,7 +19,7 @@ const CustomerBookingPage = () => {
     bookingTime: '',
     serviceType: '',
     duration: '',
-    estimatedCost: '',
+    finalCost: '',
     fuelCost: FUEL_COST,
     notes: ''
   });
@@ -131,10 +131,10 @@ const CustomerBookingPage = () => {
         
         setFormData(prev => ({ 
           ...prev, 
-          estimatedCost: totalCost.toFixed(2) 
+          finalCost: totalCost.toFixed(2) 
         }));
       } else {
-        setFormData(prev => ({ ...prev, estimatedCost: '' }));
+        setFormData(prev => ({ ...prev, finalCost: '' }));
       }
     };
 
@@ -144,7 +144,10 @@ const CustomerBookingPage = () => {
   const validateField = (name, value) => {
     const errors = {};
 
-    if (!value || value.trim() === '') {
+    // Convert value to string for validation, handle null/undefined
+    const stringValue = value != null ? String(value).trim() : '';
+    
+    if (!stringValue || stringValue === '') {
       switch (name) {
         case 'branchId':
           errors.branchId = 'Please select a branch';
@@ -266,7 +269,7 @@ const CustomerBookingPage = () => {
         bookingTime: formData.bookingTime,
         serviceType: parseInt(formData.serviceType),
         duration: parseFloat(formData.duration),
-        estimatedCost: parseFloat(formData.estimatedCost),
+        finalCost: parseFloat(formData.finalCost),
         fuelCost: FUEL_COST,
         notes: formData.notes
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -280,7 +283,7 @@ const CustomerBookingPage = () => {
 
       setFormData({
         branchId: '', nurseId: '', bookingDate: '', bookingTime: '', 
-        serviceType: '', duration: '', estimatedCost: '', fuelCost: FUEL_COST, notes: ''
+        serviceType: '', duration: '', finalCost: '', fuelCost: FUEL_COST, notes: ''
       });
       setTouched({});
       setCurrentStep(1);
@@ -563,19 +566,19 @@ const CustomerBookingPage = () => {
           </div>
 
           <div className="booking-form-group">
-            <label className="booking-label">Estimated Cost (Auto-calculated)</label>
+            <label className="booking-label">Final Cost (Auto-calculated)</label>
             <div className="booking-input-wrapper">
               <DollarSign className="booking-input-icon" size={18} />
               <input
                 type="text"
-                name="estimatedCost"
-                value={formData.estimatedCost ? `RM ${formData.estimatedCost}` : 'Select service details to calculate'}
+                name="finalCost"
+                value={formData.finalCost ? `RM ${formData.finalCost}` : 'Select service details to calculate'}
                 readOnly
                 className="booking-input readonly"
                 placeholder="Auto-calculated based on service and duration"
               />
             </div>
-            {formData.estimatedCost && getSelectedServiceType() && getSelectedNurse() && formData.duration && (
+            {formData.finalCost && getSelectedServiceType() && getSelectedNurse() && formData.duration && (
               <div className="cost-breakdown-detailed">
                 <div className="cost-item">
                   <span>Service Fee:</span>
@@ -591,7 +594,7 @@ const CustomerBookingPage = () => {
                 </div>
                 <div className="cost-item total">
                   <span><strong>Total:</strong></span>
-                  <span><strong>RM {formData.estimatedCost}</strong></span>
+                  <span><strong>RM {formData.finalCost}</strong></span>
                 </div>
               </div>
             )}
@@ -696,12 +699,12 @@ const CustomerBookingPage = () => {
               </div>
             )}
 
-            {formData.estimatedCost && (
+            {formData.finalCost && (
               <div className="summary-item-cost">
                 <DollarSign size={20} className="summary-icon" />
                 <div>
                   <div className="summary-label">Total Cost</div>
-                  <div className="summary-cost">RM {formData.estimatedCost}</div>
+                  <div className="summary-cost">RM {formData.finalCost}</div>
                 </div>
               </div>
             )}
@@ -760,7 +763,7 @@ const CustomerBookingPage = () => {
                 </div>
                 <div className="confirm-row-total">
                   <strong>Total Cost:</strong>
-                  <strong className="confirm-cost">RM {formData.estimatedCost}</strong>
+                  <strong className="confirm-cost">RM {formData.finalCost}</strong>
                 </div>
               </div>
               <div className="confirmation-actions">

@@ -62,6 +62,12 @@ public class Booking {
     private Double estimatedCost;
     
     @Column
+    private Double nurseRate;
+    
+    @Column
+    private Double serviceFee;
+    
+    @Column
     private Double fuelCost;
 
     @Column
