@@ -68,12 +68,13 @@
 .dashboard-header-content {
   position: relative;
   z-index: 1;
-  text-align: left;
+  text-align: center;
 }
 
 .greeting-section {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
   gap: 0.625rem;
   margin-bottom: 0.35rem;
 }
@@ -94,7 +95,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .greeting-message {
@@ -103,7 +104,7 @@
   color: rgba(255, 255, 255, 0.9);
   margin: 0;
   letter-spacing: 0.5px;
-  text-align: right;
+  text-align: center;
   width: 100%;
 }
 

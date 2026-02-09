@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import {
-  Calendar,
   User,
-  FileText,
   LogOut,
   Home,
   Stethoscope,
@@ -62,12 +60,6 @@ const NurseSidebar = ({ onLogout, isOpen, onToggle }) => {
       label: 'My Assignments',
       path: '/nurse/assignments',
       active: location.pathname === '/nurse/assignments'
-    },
-    {
-      icon: Calendar,
-      label: 'Schedule',
-      path: '/nurse/schedule',
-      active: location.pathname === '/nurse/schedule'
     },
     {
       icon: User,
