@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.homenursing.dto.NurseEarningsDTO;
 import com.example.homenursing.entity.Nurse;
 import com.example.homenursing.service.NurseService;
 
@@ -120,6 +121,55 @@ public class NurseController {
             List<Nurse> nurses = nurseService.getNursesByServiceTypeAndBranch(serviceTypeId, branchId);
             return ResponseEntity.ok(nurses);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // GET /api/nurses/earnings/all - Get all nurses earnings for a specific month
+    @GetMapping("/earnings/all")
+    public ResponseEntity<List<NurseEarningsDTO>> getAllNursesEarnings(
+            @RequestParam(required = false) String month) {
+        try {
+            if (month == null || month.isEmpty()) {
+                // Default to current month if not provided
+                java.time.YearMonth currentMonth = java.time.YearMonth.now();
+                month = currentMonth.toString();
+            }
+            List<NurseEarningsDTO> earnings = nurseService.getAllNursesEarnings(month);
+            return ResponseEntity.ok(earnings);
+        } catch (Exception e) {
+            logger.error("Error fetching all earnings: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // GET /api/nurses/{id}/earnings - Get earnings for a specific nurse in a specific month
+    @GetMapping("/{id}/earnings")
+    public ResponseEntity<NurseEarningsDTO> getNurseEarnings(
+            @PathVariable Long id,
+            @RequestParam(required = false) String month) {
+        try {
+            if (month == null || month.isEmpty()) {
+                // Default to current month if not provided
+                java.time.YearMonth currentMonth = java.time.YearMonth.now();
+                month = currentMonth.toString();
+            }
+            NurseEarningsDTO earnings = nurseService.getNurseEarnings(id, month);
+            return ResponseEntity.ok(earnings);
+        } catch (Exception e) {
+            logger.error("Error fetching nurse earnings: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // GET /api/nurses/{id}/earnings/all-time - Get all time earnings for a specific nurse
+    @GetMapping("/{id}/earnings/all-time")
+    public ResponseEntity<NurseEarningsDTO> getNurseAllTimeEarnings(@PathVariable Long id) {
+        try {
+            NurseEarningsDTO earnings = nurseService.getNurseAllTimeEarnings(id);
+            return ResponseEntity.ok(earnings);
+        } catch (Exception e) {
+            logger.error("Error fetching all time earnings: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

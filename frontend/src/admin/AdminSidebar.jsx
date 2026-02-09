@@ -4,7 +4,7 @@ import axios from 'axios';
 import { 
   LayoutDashboard, Calendar, Users, UserCog, 
   FileText, Settings, LogOut, Menu, X,
-  Activity, ClipboardList
+  Activity, ClipboardList, DollarSign
 } from 'lucide-react';
 import './AdminSidebar.css';
 
@@ -50,6 +50,8 @@ const AdminSidebar = ({ isOpen, toggleSidebar, onLogout }) => {
     { path: '/admin/bookings', icon: Calendar, label: 'Bookings' },
     { path: '/admin/nurses', icon: UserCog, label: 'Nurses' },
     { path: '/admin/users', icon: Users, label: 'Users' },
+    { path: '/admin/earnings', icon: DollarSign, label: 'Earnings' },
+    { path: '/admin/reports', icon: FileText, label: 'Reports' },
   ];
 
   const handleLogout = () => {
