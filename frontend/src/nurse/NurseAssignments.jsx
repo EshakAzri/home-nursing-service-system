@@ -251,7 +251,7 @@ const NurseAssignments = () => {
               <table className="assignments-table">
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>NO</th>
                     <th>Date & Time</th>
                     <th>Patient</th>
                     <th>Service Type</th>
@@ -262,10 +262,10 @@ const NurseAssignments = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredAssignments.map((assignment) => (
+                  {filteredAssignments.map((assignment, index) => (
                     <tr key={assignment.id}>
-                      <td data-label="ID">
-                        <span className="assignment-id-badge">{assignment.id}</span>
+                      <td data-label="NO">
+                        <span className="assignment-id-badge">{index + 1}</span>
                       </td>
                       <td data-label="Date & Time">
                         <div className="date-cell">
