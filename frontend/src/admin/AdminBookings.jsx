@@ -180,10 +180,19 @@ const AdminBookings = () => {
       
       <main className={`admin-dashboard-main ${sidebarOpen ? 'sidebar-open' : ''}`}>
         {!sidebarOpen && <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>}
-        <div className="admin-page-header">
-          <div>
-            <h1>Manage Bookings</h1>
-            <p>View and manage all booking appointments</p>
+        <div className="admin-bookings-header">
+          <div className="header-content">
+            <div className="header-icon">
+              <Calendar size={32} />
+            </div>
+            <div className="header-text">
+              <h1>Manage Bookings</h1>
+              <p>View and manage all booking appointments</p>
+            </div>
+          </div>
+          <div className="header-decoration">
+            <div className="decoration-circle circle-1"></div>
+            <div className="decoration-circle circle-2"></div>
           </div>
         </div>
 

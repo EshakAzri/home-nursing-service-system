@@ -1,5 +1,106 @@
 @import './AdminDashboard.css';
 
+.admin-bookings-header {
+  background: linear-gradient(135deg, #7a53be 0%, #7c3aed 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+.admin-bookings-header::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.admin-bookings-header::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: -40px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-icon {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  padding: 0.75rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header-text h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.025em;
+}
+
+.header-text p {
+  font-size: 1rem;
+  opacity: 0.9;
+  font-weight: 500;
+  margin: 0;
+}
+
+.header-decoration {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.decoration-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.circle-1 {
+  width: 80px;
+  height: 80px;
+  top: 20px;
+  right: 80px;
+  animation: float 6s ease-in-out infinite;
+}
+
+.circle-2 {
+  width: 60px;
+  height: 60px;
+  bottom: 30px;
+  right: 40px;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
 .admin-page-header {
   margin-bottom: 2rem;
 }
