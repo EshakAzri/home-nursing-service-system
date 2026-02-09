@@ -7,6 +7,8 @@ import { jsPDF } from 'jspdf';
 import CustomerSidebar from './CustomerSidebar';
 import './CustomerInvoice.css';
 
+const FUEL_COST = 10.00; // Fixed fuel charge in RM
+
 const CustomerInvoice = () => {
   const [invoice, setInvoice] = useState(null);
   const [booking, setBooking] = useState(null);
@@ -354,14 +356,26 @@ const CustomerInvoice = () => {
                   <td>{booking.serviceType?.name || 'Nursing Service'}</td>
                   <td>{booking.duration || booking.serviceType?.estimatedDurationHours || 0} hours</td>
                   <td>RM{booking.serviceType?.basePricePerHour || 0}/hour</td>
-                  <td>RM{booking.estimatedCost?.toFixed(2) || '0.00'}</td>
+                  <td>RM{(booking.serviceType?.basePricePerHour * (booking.duration || 0)).toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Nurse Service</td>
+                  <td>{booking.duration || 0} hours</td>
+                  <td>RM{booking.nurse?.hourlyRate || 0}/hour</td>
+                  <td>RM{(booking.nurse?.hourlyRate * (booking.duration || 0)).toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Fuel Charge</td>
+                  <td>-</td>
+                  <td>Fixed</td>
+                  <td>RM{FUEL_COST.toFixed(2)}</td>
                 </tr>
                 {booking.finalCost && booking.finalCost !== booking.estimatedCost && (
                   <tr>
                     <td>Adjustments</td>
                     <td>-</td>
                     <td>-</td>
-                    <td>${(booking.finalCost - booking.estimatedCost).toFixed(2)}</td>
+                    <td>RM{(booking.finalCost - booking.estimatedCost).toFixed(2)}</td>
                   </tr>
                 )}
               </tbody>

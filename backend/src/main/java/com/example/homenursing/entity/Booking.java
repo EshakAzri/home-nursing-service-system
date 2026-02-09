@@ -62,6 +62,9 @@ public class Booking {
     private Double estimatedCost;
     
     @Column
+    private Double fuelCost;
+
+    @Column
     private Double finalCost;
     
     @Column(nullable = false)

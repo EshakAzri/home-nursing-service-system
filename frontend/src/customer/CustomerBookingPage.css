@@ -756,6 +756,34 @@
   border-top: 2px solid #cbd5e1;
 }
 
+.confirm-breakdown {
+  margin: 12px 0;
+  padding: 12px 0;
+  background: #f0f9ff;
+  border-left: 3px solid #3b82f6;
+  padding-left: 12px;
+}
+
+.breakd-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.breakd-item:last-child {
+  border-bottom: none;
+}
+
+.confirm-row-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0 0;
+  margin-top: 12px;
+  border-top: 2px solid #cbd5e1;
+}
+
 .confirm-row-total strong {
   font-size: 16px;
   color: #1e293b;

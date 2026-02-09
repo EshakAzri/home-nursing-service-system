@@ -9,6 +9,8 @@ import {
 import CustomerSidebar from './CustomerSidebar';
 import './CustomerBookingPage.css';
 
+const FUEL_COST = 10.00; // Fixed fuel charge in RM
+
 const CustomerBookingPage = () => {
   const [formData, setFormData] = useState({
     branchId: '',
@@ -18,6 +20,7 @@ const CustomerBookingPage = () => {
     serviceType: '',
     duration: '',
     estimatedCost: '',
+    fuelCost: FUEL_COST,
     notes: ''
   });
   const [branches, setBranches] = useState([]);
@@ -123,8 +126,8 @@ const CustomerBookingPage = () => {
         // Nurse hourly rate * duration
         const nurseCost = nurse.hourlyRate * duration;
         
-        // Total cost (fuel charge not included)
-        const totalCost = baseCost + nurseCost;
+        // Total cost including fuel charge
+        const totalCost = baseCost + nurseCost + FUEL_COST;
         
         setFormData(prev => ({ 
           ...prev, 
@@ -264,6 +267,7 @@ const CustomerBookingPage = () => {
         serviceType: parseInt(formData.serviceType),
         duration: parseFloat(formData.duration),
         estimatedCost: parseFloat(formData.estimatedCost),
+        fuelCost: FUEL_COST,
         notes: formData.notes
       }, { headers: { Authorization: `Bearer ${token}` } });
 
@@ -276,7 +280,7 @@ const CustomerBookingPage = () => {
 
       setFormData({
         branchId: '', nurseId: '', bookingDate: '', bookingTime: '', 
-        serviceType: '', duration: '', estimatedCost: '', notes: ''
+        serviceType: '', duration: '', estimatedCost: '', fuelCost: FUEL_COST, notes: ''
       });
       setTouched({});
       setCurrentStep(1);
@@ -581,13 +585,14 @@ const CustomerBookingPage = () => {
                   <span>Nurse Rate ({getSelectedNurse().hourlyRate}/hr × {formData.duration}hr):</span>
                   <span>RM {(getSelectedNurse().hourlyRate * parseFloat(formData.duration)).toFixed(2)}</span>
                 </div>
+                <div className="cost-item">
+                  <span>Fuel Charge:</span>
+                  <span>RM {FUEL_COST.toFixed(2)}</span>
+                </div>
                 <div className="cost-item total">
                   <span><strong>Total:</strong></span>
                   <span><strong>RM {formData.estimatedCost}</strong></span>
                 </div>
-                <small style={{ color: '#666', fontSize: '11px', marginTop: '4px', display: 'block' }}>
-                  * Fuel charge will be added based on distance
-                </small>
               </div>
             )}
           </div>
@@ -738,6 +743,20 @@ const CustomerBookingPage = () => {
                 <div className="confirm-row">
                   <strong>Duration:</strong>
                   <span>{formData.duration} hour(s)</span>
+                </div>
+                <div className="confirm-breakdown">
+                  <div className="breakd-item">
+                    <span>Service Fee:</span>
+                    <span>RM {(getSelectedServiceType().basePricePerHour * parseFloat(formData.duration)).toFixed(2)}</span>
+                  </div>
+                  <div className="breakd-item">
+                    <span>Nurse Rate:</span>
+                    <span>RM {(getSelectedNurse().hourlyRate * parseFloat(formData.duration)).toFixed(2)}</span>
+                  </div>
+                  <div className="breakd-item">
+                    <span>Fuel Charge:</span>
+                    <span>RM {FUEL_COST.toFixed(2)}</span>
+                  </div>
                 </div>
                 <div className="confirm-row-total">
                   <strong>Total Cost:</strong>
