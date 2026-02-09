@@ -391,7 +391,7 @@ const CustomerBookingHistory = () => {
       {showModal && selectedBooking && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+            <div className="modal-header-user">
               <h2>Booking Details</h2>
               <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
             </div>

@@ -327,7 +327,7 @@
 
 .cost-amount {
   font-weight: 700;
-  color: #059669;
+  color: #374151;
   font-size: 1.1rem;
 }
 
@@ -576,15 +576,16 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-.modal-header {
+.modal-header-user {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
   border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.modal-header h2 {
+.modal-header-user h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
