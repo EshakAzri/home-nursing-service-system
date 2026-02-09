@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Search, Download, Filter, TrendingUp, DollarSign, 
-  Calendar, Users, CheckCircle 
+  Download, TrendingUp, DollarSign, 
+  Calendar, Users, CheckCircle, TrendingDown, Award
 } from 'lucide-react';
 import AdminSidebar from './AdminSidebar';
 import './AdminEarnings.css';
@@ -16,14 +16,47 @@ const AdminEarnings = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
   });
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('earnings'); // earnings, bookings, name
   const [sortOrder, setSortOrder] = useState('desc'); // asc, desc
   const [totalEarnings, setTotalEarnings] = useState(0);
+  const [statistics, setStatistics] = useState({
+    averageEarnings: 0,
+    medianEarnings: 0,
+    minEarnings: 0,
+    maxEarnings: 0,
+    averageBookings: 0
+  });
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const calculateStatistics = (data) => {
+    if (data.length === 0) {
+      return {
+        averageEarnings: 0,
+        medianEarnings: 0,
+        minEarnings: 0,
+        maxEarnings: 0,
+        averageBookings: 0
+      };
+    }
+
+    const earnings = data.map(item => item.totalEarnings || 0).sort((a, b) => a - b);
+    const median = earnings.length % 2 === 0
+      ? (earnings[earnings.length / 2 - 1] + earnings[earnings.length / 2]) / 2
+      : earnings[Math.floor(earnings.length / 2)];
+
+    const avgBookings = data.reduce((sum, item) => sum + (item.completedBookings || 0), 0) / data.length;
+
+    return {
+      averageEarnings: earnings.reduce((a, b) => a + b, 0) / data.length,
+      medianEarnings: median,
+      minEarnings: Math.min(...earnings),
+      maxEarnings: Math.max(...earnings),
+      averageBookings: avgBookings
+    };
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -39,7 +72,7 @@ const AdminEarnings = () => {
 
   useEffect(() => {
     filterAndSortEarnings();
-  }, [searchTerm, earnings, sortBy, sortOrder]);
+  }, [earnings, sortBy, sortOrder]);
 
   const fetchEarnings = async () => {
     try {
@@ -71,11 +104,7 @@ const AdminEarnings = () => {
   };
 
   const filterAndSortEarnings = () => {
-    let filtered = earnings.filter(item =>
-      `${item.firstName} ${item.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.specialization.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    let filtered = earnings;
 
     // Sort
     filtered.sort((a, b) => {
@@ -93,6 +122,7 @@ const AdminEarnings = () => {
     });
 
     setFilteredEarnings(filtered);
+    setStatistics(calculateStatistics(filtered));
   };
 
   const formatCurrency = (amount) => {
@@ -150,15 +180,20 @@ const AdminEarnings = () => {
       <main className={`admin-dashboard-main ${sidebarOpen ? 'sidebar-open' : ''}`}>
         {!sidebarOpen && <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>}
         
-        <div className="admin-page-header">
-          <div>
-            <h1>Nurse Earnings Report</h1>
-            <p>Monitor and track nurse earnings by month</p>
+        <div className="admin-earnings-header">
+          <div className="header-content">
+            <div className="header-icon">
+              <DollarSign size={32} />
+            </div>
+            <div className="header-text">
+              <h1>Nurse Earnings Report</h1>
+              <p>Monitor and track nurse earnings by month</p>
+            </div>
           </div>
-          <button className="export-btn" onClick={handleExportCSV} disabled={filteredEarnings.length === 0}>
-            <Download size={20} />
-            Export CSV
-          </button>
+          <div className="header-decoration">
+            <div className="decoration-circle circle-1"></div>
+            <div className="decoration-circle circle-2"></div>
+          </div>
         </div>
 
         {/* Summary Cards */}
@@ -194,6 +229,61 @@ const AdminEarnings = () => {
           </div>
         </div>
 
+        {/* Advanced Statistics Cards */}
+        {filteredEarnings.length > 0 && (
+          <div className="advanced-stats-grid">
+            <div className="stat-card stat-avg">
+              <div className="stat-icon">
+                <TrendingUp size={20} />
+              </div>
+              <div className="stat-info">
+                <p className="stat-label">Average Earnings</p>
+                <h4>{formatCurrency(statistics.averageEarnings)}</h4>
+              </div>
+            </div>
+
+            <div className="stat-card stat-median">
+              <div className="stat-icon">
+                <Award size={20} />
+              </div>
+              <div className="stat-info">
+                <p className="stat-label">Median Earnings</p>
+                <h4>{formatCurrency(statistics.medianEarnings)}</h4>
+              </div>
+            </div>
+
+            <div className="stat-card stat-max">
+              <div className="stat-icon">
+                <TrendingUp size={20} />
+              </div>
+              <div className="stat-info">
+                <p className="stat-label">Highest Earning</p>
+                <h4>{formatCurrency(statistics.maxEarnings)}</h4>
+              </div>
+            </div>
+
+            <div className="stat-card stat-min">
+              <div className="stat-icon">
+                <TrendingDown size={20} />
+              </div>
+              <div className="stat-info">
+                <p className="stat-label">Lowest Earning</p>
+                <h4>{formatCurrency(statistics.minEarnings)}</h4>
+              </div>
+            </div>
+
+            <div className="stat-card stat-avg-bookings">
+              <div className="stat-icon">
+                <CheckCircle size={20} />
+              </div>
+              <div className="stat-info">
+                <p className="stat-label">Avg Bookings</p>
+                <h4>{statistics.averageBookings.toFixed(1)}</h4>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Filters Section */}
         <div className="earnings-filters">
           <div className="filter-group">
@@ -204,19 +294,6 @@ const AdminEarnings = () => {
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="month-input"
             />
-          </div>
-
-          <div className="filter-group">
-            <label>Search</label>
-            <div className="search-box">
-              <Search size={20} />
-              <input
-                type="text"
-                placeholder="Search by name, email, or specialization..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
           </div>
 
           <div className="filter-group">
@@ -237,7 +314,14 @@ const AdminEarnings = () => {
           </div>
         </div>
 
-        {/* Earnings Table */}
+        {/* Earnings Section */}
+        <div className="earnings-table-header">
+          <button className="export-btn" onClick={handleExportCSV} disabled={filteredEarnings.length === 0}>
+            <Download size={20} />
+            Export CSV
+          </button>
+        </div>
+
         <div className="earnings-section">
           {filteredEarnings.length === 0 ? (
             <div className="no-data-message">
