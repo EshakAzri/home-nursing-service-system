@@ -90,7 +90,8 @@ public class AuthController {
                     User user = userOpt.get();
                     return ResponseEntity.ok(Map.of(
                         "username", user.getUsername(),
-                        "email", user.getEmail()
+                        "email", user.getEmail(),
+                        "address", user.getAddress() != null ? user.getAddress() : ""
                     ));
                 }
             }
@@ -109,6 +110,7 @@ public class AuthController {
             String currentUsername = authentication.getName();
             String newUsername = profileData.get("username");
             String newEmail = profileData.get("email");
+            String address = profileData.get("address");
 
             if (newUsername == null || newUsername.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Username is required"));
@@ -118,7 +120,7 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Email is required"));
             }
 
-            User updatedUser = userService.updateProfile(currentUsername, newUsername, newEmail);
+            User updatedUser = userService.updateProfile(currentUsername, newUsername, newEmail, address);
             
             // Generate new token if username changed
             String newToken = jwtUtil.generateToken(updatedUser.getUsername());
@@ -127,6 +129,7 @@ public class AuthController {
                 "message", "Profile updated successfully",
                 "username", updatedUser.getUsername(),
                 "email", updatedUser.getEmail(),
+                "address", updatedUser.getAddress() != null ? updatedUser.getAddress() : "",
                 "token", newToken
             ));
         } catch (RuntimeException e) {

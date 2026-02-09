@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Search, UserPlus, Edit, Trash2, Eye, Shield, Mail
+  Search, UserPlus, Edit, Trash2, Eye, Shield, Mail, MapPin
 } from 'lucide-react';
 import AdminSidebar from './AdminSidebar';
 import './AdminUsers.css';
@@ -218,6 +218,12 @@ const AdminUsers = () => {
                       <Mail size={16} />
                       <span>{user.email}</span>
                     </div>
+                    {user.address && (
+                      <div className="user-detail-item">
+                        <MapPin size={16} />
+                        <span>{user.address}</span>
+                      </div>
+                    )}
                     <div className="user-detail-item">
                       <Shield size={16} />
                       <span>User ID: #{user.id}</span>
@@ -270,6 +276,10 @@ const AdminUsers = () => {
               <div className="detail-row">
                 <span className="detail-label">Email:</span>
                 <span className="detail-value">{selectedUser.email}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Address:</span>
+                <span className="detail-value">{selectedUser.address || 'Not provided'}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Role:</span>

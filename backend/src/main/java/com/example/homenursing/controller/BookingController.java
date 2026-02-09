@@ -78,6 +78,11 @@ public class BookingController {
             String username = authentication.getName();
             User currentUser = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
+            // Validate that customer has an address
+            if (currentUser.getAddress() == null || currentUser.getAddress().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Please add your address in your profile before making a booking"));
+            }
+
             // Parse the booking data
             Map<String, Object> nurseMap = (Map<String, Object>) bookingData.get("nurse");
             Long nurseId = Long.valueOf(nurseMap.get("id").toString());

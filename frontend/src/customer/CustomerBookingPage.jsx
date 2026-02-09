@@ -245,7 +245,7 @@ const CustomerBookingPage = () => {
         const data = error.response.data;
 
         if (status === 400) {
-          errorMsg = data.message || 'Please check your booking details and try again.';
+          errorMsg = data.error || data.message || 'Please check your booking details and try again.';
           errorTitle = 'Invalid Booking Data';
         } else if (status === 401) {
           errorMsg = 'Your session has expired. Please login again.';

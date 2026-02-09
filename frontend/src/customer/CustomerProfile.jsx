@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Lock, Save, Edit2, X, Check, Shield, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Save, Edit2, X, Check, Shield, CheckCircle, AlertCircle, Eye, EyeOff, MapPin } from 'lucide-react';
 import CustomerSidebar from './CustomerSidebar';
 import './CustomerProfile.css';
 
@@ -9,6 +9,7 @@ const CustomerProfile = () => {
   const [userInfo, setUserInfo] = useState({
     username: '',
     email: '',
+    address: '',
     role: ''
   });
   const [editMode, setEditMode] = useState(false);
@@ -78,6 +79,7 @@ const CustomerProfile = () => {
       const userData = {
         username: response.data.username || '',
         email: response.data.email || '',
+        address: response.data.address || '',
         role: localStorage.getItem('role') || 'PATIENT'
       };
 
@@ -119,7 +121,8 @@ const CustomerProfile = () => {
       const token = localStorage.getItem('token');
       const response = await axios.put('http://localhost:8080/api/auth/profile', {
         username: editedInfo.username,
-        email: editedInfo.email
+        email: editedInfo.email,
+        address: editedInfo.address
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -294,6 +297,25 @@ const CustomerProfile = () => {
                     />
                   ) : (
                     <div className="profile-value">{userInfo.email}</div>
+                  )}
+                </div>
+
+                <div className="profile-field">
+                  <label>
+                    <MapPin size={18} />
+                    Address
+                  </label>
+                  {editMode ? (
+                    <textarea
+                      name="address"
+                      value={editedInfo.address}
+                      onChange={handleInputChange}
+                      className="profile-input address-input"
+                      placeholder="Enter your full address"
+                      rows="3"
+                    />
+                  ) : (
+                    <div className="profile-value">{userInfo.address || 'Not provided'}</div>
                   )}
                 </div>
 
