@@ -21,7 +21,6 @@ const AdminEarnings = () => {
   const [sortBy, setSortBy] = useState('earnings'); // earnings, bookings, name
   const [sortOrder, setSortOrder] = useState('desc'); // asc, desc
   const [totalEarnings, setTotalEarnings] = useState(0);
-  const [totalCommission, setTotalCommission] = useState(0);
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -59,9 +58,7 @@ const AdminEarnings = () => {
       
       // Calculate totals
       const total = response.data.reduce((sum, item) => sum + (item.totalEarnings || 0), 0);
-      const commission = response.data.reduce((sum, item) => sum + (item.commission || 0), 0);
       setTotalEarnings(total);
-      setTotalCommission(commission);
       
       setLoading(false);
     } catch (error) {
@@ -106,7 +103,7 @@ const AdminEarnings = () => {
   };
 
   const handleExportCSV = () => {
-    const headers = ['Nurse Name', 'Email', 'Specialization', 'Completed Bookings', 'Total Earnings', 'Commission (10%)'];
+    const headers = ['Nurse Name', 'Email', 'Specialization', 'Completed Bookings', 'Total Earnings'];
     const csvContent = [
       headers.join(','),
       ...filteredEarnings.map(item =>
@@ -115,8 +112,7 @@ const AdminEarnings = () => {
           item.email,
           item.specialization,
           item.completedBookings,
-          item.totalEarnings,
-          item.commission
+          item.totalEarnings
         ].join(',')
       )
     ].join('\n');
@@ -174,16 +170,6 @@ const AdminEarnings = () => {
             <div className="summary-content">
               <p className="summary-label">Total Earnings</p>
               <h3>{formatCurrency(totalEarnings)}</h3>
-            </div>
-          </div>
-
-          <div className="summary-card">
-            <div className="summary-icon" style={{ background: '#FCE4EC' }}>
-              <TrendingUp size={24} color="#E91E63" />
-            </div>
-            <div className="summary-content">
-              <p className="summary-label">Total Commission (10%)</p>
-              <h3>{formatCurrency(totalCommission)}</h3>
             </div>
           </div>
 
@@ -268,7 +254,6 @@ const AdminEarnings = () => {
                     <th>Hourly Rate</th>
                     <th>Completed Bookings</th>
                     <th>Total Earnings</th>
-                    <th>Commission (10%)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -294,9 +279,6 @@ const AdminEarnings = () => {
                       <td className="earnings-value">
                         <strong>{formatCurrency(item.totalEarnings)}</strong>
                       </td>
-                      <td className="commission-value">
-                        {formatCurrency(item.commission)}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -312,12 +294,6 @@ const AdminEarnings = () => {
               <span className="label">Total Earnings (Filtered):</span>
               <span className="value">{formatCurrency(
                 filteredEarnings.reduce((sum, item) => sum + (item.totalEarnings || 0), 0)
-              )}</span>
-            </div>
-            <div className="summary-item">
-              <span className="label">Total Commission (Filtered):</span>
-              <span className="value">{formatCurrency(
-                filteredEarnings.reduce((sum, item) => sum + (item.commission || 0), 0)
               )}</span>
             </div>
             <div className="summary-item">
