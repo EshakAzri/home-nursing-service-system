@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.homenursing.entity.Booking;
 import com.example.homenursing.entity.Invoice;
@@ -40,7 +41,7 @@ public class InvoiceService {
 
     // Get invoice by booking ID
     public Optional<Invoice> getInvoiceByBookingId(Long bookingId) {
-        return invoiceRepository.findByBookingId(bookingId);
+        return invoiceRepository.findFirstByBookingIdOrderByCreatedAtDesc(bookingId);
     }
 
     // Get all invoices for a user
@@ -72,7 +73,15 @@ public class InvoiceService {
     }
 
     // Generate invoice for a booking
+    @Transactional
     public Invoice generateInvoiceForBooking(Long bookingId) {
+        // Check if invoice already exists for this booking
+        Optional<Invoice> existingInvoice = invoiceRepository.findFirstByBookingIdOrderByCreatedAtDesc(bookingId);
+        if (existingInvoice.isPresent()) {
+            // Return existing invoice instead of creating a new one
+            return existingInvoice.get();
+        }
+        
         Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
         if (optionalBooking.isPresent()) {
             Booking booking = optionalBooking.get();
@@ -101,7 +110,17 @@ public class InvoiceService {
                 .amount(amount)
                 .status(invoiceStatus)
                 .build();
-            return invoiceRepository.save(invoice);
+            
+            try {
+                return invoiceRepository.save(invoice);
+            } catch (Exception e) {
+                // If save fails due to duplicate (race condition), fetch and return existing
+                Optional<Invoice> fallbackInvoice = invoiceRepository.findFirstByBookingIdOrderByCreatedAtDesc(bookingId);
+                if (fallbackInvoice.isPresent()) {
+                    return fallbackInvoice.get();
+                }
+                throw new RuntimeException("Failed to create invoice: " + e.getMessage());
+            }
         } else {
             throw new RuntimeException("Booking not found with id " + bookingId);
         }

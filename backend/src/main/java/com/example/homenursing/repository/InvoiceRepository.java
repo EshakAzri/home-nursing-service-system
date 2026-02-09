@@ -13,7 +13,7 @@ import com.example.homenursing.entity.Invoice;
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     
-    Optional<Invoice> findByBookingId(Long bookingId);
+    Optional<Invoice> findFirstByBookingIdOrderByCreatedAtDesc(Long bookingId);
     
     @Query("SELECT i FROM Invoice i WHERE i.booking.user.id = :userId ORDER BY i.issuedDate DESC")
     List<Invoice> findAllByUserId(@Param("userId") Long userId);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Download, Check, Clock, XCircle, DollarSign, Calendar, User, MapPin, FileText } from 'lucide-react';
@@ -15,6 +15,7 @@ const CustomerInvoice = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const fetchingRef = useRef(false);
   const navigate = useNavigate();
   const { bookingId } = useParams();
 
@@ -28,10 +29,16 @@ const CustomerInvoice = () => {
 
   useEffect(() => {
     fetchInvoiceData();
-  }, [bookingId]);
+  }, [bookingId, navigate]);
 
   const fetchInvoiceData = async () => {
+    // Prevent duplicate calls
+    if (fetchingRef.current) {
+      return;
+    }
+    
     try {
+      fetchingRef.current = true;
       setLoading(true);
       const token = localStorage.getItem('token');
 
@@ -76,6 +83,7 @@ const CustomerInvoice = () => {
       }
     } finally {
       setLoading(false);
+      fetchingRef.current = false;
     }
   };
 

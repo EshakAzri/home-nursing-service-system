@@ -33,7 +33,7 @@ public class Invoice {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id", nullable = false)
+    @JoinColumn(name = "booking_id", nullable = false, unique = true)
     private Booking booking;
 
     @Column(nullable = false, unique = true)
