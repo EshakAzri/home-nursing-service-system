@@ -1,6 +1,24 @@
+.nurse-layout {
+  display: flex;
+  min-height: 100vh;
+  background: transparent;
+}
+
+.nurse-main {
+  flex: 1;
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+.nurse-main.sidebar-closed {
+  margin-left: 0;
+}
+
 .assignments-container {
   padding: 2rem;
-  background-color: #f9fafb;
+  background-color: transparent;
   min-height: 100vh;
 }
 

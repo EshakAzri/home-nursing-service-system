@@ -6,6 +6,7 @@ import {
   AlertCircle, ArrowRight, User, DollarSign,
   Activity, FileText, MapPin, Briefcase
 } from 'lucide-react';
+import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import NurseSidebar from './NurseSidebar';
 import './NurseDashboard.css';
 
@@ -131,6 +132,38 @@ const NurseDashboard = () => {
     );
   };
 
+  const getMonthlyChartData = () => {
+    // Get last 6 months data
+    const months = {};
+    const today = new Date();
+    
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(today);
+      date.setMonth(date.getMonth() - i);
+      const monthKey = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      months[monthKey] = { bookings: 0, earnings: 0, date };
+    }
+
+    // Aggregate data
+    assignments.forEach(assignment => {
+      const bookingDate = new Date(assignment.bookingDateTime);
+      const monthKey = bookingDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      
+      if (months[monthKey]) {
+        months[monthKey].bookings += 1;
+        if (assignment.status === 'COMPLETED') {
+          months[monthKey].earnings += (assignment.estimatedCost || 0);
+        }
+      }
+    });
+
+    return Object.entries(months).map(([month, data]) => ({
+      month,
+      Bookings: data.bookings,
+      Earnings: parseFloat(data.earnings.toFixed(2))
+    }));
+  };
+
   if (loading) {
     return (
       <div className="nurse-layout">
@@ -205,6 +238,35 @@ const NurseDashboard = () => {
                 <p className="stat-label">Total Earnings</p>
                 <h3 className="stat-value">RM {stats.totalEarnings.toFixed(2)}</h3>
               </div>
+            </div>
+          </div>
+
+          {/* Monthly Chart */}
+          <div className="dashboard-section chart-section">
+            <h2>6-Month Performance</h2>
+            <div className="chart-container">
+              <ResponsiveContainer width="100%" height={300}>
+                <ComposedChart data={getMonthlyChartData()}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="month" />
+                  <YAxis yAxisId="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#fff', 
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px'
+                    }}
+                    formatter={(value, name) => {
+                      if (name === 'Earnings') return ['RM ' + value.toFixed(2), name];
+                      return [value, name];
+                    }}
+                  />
+                  <Legend />
+                  <Bar yAxisId="left" dataKey="Bookings" fill="#10b981" radius={[8, 8, 0, 0]} />
+                  <Line yAxisId="right" type="monotone" dataKey="Earnings" stroke="#8b5cf6" strokeWidth={2} dot={{ fill: '#8b5cf6', r: 4 }} />
+                </ComposedChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
