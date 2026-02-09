@@ -403,8 +403,8 @@ TERMS & CONDITIONS:
                 <tr>
                   <td>{booking.serviceType?.name || 'Nursing Service'}</td>
                   <td>{booking.duration || booking.serviceType?.estimatedDurationHours || 0} hours</td>
-                  <td>${booking.serviceType?.basePricePerHour || 0}/hour</td>
-                  <td>${booking.estimatedCost?.toFixed(2) || '0.00'}</td>
+                  <td>RM{booking.serviceType?.basePricePerHour || 0}/hour</td>
+                  <td>RM{booking.estimatedCost?.toFixed(2) || '0.00'}</td>
                 </tr>
                 {booking.finalCost && booking.finalCost !== booking.estimatedCost && (
                   <tr>
@@ -420,7 +420,7 @@ TERMS & CONDITIONS:
             <div className="total-section">
               <div className="total-row">
                 <span className="total-label">Total Amount:</span>
-                <span className="total-amount">${invoice.amount.toFixed(2)}</span>
+                <span className="total-amount">RM{invoice.amount.toFixed(2)}</span>
               </div>
             </div>
           </div>
