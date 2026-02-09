@@ -6,6 +6,7 @@ import CustomerDashboard from './customer/CustomerDashboard';
 import CustomerBookingPage from './customer/CustomerBookingPage';
 import CustomerBookingHistory from './customer/CustomerBookingHistory';
 import CustomerProfile from './customer/CustomerProfile';
+import CustomerInvoice from './customer/CustomerInvoice';
 import NurseDashboard from './nurse/NurseDashboard';
 import NurseAssignments from './nurse/NurseAssignments';
 import NurseProfile from './nurse/NurseProfile';
@@ -26,6 +27,7 @@ function App() {
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/customer/booking" element={<CustomerBookingPage />} />
           <Route path="/customer/bookings" element={<CustomerBookingHistory />} />
+          <Route path="/customer/invoice/:bookingId" element={<CustomerInvoice />} />
           <Route path="/customer/profile" element={<CustomerProfile />} />
           <Route path="/nurse/dashboard" element={<NurseDashboard />} />
           <Route path="/nurse/assignments" element={<NurseAssignments />} />

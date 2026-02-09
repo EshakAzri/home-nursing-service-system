@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Clock, MapPin, User, Check, X, DollarSign, Download, Filter, Search, Calendar, BookOpen, ChevronDown } from 'lucide-react';
+import { Clock, MapPin, User, Check, X, DollarSign, Eye, Filter, Search, Calendar, BookOpen, ChevronDown, Download } from 'lucide-react';
 import CustomerSidebar from './CustomerSidebar';
 import './CustomerBookingHistory.css';
 
@@ -36,7 +36,7 @@ const CustomerBookingHistory = () => {
     if (action === 'view') {
       handleViewDetails(booking);
     } else if (action === 'invoice') {
-      handleDownloadInvoice(booking);
+      handleViewInvoice(booking);
     }
     // Reset the select to default
     if (selectRef) {
@@ -44,144 +44,8 @@ const CustomerBookingHistory = () => {
     }
   };
 
-  const handleDownloadInvoice = async (booking) => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        alert('No authentication token found. Please login again.');
-        return;
-      }
-
-      console.log('Token exists:', token.substring(0, 20) + '...');
-      let invoice = null;
-
-      // First, try to get existing invoice
-      try {
-        console.log(`Attempting to fetch invoice for booking ${booking.id}...`);
-        const response = await axios.get(`http://localhost:8080/api/invoices/booking/${booking.id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        invoice = response.data;
-        console.log('Invoice found:', invoice);
-      } catch (err) {
-        console.log('Error response status:', err.response?.status);
-        console.log('Error response data:', err.response?.data);
-        // If 404, no invoice exists yet, try to generate one
-        if (err.response?.status === 404) {
-          console.log('No invoice found, attempting to generate new one...');
-        } else if (err.response?.status === 403) {
-          // Permission denied - this booking doesn't belong to the user
-          throw new Error(err.response?.data?.error || 'You do not have permission to access this invoice. This booking may not belong to you.');
-        } else {
-          throw err;
-        }
-      }
-
-      // If no invoice exists, generate one
-      if (!invoice) {
-        console.log(`Generating new invoice for booking ${booking.id}...`);
-        const generateResponse = await axios.post(`http://localhost:8080/api/invoices/generate/${booking.id}`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        invoice = generateResponse.data;
-        console.log('Invoice generated:', invoice);
-      }
-
-      // Create and download invoice as text file
-      const invoiceText = generateInvoiceContent(booking, invoice);
-      downloadInvoiceAsFile(invoiceText, invoice.invoiceNumber);
-      console.log('Invoice downloaded successfully');
-      
-    } catch (error) {
-      console.error('Error downloading invoice:', error);
-      console.error('Error status:', error.response?.status);
-      console.error('Error data:', error.response?.data);
-      
-      // Show appropriate error message
-      let errorMessage = 'Failed to download invoice. Please try again.';
-      if (error.response?.status === 403) {
-        errorMessage = error.response?.data?.error || 'You do not have permission to access this invoice.';
-      } else if (error.response?.status === 401) {
-        errorMessage = 'Your session has expired. Please login again.';
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      alert(errorMessage);
-    }
-  };
-
-  const generateInvoiceContent = (booking, invoice) => {
-    const formatter = new Intl.DateTimeFormat('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-
-    const bookingDate = formatter.format(new Date(booking.bookingDateTime));
-    const issuedDate = formatter.format(new Date(invoice.issuedDate));
-    const dueDate = formatter.format(new Date(invoice.dueDate));
-    const invoiceType = booking.status?.toLowerCase() === 'completed' ? 'FINAL INVOICE' : 'ESTIMATED INVOICE';
-
-    return `
-================================================================================
-                           HOME NURSING SERVICE
-                              ${invoiceType}
-================================================================================
-
-Invoice Number: ${invoice.invoiceNumber}
-Issued Date: ${issuedDate}
-Due Date: ${dueDate}
-Status: ${invoice.status}
-
-================================================================================
-CUSTOMER INFORMATION
-================================================================================
-Name: ${booking.user.username}
-Email: ${booking.user.email}
-Address: ${booking.user.address || 'Not provided'}
-
-================================================================================
-SERVICE DETAILS
-================================================================================
-Booking Date & Time: ${bookingDate}
-Service Type: ${booking.serviceType?.name || 'N/A'}
-Nurse: ${booking.nurse ? booking.nurse.firstName + ' ' + booking.nurse.lastName : 'Not Assigned'}
-Specialization: ${booking.nurse?.specialization || 'N/A'}
-Duration: ${booking.duration} hour(s)
-Status: ${booking.status}
-Notes: ${booking.notes || 'N/A'}
-
-================================================================================
-COST BREAKDOWN
-================================================================================
-Estimated Cost: RM${booking.estimatedCost?.toFixed(2) || '0.00'}
-Final Cost: RM${invoice.amount?.toFixed(2) || '0.00'}
-
-================================================================================
-PAYMENT INFORMATION
-================================================================================
-Amount Due: RM${invoice.amount?.toFixed(2) || '0.00'}
-Payment Status: ${invoice.status}
-
-================================================================================
-Thank you for using our service!
-For inquiries, please contact our support team.
-================================================================================
-`;
-  };
-
-  const downloadInvoiceAsFile = (content, invoiceNumber) => {
-    const element = document.createElement('a');
-    const file = new Blob([content], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = `${invoiceNumber}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+  const handleViewInvoice = (booking) => {
+    navigate(`/customer/invoice/${booking.id}`);
   };
 
   const exportToCSV = () => {
@@ -508,7 +372,7 @@ For inquiries, please contact our support team.
                     >
                       <option value="" disabled>Select Action</option>
                       <option value="view">View Details</option>
-                      <option value="invoice">Download Invoice</option>
+                      <option value="invoice">View Invoice</option>
                     </select>
                   </td>
                 </tr>
