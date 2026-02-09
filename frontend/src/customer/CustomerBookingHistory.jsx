@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Clock, MapPin, User, Check, X, DollarSign, Download, Filter, Search, Calendar } from 'lucide-react';
+import { Clock, MapPin, User, Check, X, DollarSign, Download, Filter, Search, Calendar, BookOpen, ChevronDown } from 'lucide-react';
 import CustomerSidebar from './CustomerSidebar';
 import './CustomerBookingHistory.css';
 
@@ -16,6 +16,7 @@ const CustomerBookingHistory = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -202,8 +203,15 @@ const CustomerBookingHistory = () => {
         <div className="booking-history-container">
       <div className="booking-history-header">
         <div className="header-left">
-          <h1>My Bookings</h1>
-          <p>View and manage your service bookings</p>
+          <div className="header-icon-title">
+            <div className="header-icon">
+              <BookOpen size={28} />
+            </div>
+            <div>
+              <h1>My Bookings</h1>
+              <p>View and manage your service bookings</p>
+            </div>
+          </div>
         </div>
         <button className="btn-export" onClick={exportToCSV} disabled={filteredBookings.length === 0}>
           <Download size={18} />
@@ -213,7 +221,13 @@ const CustomerBookingHistory = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      <div className="filters-section">
+      <button className="btn-toggle-filters" onClick={() => setShowFilters(!showFilters)}>
+        <Filter size={16} />
+        <span>Filters</span>
+        <ChevronDown size={16} className={`chevron ${showFilters ? 'open' : ''}`} />
+      </button>
+
+      <div className={`filters-section ${showFilters ? 'open' : 'closed'}`}>
         <div className="filters-container">
           <div className="filter-group">
             <label><Filter size={16} /> Status</label>
