@@ -192,36 +192,15 @@ const CustomerDashboard = () => {
         
         <div className="dashboard-container">
           {/* Welcome Section */}
-          <div className="dashboard-welcome">
+          <div className="dashboard-welcome dashboard-welcome-collapsed">
             <div className="welcome-content">
               <div className="welcome-greeting">
                 <span className="greeting-icon">{timeGreeting.icon}</span>
                 <h1>{timeGreeting.greeting}, {userInfo.username}!</h1>
               </div>
-              <p className="welcome-message">{timeGreeting.message}</p>
-              <div className="welcome-tip">
-                <span className="tip-icon">💡</span>
-                <span className="tip-text">{getMotivationalTip()}</span>
-              </div>
             </div>
-            <div className="welcome-stats">
-              <div className="quick-stat">
-                <div className="quick-stat-number">{stats.upcoming}</div>
-                <div className="quick-stat-label">Upcoming</div>
-              </div>
-              <div className="quick-stat">
-                <div className="quick-stat-number">{stats.completed}</div>
-                <div className="quick-stat-label">Completed</div>
-              </div>
-              <div className="welcome-date">
-                <Calendar size={20} />
-                <span>{new Date().toLocaleDateString('en-MY', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}</span>
-              </div>
+            <div className="welcome-compact-actions">
+              <div className="welcome-date-compact"><Calendar size={16} /> <span>{new Date().toLocaleDateString('en-MY', { weekday: 'short', day: 'numeric', month: 'short' })}</span></div>
             </div>
           </div>
 
