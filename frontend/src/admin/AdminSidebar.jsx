@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { 
   LayoutDashboard, Calendar, Users, UserCog, 
   FileText, Settings, LogOut, Menu, X,
@@ -10,6 +11,39 @@ import './AdminSidebar.css';
 const AdminSidebar = ({ isOpen, toggleSidebar, onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState({ username: '', email: '' });
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // First, try to get basic info from token
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUserInfo({
+          username: payload.username || payload.sub || payload.name || 'Admin',
+          email: payload.email || payload.userEmail || payload.mail || ''
+        });
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        setUserInfo({ username: 'Admin', email: '' });
+      }
+
+      // Then fetch full user details from API
+      axios.get('http://localhost:8080/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(response => {
+        setUserInfo({
+          username: response.data.username || response.data.name || 'Admin',
+          email: response.data.email || ''
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching user details:', error);
+        // Keep the token-based info as fallback
+      });
+    }
+  }, []);
 
   const menuItems = [
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -33,6 +67,15 @@ const AdminSidebar = ({ isOpen, toggleSidebar, onLogout }) => {
           </div>
           <span className="admin-sidebar-title">Admin Panel</span>
           <span className="admin-sidebar-subtitle">Management Portal</span>
+          <div className="admin-sidebar-user">
+            <div className="user-avatar">
+              {userInfo.username.charAt(0).toUpperCase()}
+            </div>
+            <div className="user-info">
+              <div className="admin-sidebar-username">{userInfo.username}</div>
+              <div className="admin-sidebar-email">{userInfo.email || 'Loading...'}</div>
+            </div>
+          </div>
           <button className="sidebar-close" onClick={toggleSidebar}>
             <Menu size={20} />
           </button>

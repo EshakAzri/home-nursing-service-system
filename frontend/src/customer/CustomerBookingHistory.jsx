@@ -14,6 +14,8 @@ const CustomerBookingHistory = () => {
   const [dateTo, setDateTo] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -25,8 +27,8 @@ const CustomerBookingHistory = () => {
   };
 
   const handleViewDetails = (booking) => {
-    // TODO: Implement view details modal or navigation
-    console.log('View booking details:', booking);
+    setSelectedBooking(booking);
+    setShowModal(true);
   };
 
   const exportToCSV = () => {
@@ -342,6 +344,65 @@ const CustomerBookingHistory = () => {
           </table>
         </div>
       )}
+
+      {/* Booking Details Modal */}
+      {showModal && selectedBooking && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Booking Details</h2>
+              <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-row">
+                <span className="detail-label">Booking ID:</span>
+                <span className="detail-value">{selectedBooking.id}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Date & Time:</span>
+                <span className="detail-value">{formatDate(selectedBooking.bookingDateTime)}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Service Type:</span>
+                <span className="detail-value">{selectedBooking.serviceType?.name || 'N/A'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Nurse:</span>
+                <span className="detail-value">
+                  {selectedBooking.nurse ? `${selectedBooking.nurse.firstName} ${selectedBooking.nurse.lastName}` : 'Not Assigned'}
+                </span>
+              </div>
+              {selectedBooking.nurse?.specialization && (
+                <div className="detail-row">
+                  <span className="detail-label">Specialization:</span>
+                  <span className="detail-value">{selectedBooking.nurse.specialization}</span>
+                </div>
+              )}
+              <div className="detail-row">
+                <span className="detail-label">Duration:</span>
+                <span className="detail-value">{selectedBooking.duration ? `${selectedBooking.duration}h` : 'N/A'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Cost:</span>
+                <span className="detail-value">RM{selectedBooking.estimatedCost?.toFixed(2) || '0.00'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Status:</span>
+                <span className={`detail-value status-badge ${getStatusColor(selectedBooking.status)}`}>
+                  {selectedBooking.status || 'Pending'}
+                </span>
+              </div>
+              {selectedBooking.notes && (
+                <div className="detail-row">
+                  <span className="detail-label">Notes:</span>
+                  <span className="detail-value">{selectedBooking.notes}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
         </div>
       </div>
     </div>
