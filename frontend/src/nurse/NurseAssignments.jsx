@@ -1,0 +1,237 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { Clock, MapPin, User, Check, X, DollarSign, Filter, Search, Calendar, FileText } from 'lucide-react';
+import NurseSidebar from './NurseSidebar';
+import './NurseAssignments.css';
+
+const NurseAssignments = () => {
+  const [assignments, setAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const navigate = useNavigate();
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    navigate('/login');
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, [navigate]);
+
+  const fetchAssignments = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      
+      const config = {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+      
+      const response = await axios.get('http://localhost:8080/api/bookings/nurse-assignments', config);
+      setAssignments(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching assignments:', err);
+      if (err.response?.status === 401) {
+        setError('Your session has expired. Please log in again.');
+        localStorage.removeItem('token');
+        setTimeout(() => navigate('/login'), 2000);
+      } else {
+        setError('Failed to load assignments: ' + (err.response?.data?.error || err.message));
+      }
+      setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status?.toUpperCase()) {
+      case 'COMPLETED':
+        return 'status-completed';
+      case 'PENDING':
+        return 'status-pending';
+      case 'CANCELLED':
+        return 'status-cancelled';
+      case 'IN_PROGRESS':
+        return 'status-in-progress';
+      case 'CONFIRMED':
+        return 'status-confirmed';
+      default:
+        return 'status-default';
+    }
+  };
+
+  const filteredAssignments = assignments.filter(assignment => {
+    // Status filter
+    if (filterStatus !== 'all' && assignment.status?.toUpperCase() !== filterStatus.toUpperCase()) {
+      return false;
+    }
+
+    // Search filter
+    if (searchTerm) {
+      const search = searchTerm.toLowerCase();
+      const patientName = assignment.user?.username?.toLowerCase() || '';
+      const serviceType = assignment.serviceType?.name?.toLowerCase() || '';
+      const id = assignment.id.toString();
+      
+      return patientName.includes(search) || serviceType.includes(search) || id.includes(search);
+    }
+
+    return true;
+  });
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="nurse-layout">
+        <NurseSidebar onLogout={handleLogout} isOpen={sidebarOpen} onToggle={toggleSidebar} />
+        <div className="nurse-main">
+          <div className="assignments-container">
+            <div className="loading">Loading your assignments...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="nurse-layout">
+      <NurseSidebar onLogout={handleLogout} isOpen={sidebarOpen} onToggle={toggleSidebar} />
+      <div className={`nurse-main ${!sidebarOpen ? 'sidebar-closed' : ''}`}>
+        {!sidebarOpen && <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>}
+        <div className="assignments-container">
+          <div className="assignments-header">
+            <div className="header-left">
+              <h1>My Assignments</h1>
+              <p>View and manage your patient assignments</p>
+            </div>
+          </div>
+
+          {error && <div className="error-message">{error}</div>}
+
+          <div className="filters-section">
+            <div className="filters-container">
+              <div className="filter-group">
+                <label><Filter size={16} /> Status</label>
+                <select 
+                  className="filter-select"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <option value="all">All Status ({assignments.length})</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="CONFIRMED">Confirmed</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="CANCELLED">Cancelled</option>
+                </select>
+              </div>
+
+              <div className="filter-group filter-search">
+                <label><Search size={16} /> Search</label>
+                <input 
+                  type="text"
+                  className="filter-input"
+                  placeholder="Search by patient, service, or ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="results-info">
+              Showing {filteredAssignments.length} of {assignments.length} assignments
+            </div>
+          </div>
+
+          {filteredAssignments.length === 0 ? (
+            <div className="no-assignments">
+              <p>No {filterStatus !== 'all' ? filterStatus : ''} assignments found</p>
+            </div>
+          ) : (
+            <div className="table-container">
+              <table className="assignments-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Date & Time</th>
+                    <th>Patient</th>
+                    <th>Service Type</th>
+                    <th>Duration</th>
+                    <th>Fee</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAssignments.map((assignment) => (
+                    <tr key={assignment.id}>
+                      <td data-label="ID">
+                        <span className="assignment-id-badge">{assignment.id}</span>
+                      </td>
+                      <td data-label="Date & Time">
+                        <div className="date-cell">
+                          <span>{formatDate(assignment.bookingDateTime)}</span>
+                        </div>
+                      </td>
+                      <td data-label="Patient">
+                        <div className="patient-cell">
+                          <User size={16} />
+                          <span>{assignment.user?.username || 'N/A'}</span>
+                        </div>
+                      </td>
+                      <td data-label="Service Type">
+                        <div className="service-cell">
+                          <span>{assignment.serviceType?.name || 'N/A'}</span>
+                        </div>
+                      </td>
+                      <td data-label="Duration">
+                        <span className="duration-badge">
+                          {assignment.duration ? `${assignment.duration}h` : 'N/A'}
+                        </span>
+                      </td>
+                      <td data-label="Fee">
+                        <div className="fee-cell">
+                          <span className="fee-amount">RM{assignment.estimatedCost?.toFixed(2) || '0.00'}</span>
+                        </div>
+                      </td>
+                      <td data-label="Status">
+                        <span className={`status-badge ${getStatusColor(assignment.status)}`}>
+                          {assignment.status || 'Pending'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default NurseAssignments;

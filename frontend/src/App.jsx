@@ -6,6 +6,8 @@ import CustomerDashboard from './customer/CustomerDashboard';
 import CustomerBookingPage from './customer/CustomerBookingPage';
 import CustomerBookingHistory from './customer/CustomerBookingHistory';
 import CustomerProfile from './customer/CustomerProfile';
+import NurseDashboard from './nurse/NurseDashboard';
+import NurseAssignments from './nurse/NurseAssignments';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminBookings from './admin/AdminBookings';
 import AdminNurses from './admin/AdminNurses';
@@ -24,7 +26,11 @@ function App() {
           <Route path="/customer/booking" element={<CustomerBookingPage />} />
           <Route path="/customer/bookings" element={<CustomerBookingHistory />} />
           <Route path="/customer/profile" element={<CustomerProfile />} />
-          <Route path="/nurse-dashboard" element={<div><h1>Nurse Dashboard</h1><p>Coming soon...</p></div>} />
+          <Route path="/nurse/dashboard" element={<NurseDashboard />} />
+          <Route path="/nurse/assignments" element={<NurseAssignments />} />
+          <Route path="/nurse/schedule" element={<div style={{padding: '2rem'}}><h1>Nurse Schedule</h1><p>Coming soon...</p></div>} />
+          <Route path="/nurse/profile" element={<div style={{padding: '2rem'}}><h1>Nurse Profile</h1><p>Coming soon...</p></div>} />
+          <Route path="/nurse-dashboard" element={<NurseDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/bookings" element={<AdminBookings />} />
