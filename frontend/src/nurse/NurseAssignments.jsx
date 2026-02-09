@@ -107,6 +107,30 @@ const NurseAssignments = () => {
     }
   };
 
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      setActionLoading(bookingId);
+      setActionError(null);
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+      
+      const response = await axios.post(`http://localhost:8080/api/bookings/${bookingId}/cancel`, {}, config);
+      
+      // Update the assignment in state
+      setAssignments(assignments.map(a => a.id === bookingId ? response.data : a));
+      setActionLoading(null);
+    } catch (err) {
+      console.error('Error cancelling booking:', err);
+      setActionError(err.response?.data?.error || 'Failed to cancel booking');
+      setActionLoading(null);
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status?.toUpperCase()) {
       case 'COMPLETED':
@@ -297,6 +321,16 @@ const NurseAssignments = () => {
                                 {actionLoading === assignment.id ? 'Processing...' : 'Reject'}
                               </button>
                             </>
+                          ) : assignment.status === 'CONFIRMED' ? (
+                            <button 
+                              className="btn-cancel"
+                              onClick={() => handleCancelBooking(assignment.id)}
+                              disabled={actionLoading === assignment.id}
+                              title="Cancel this booking"
+                            >
+                              <X size={16} />
+                              {actionLoading === assignment.id ? 'Processing...' : 'Cancel'}
+                            </button>
                           ) : (
                             <span className="no-actions">No actions available</span>
                           )}

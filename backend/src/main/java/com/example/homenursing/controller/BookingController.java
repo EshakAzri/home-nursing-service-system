@@ -352,4 +352,63 @@ public class BookingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
+
+    // POST /api/bookings/{id}/cancel - Cancel a confirmed booking
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<?> cancelBooking(@PathVariable Long id) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated"));
+            }
+
+            Object principal = authentication.getPrincipal();
+            if ("anonymousUser".equals(principal)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated"));
+            }
+
+            String username = authentication.getName();
+            User currentUser = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Check if user is a nurse
+            if (currentUser.getRole() != User.Role.NURSE) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "User is not a nurse"));
+            }
+
+            // Find nurse by email matching current user's email
+            List<Nurse> nurses = nurseService.getNurseByEmail(currentUser.getEmail());
+            if (nurses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Nurse record not found"));
+            }
+
+            Nurse nurse = nurses.get(0);
+            Optional<Booking> bookingOpt = bookingService.getBookingById(id);
+
+            if (!bookingOpt.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Booking not found"));
+            }
+
+            Booking booking = bookingOpt.get();
+
+            // Verify that the booking is assigned to the current nurse
+            if (!booking.getNurse().getId().equals(nurse.getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "This booking is not assigned to you"));
+            }
+
+            // Only allow cancelling CONFIRMED bookings
+            if (booking.getStatus() != BookingStatus.CONFIRMED) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Only confirmed bookings can be cancelled"));
+            }
+
+            // Update booking status to CANCELLED
+            Booking cancelledBooking = bookingService.updateBookingStatus(id, BookingStatus.CANCELLED);
+            return ResponseEntity.ok(cancelledBooking);
+
+        } catch (Exception e) {
+            System.out.println("Error cancelling booking: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
 }
