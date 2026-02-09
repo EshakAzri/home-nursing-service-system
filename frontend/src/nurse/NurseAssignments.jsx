@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Clock, MapPin, User, Check, X, DollarSign, Filter, Search, Calendar, FileText, AlertCircle, Briefcase, Activity } from 'lucide-react';
+import { Clock, MapPin, User, Check, X, DollarSign, Filter, Search, Calendar, FileText, AlertCircle, Briefcase, Activity, Eye } from 'lucide-react';
 import NurseSidebar from './NurseSidebar';
 import './NurseAssignments.css';
 
@@ -14,6 +14,8 @@ const NurseAssignments = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [actionError, setActionError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -178,6 +180,23 @@ const NurseAssignments = () => {
     });
   };
 
+  const handleViewDetails = (assignment) => {
+    setSelectedAssignment(assignment);
+    setShowModal(true);
+  };
+
+  const getGoogleMapsLink = (address) => {
+    if (!address) return '#';
+    const encodedAddress = encodeURIComponent(address);
+    return `https://www.google.com/maps/search/${encodedAddress}`;
+  };
+
+  const getWazeLink = (address) => {
+    if (!address) return '#';
+    const encodedAddress = encodeURIComponent(address);
+    return `https://waze.com/ul?q=${encodedAddress}`;
+  };
+
   if (loading) {
     return (
       <div className="nurse-layout">
@@ -322,15 +341,25 @@ const NurseAssignments = () => {
                               </button>
                             </>
                           ) : assignment.status === 'CONFIRMED' ? (
-                            <button 
-                              className="btn-cancel"
-                              onClick={() => handleCancelBooking(assignment.id)}
-                              disabled={actionLoading === assignment.id}
-                              title="Cancel this booking"
-                            >
-                              <X size={16} />
-                              {actionLoading === assignment.id ? 'Processing...' : 'Cancel'}
-                            </button>
+                            <>
+                              <button 
+                                className="btn-view-details"
+                                onClick={() => handleViewDetails(assignment)}
+                                title="View booking details and address"
+                              >
+                                <Eye size={16} />
+                                View Details
+                              </button>
+                              <button 
+                                className="btn-cancel"
+                                onClick={() => handleCancelBooking(assignment.id)}
+                                disabled={actionLoading === assignment.id}
+                                title="Cancel this booking"
+                              >
+                                <X size={16} />
+                                {actionLoading === assignment.id ? 'Processing...' : 'Cancel'}
+                              </button>
+                            </>
                           ) : (
                             <span className="no-actions">No actions available</span>
                           )}
@@ -344,6 +373,92 @@ const NurseAssignments = () => {
           )}
         </div>
       </div>
+
+      {/* Booking Details Modal */}
+      {showModal && selectedAssignment && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Booking Details</h2>
+              <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-section">
+                <h3>Patient Information</h3>
+                <div className="detail-row">
+                  <span className="detail-label">Patient Name:</span>
+                  <span className="detail-value">{selectedAssignment.user?.username || 'N/A'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Contact:</span>
+                  <span className="detail-value">{selectedAssignment.user?.phoneNumber || 'N/A'}</span>
+                </div>
+              </div>
+
+              <div className="detail-section">
+                <h3>Service Details</h3>
+                <div className="detail-row">
+                  <span className="detail-label">Service Type:</span>
+                  <span className="detail-value">{selectedAssignment.serviceType?.name || 'N/A'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Date & Time:</span>
+                  <span className="detail-value">{formatDate(selectedAssignment.bookingDateTime)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Duration:</span>
+                  <span className="detail-value">{selectedAssignment.duration ? `${selectedAssignment.duration}h` : 'N/A'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Fee:</span>
+                  <span className="detail-value">RM{selectedAssignment.estimatedCost?.toFixed(2) || '0.00'}</span>
+                </div>
+              </div>
+
+              <div className="detail-section">
+                <h3>Address Information</h3>
+                <div className="detail-row">
+                  <span className="detail-label">Address:</span>
+                  <span className="detail-value">{selectedAssignment.user?.address || 'No address provided'}</span>
+                </div>
+                {selectedAssignment.user?.address && (
+                  <div className="address-navigation">
+                    <a 
+                      href={getGoogleMapsLink(selectedAssignment.user.address)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="nav-button nav-maps"
+                      title="Open in Google Maps"
+                    >
+                      <MapPin size={16} />
+                      Google Maps
+                    </a>
+                    <a 
+                      href={getWazeLink(selectedAssignment.user.address)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="nav-button nav-waze"
+                      title="Open in Waze"
+                    >
+                      <MapPin size={16} />
+                      Waze
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {selectedAssignment.notes && (
+                <div className="detail-section">
+                  <h3>Notes</h3>
+                  <div className="detail-row">
+                    <span className="detail-value">{selectedAssignment.notes}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
