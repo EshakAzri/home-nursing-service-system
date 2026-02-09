@@ -190,4 +190,48 @@ public class BookingController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
         }
     }
+
+    // GET /api/bookings/nurse-assignments - Get current nurse's assignments
+    @GetMapping("/nurse-assignments")
+    public ResponseEntity<?> getNurseAssignments() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            
+            // Check if user is authenticated
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated"));
+            }
+            
+            Object principal = authentication.getPrincipal();
+            if ("anonymousUser".equals(principal)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated"));
+            }
+            
+            String username = authentication.getName();
+            System.out.println("Fetching assignments for nurse: " + username);
+            
+            User currentUser = userService.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+            
+            // Check if user is a nurse
+            if (currentUser.getRole() != User.Role.NURSE) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "User is not a nurse"));
+            }
+            
+            // Find nurse by email matching current user's email
+            List<Nurse> nurses = nurseService.getNurseByEmail(currentUser.getEmail());
+            if (nurses.isEmpty()) {
+                return ResponseEntity.ok(List.of()); // Return empty list if no nurse record
+            }
+            
+            Nurse nurse = nurses.get(0);
+            List<Booking> assignments = bookingService.getBookingsByNurse(nurse);
+            System.out.println("Found " + assignments.size() + " assignments for nurse: " + username);
+            
+            return ResponseEntity.ok(assignments);
+        } catch (Exception e) {
+            System.out.println("Error fetching nurse assignments: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
 }

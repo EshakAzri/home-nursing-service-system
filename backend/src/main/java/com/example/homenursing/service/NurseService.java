@@ -109,4 +109,9 @@ public class NurseService {
     public List<Nurse> getNursesByServiceTypeAndBranch(Long serviceTypeId, Long branchId) {
         return serviceConfigurationService.getNursesByServiceTypeAndBranch(serviceTypeId, branchId);
     }
+
+    // Get nurse by email
+    public List<Nurse> getNurseByEmail(String email) {
+        return nurseRepository.findByEmail(email);
+    }
 }

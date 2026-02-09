@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.homenursing.entity.Booking;
 import com.example.homenursing.entity.Booking.BookingStatus;
+import com.example.homenursing.entity.Nurse;
 import com.example.homenursing.entity.User;
 import com.example.homenursing.repository.BookingRepository;
 
@@ -134,6 +135,11 @@ public class BookingService {
     // Get all bookings for a specific user
     public List<Booking> getUserBookings(User user) {
         return bookingRepository.findByUserOrderByBookingDateTimeDesc(user);
+    }
+
+    // Get all bookings/assignments for a specific nurse
+    public List<Booking> getBookingsByNurse(Nurse nurse) {
+        return bookingRepository.findByNurseOrderByBookingDateTimeDesc(nurse);
     }
 
     // Additional query methods can be added here as needed

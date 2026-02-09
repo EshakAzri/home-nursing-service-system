@@ -7,12 +7,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.homenursing.entity.Booking;
+import com.example.homenursing.entity.Nurse;
 import com.example.homenursing.entity.User;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Find all bookings for a specific user
     List<Booking> findByUserOrderByBookingDateTimeDesc(User user);
+    
+    // Find all bookings for a specific nurse
+    List<Booking> findByNurseOrderByBookingDateTimeDesc(Nurse nurse);
     
     // Find all bookings with nurse and branch data loaded
     @Query("SELECT b FROM Booking b JOIN FETCH b.nurse n JOIN FETCH n.branch")
