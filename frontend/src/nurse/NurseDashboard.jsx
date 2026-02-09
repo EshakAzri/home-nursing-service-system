@@ -204,7 +204,7 @@ const NurseDashboard = () => {
                 <span className="greeting-emoji">{getGreeting().emoji}</span>
                 <div className="greeting-text">
                   <h2 className="greeting-message">{getGreeting().text},</h2>
-                  <h1 className="nurse-name">{userInfo.username}!</h1>
+                  <h1 className="nurse-name1">{userInfo.username}!</h1>
                   <p className="overview-subtitle">Here's an overview of your assignments</p>
                 </div>
               </div>
