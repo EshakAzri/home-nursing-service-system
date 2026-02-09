@@ -32,6 +32,19 @@ const CustomerBookingHistory = () => {
     setShowModal(true);
   };
 
+  const handleActionSelect = (action, booking, selectRef) => {
+    if (action === 'view') {
+      handleViewDetails(booking);
+    } else if (action === 'invoice') {
+      // Handle invoice action - for now just alert
+      alert(`Invoice for booking ${booking.id} - Coming soon!`);
+    }
+    // Reset the select to default
+    if (selectRef) {
+      selectRef.value = '';
+    }
+  };
+
   const exportToCSV = () => {
     const headers = ['ID', 'Date & Time', 'Service Type', 'Nurse', 'Duration', 'Cost', 'Status', 'Notes'];
     const csvData = filteredBookings.map(booking => [
@@ -323,11 +336,9 @@ const CustomerBookingHistory = () => {
                   <td data-label="Nurse">
                     <div className="nurse-cell">
                       <div>
-                        <div className="nurse-name">
-                          {booking.nurse ? `${booking.nurse.firstName} ${booking.nurse.lastName}` : 'Not Assigned'}
-                        </div>
+                        <span>{booking.nurse ? `${booking.nurse.firstName} ${booking.nurse.lastName}` : 'Not Assigned'}</span><br></br>
                         {booking.nurse?.specialization && (
-                          <div className="nurse-specialization">{booking.nurse.specialization}</div>
+                          <span className="nurse-specialization">{booking.nurse.specialization}</span>
                         )}
                       </div>
                     </div>
@@ -348,9 +359,20 @@ const CustomerBookingHistory = () => {
                     </span>
                   </td>
                   <td data-label="Actions">
-                    <button className="btn-view" onClick={() => handleViewDetails(booking)}>
-                      View
-                    </button>
+                    <select 
+                      className="action-select"
+                      onChange={(e) => {
+                        handleActionSelect(e.target.value, booking);
+                        e.target.value = '';
+                      }}
+                      defaultValue=""
+                    >
+                      <option value="" disabled>Select Action</option>
+                      <option value="view">View Details</option>
+                      {booking.status?.toLowerCase() !== 'pending' && (
+                        <option value="invoice">Download Invoice</option>
+                      )}
+                    </select>
                   </td>
                 </tr>
               ))}
