@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Search, UserPlus, Edit, Trash2, Eye, Shield, Mail, MapPin
+  Search, UserPlus, Edit, Trash2, Eye, Shield, Mail, MapPin, X
 } from 'lucide-react';
 import AdminSidebar from './AdminSidebar';
 import './AdminUsers.css';
@@ -81,6 +81,11 @@ const AdminUsers = () => {
     setShowModal(true);
   };
 
+  const resetFilters = () => {
+    setSearchTerm('');
+    setRoleFilter('ALL');
+  };
+
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) {
       return;
@@ -124,10 +129,19 @@ const AdminUsers = () => {
       
       <main className={`admin-dashboard-main ${sidebarOpen ? 'sidebar-open' : ''}`}>
         {!sidebarOpen && <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>}
-        <div className="admin-page-header">
-          <div>
-            <h1>Manage Users</h1>
-            <p>View and manage all registered users</p>
+        <div className="admin-users-header">
+          <div className="header-content">
+            <div className="header-icon">
+              <Shield size={32} />
+            </div>
+            <div className="header-text">
+              <h1>Manage Users</h1>
+              <p>View and manage all registered users</p>
+            </div>
+          </div>
+          <div className="header-decoration">
+            <div className="decoration-circle circle-1"></div>
+            <div className="decoration-circle circle-2"></div>
           </div>
         </div>
 
@@ -141,6 +155,15 @@ const AdminUsers = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="search-clear"
+                title="Clear search"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
 
           <div className="filter-group">
@@ -160,6 +183,16 @@ const AdminUsers = () => {
           <div className="results-count">
             Showing {filteredUsers.length} of {users.length} users
           </div>
+
+          {(searchTerm || roleFilter !== 'ALL') && (
+            <button 
+              onClick={resetFilters}
+              className="reset-filters-btn"
+              title="Clear all filters"
+            >
+              Reset Filters
+            </button>
+          )}
         </div>
 
         {/* Summary Cards */}
@@ -197,7 +230,11 @@ const AdminUsers = () => {
         <div className="users-grid-view">
           {filteredUsers.length === 0 ? (
             <div className="no-data-message">
-              <p>No users found</p>
+              <p>
+                {searchTerm || roleFilter !== 'ALL' 
+                  ? 'No users match your search criteria' 
+                  : 'No users available'}
+              </p>
             </div>
           ) : (
             filteredUsers.map(user => (
@@ -236,6 +273,7 @@ const AdminUsers = () => {
                     className="action-btn view"
                     onClick={() => handleViewDetails(user)}
                     title="View Details"
+                    aria-label={`View details for ${user.username}`}
                   >
                     <Eye size={16} />
                     View
@@ -243,8 +281,9 @@ const AdminUsers = () => {
                   <button 
                     className="action-btn delete"
                     onClick={() => handleDeleteUser(user.id)}
-                    title="Delete"
+                    title={user.role === 'ADMIN' ? 'Cannot delete admin users' : 'Delete user'}
                     disabled={user.role === 'ADMIN'}
+                    aria-label={`Delete ${user.username}`}
                   >
                     <Trash2 size={16} />
                     Delete
