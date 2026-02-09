@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Clock, MapPin, User, Check, X, DollarSign, Filter, Search, Calendar, FileText, AlertCircle } from 'lucide-react';
+import { Clock, MapPin, User, Check, X, DollarSign, Filter, Search, Calendar, FileText, AlertCircle, Briefcase, Activity } from 'lucide-react';
 import NurseSidebar from './NurseSidebar';
 import './NurseAssignments.css';
 
@@ -199,8 +199,8 @@ const NurseAssignments = () => {
         <div className="assignments-container">
           <div className="assignments-header">
             <div className="header-left">
-              <h1>My Assignments</h1>
-              <p>View and manage your patient assignments</p>
+              <h1><Briefcase size={28} style={{ marginRight: '0.5rem', display: 'inline', marginTop: '-2px', verticalAlign: 'middle' }} /> My Assignments</h1>
+              <p><Activity size={16} style={{ marginRight: '0.35rem' }} />View and manage your patient assignments</p>
             </div>
           </div>
 

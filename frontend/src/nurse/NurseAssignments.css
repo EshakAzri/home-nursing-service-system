@@ -25,22 +25,58 @@
 .assignments-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  align-items: flex-start;
+  margin-bottom: 0.875rem;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  padding: 1.125rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.assignments-header::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .header-left h1 {
-  font-size: 1.5rem;
-  color: #111827;
+  font-size: 1.625rem;
+  color: white;
   margin-bottom: 0.25rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .header-left p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.875rem;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.header-left h1 svg,
+.header-left p svg {
+  opacity: 0.95;
 }
 
 .filters-section {
@@ -396,5 +432,18 @@
   .btn-reject {
     width: 100%;
     justify-content: center;
+  }
+
+  .assignments-header {
+    padding: 1.25rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-left h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-left p {
+    font-size: 0.875rem;
   }
 }
