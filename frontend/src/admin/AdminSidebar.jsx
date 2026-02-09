@@ -51,7 +51,6 @@ const AdminSidebar = ({ isOpen, toggleSidebar, onLogout }) => {
     { path: '/admin/nurses', icon: UserCog, label: 'Nurses' },
     { path: '/admin/users', icon: Users, label: 'Users' },
     { path: '/admin/earnings', icon: DollarSign, label: 'Earnings' },
-    { path: '/admin/reports', icon: FileText, label: 'Reports' },
   ];
 
   const handleLogout = () => {

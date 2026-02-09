@@ -14,7 +14,6 @@ import AdminDashboard from './admin/AdminDashboard';
 import AdminBookings from './admin/AdminBookings';
 import AdminNurses from './admin/AdminNurses';
 import AdminUsers from './admin/AdminUsers';
-import AdminReports from './admin/AdminReports';
 import AdminEarnings from './admin/AdminEarnings';
 import './App.css';
 
@@ -40,7 +39,6 @@ function App() {
           <Route path="/admin/bookings" element={<AdminBookings />} />
           <Route path="/admin/nurses" element={<AdminNurses />} />
           <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/admin/earnings" element={<AdminEarnings />} />
           <Route path="/" element={<div><h1>Welcome to Home Nursing Service</h1><a href="/login">Login</a> | <a href="/register">Register</a></div>} />
         </Routes>
