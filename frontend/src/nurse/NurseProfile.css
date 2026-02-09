@@ -180,7 +180,7 @@
   align-items: center;
   padding: 1.5rem;
   border-bottom: 2px solid #f3f4f6;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
 }
 
@@ -245,7 +245,7 @@
 }
 
 .profile-field label svg {
-  color: #667eea;
+  color: #10b981;
 }
 
 .profile-value {
@@ -274,8 +274,8 @@
 .profile-input:focus,
 .profile-textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .profile-input:disabled,
@@ -306,7 +306,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #667eea;
+  accent-color: #10b981;
 }
 
 .availability-toggle input[type="checkbox"]:disabled {
@@ -333,7 +333,7 @@
   gap: 0.5rem;
   grid-column: 1 / -1;
   padding: 0.75rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -345,7 +345,7 @@
 
 .btn-save:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 /* Password Input Styles */
@@ -376,7 +376,7 @@
 }
 
 .password-toggle:hover {
-  color: #667eea;
+  color: #10b981;
   background-color: #f3f4f6;
 }
 

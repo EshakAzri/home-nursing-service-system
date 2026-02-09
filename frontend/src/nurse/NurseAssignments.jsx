@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Clock, MapPin, User, Check, X, DollarSign, Filter, Search, Calendar, FileText } from 'lucide-react';
+import { Clock, MapPin, User, Check, X, DollarSign, Filter, Search, Calendar, FileText, AlertCircle } from 'lucide-react';
 import NurseSidebar from './NurseSidebar';
 import './NurseAssignments.css';
 
@@ -12,6 +12,8 @@ const NurseAssignments = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [actionLoading, setActionLoading] = useState(null);
+  const [actionError, setActionError] = useState(null);
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -54,6 +56,54 @@ const NurseAssignments = () => {
         setError('Failed to load assignments: ' + (err.response?.data?.error || err.message));
       }
       setLoading(false);
+    }
+  };
+
+  const handleAcceptBooking = async (bookingId) => {
+    try {
+      setActionLoading(bookingId);
+      setActionError(null);
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+      
+      const response = await axios.post(`http://localhost:8080/api/bookings/${bookingId}/accept`, {}, config);
+      
+      // Update the assignment in state
+      setAssignments(assignments.map(a => a.id === bookingId ? response.data : a));
+      setActionLoading(null);
+    } catch (err) {
+      console.error('Error accepting booking:', err);
+      setActionError(err.response?.data?.error || 'Failed to accept booking');
+      setActionLoading(null);
+    }
+  };
+
+  const handleRejectBooking = async (bookingId) => {
+    try {
+      setActionLoading(bookingId);
+      setActionError(null);
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+      
+      const response = await axios.post(`http://localhost:8080/api/bookings/${bookingId}/reject`, {}, config);
+      
+      // Update the assignment in state
+      setAssignments(assignments.map(a => a.id === bookingId ? response.data : a));
+      setActionLoading(null);
+    } catch (err) {
+      console.error('Error rejecting booking:', err);
+      setActionError(err.response?.data?.error || 'Failed to reject booking');
+      setActionLoading(null);
     }
   };
 
@@ -131,6 +181,7 @@ const NurseAssignments = () => {
           </div>
 
           {error && <div className="error-message">{error}</div>}
+          {actionError && <div className="error-message"><AlertCircle size={16} /> {actionError}</div>}
 
           <div className="filters-section">
             <div className="filters-container">
@@ -183,6 +234,7 @@ const NurseAssignments = () => {
                     <th>Duration</th>
                     <th>Fee</th>
                     <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -221,6 +273,34 @@ const NurseAssignments = () => {
                         <span className={`status-badge ${getStatusColor(assignment.status)}`}>
                           {assignment.status || 'Pending'}
                         </span>
+                      </td>
+                      <td data-label="Actions">
+                        <div className="action-buttons">
+                          {assignment.status === 'PENDING' ? (
+                            <>
+                              <button 
+                                className="btn-accept"
+                                onClick={() => handleAcceptBooking(assignment.id)}
+                                disabled={actionLoading === assignment.id}
+                                title="Accept this booking"
+                              >
+                                <Check size={16} />
+                                {actionLoading === assignment.id ? 'Processing...' : 'Accept'}
+                              </button>
+                              <button 
+                                className="btn-reject"
+                                onClick={() => handleRejectBooking(assignment.id)}
+                                disabled={actionLoading === assignment.id}
+                                title="Reject this booking"
+                              >
+                                <X size={16} />
+                                {actionLoading === assignment.id ? 'Processing...' : 'Reject'}
+                              </button>
+                            </>
+                          ) : (
+                            <span className="no-actions">No actions available</span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
