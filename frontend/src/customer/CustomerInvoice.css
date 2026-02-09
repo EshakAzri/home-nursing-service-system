@@ -607,3 +607,70 @@
     font-size: 22px;
   }
 }
+
+/* Print Styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm 12mm;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Hide sidebar and action bar when printing */
+  .customer-sidebar,
+  .no-print,
+  .invoice-action-bar {
+    display: none !important;
+  }
+
+  /* Reset main content positioning */
+  .invoice-main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  /* Reset container */
+  .customer-invoice-container {
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Keep readable layout - 2 pages is fine */
+  .invoice-document {
+    max-width: 100%;
+    padding: 20px 25px;
+    box-shadow: none;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  /* Header styling */
+  .invoice-header {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+  }
+
+  /* Remove shadows and backgrounds */
+  * {
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Ensure backgrounds print for colored badges */
+  .status-badge,
+  .status-badge-paid,
+  .status-badge-pending,
+  .status-badge-cancelled,
+  .status-badge-small,
+  .meta-item {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

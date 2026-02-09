@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Download, Printer, Check, Clock, XCircle, DollarSign, Calendar, User, MapPin, FileText } from 'lucide-react';
+import { ArrowLeft, Download, Check, Clock, XCircle, DollarSign, Calendar, User, MapPin, FileText } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import CustomerSidebar from './CustomerSidebar';
 import './CustomerInvoice.css';
 
@@ -75,98 +77,50 @@ const CustomerInvoice = () => {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handleDownload = async () => {
+    const invoiceEl = document.querySelector('.invoice-document');
+    if (!invoiceEl) return;
 
-  const handleDownload = () => {
-    if (!invoice || !booking) return;
+    try {
+      const canvas = await html2canvas(invoiceEl, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
 
-    const invoiceText = generateInvoiceText();
-    const blob = new Blob([invoiceText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${invoice.invoiceNumber}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth - 20; // 10mm margin each side
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-  const generateInvoiceText = () => {
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+      // Scale to fit 1 page if content is taller than page
+      let imgX, imgY, finalWidth, finalHeight;
+      if (imgHeight > pdfHeight - 20) {
+        finalHeight = pdfHeight - 20;
+        finalWidth = (canvas.width * finalHeight) / canvas.height;
+        imgX = (pdfWidth - finalWidth) / 2;
+        imgY = 10;
+      } else {
+        finalWidth = imgWidth;
+        finalHeight = imgHeight;
+        imgX = 10;
+        imgY = 10;
+      }
 
-    const bookingDate = formatter.format(new Date(booking.bookingDateTime));
-    const issuedDate = formatter.format(new Date(invoice.issuedDate));
-    const dueDate = formatter.format(new Date(invoice.dueDate));
-    const invoiceType = booking.status?.toLowerCase() === 'completed' ? 'FINAL INVOICE' : 'ESTIMATED INVOICE';
+      // Draw border around the invoice
+      pdf.setDrawColor(0, 123, 255); // Blue border
+      pdf.setLineWidth(0.5);
+      pdf.rect(imgX - 2, imgY - 2, finalWidth + 4, finalHeight + 4);
 
-    return `
-================================================================================
-                           HOME NURSING SERVICE
-                              ${invoiceType}
-================================================================================
+      pdf.addImage(imgData, 'PNG', imgX, imgY, finalWidth, finalHeight);
 
-Invoice Number: ${invoice.invoiceNumber}
-Issued Date: ${issuedDate}
-Due Date: ${dueDate}
-
---------------------------------------------------------------------------------
-BILL TO:
---------------------------------------------------------------------------------
-Customer Name: ${booking.user?.username || 'N/A'}
-Email: ${booking.user?.email || 'N/A'}
-Address: ${booking.user?.address || 'N/A'}
-
---------------------------------------------------------------------------------
-SERVICE DETAILS:
---------------------------------------------------------------------------------
-Service Type: ${booking.serviceType?.name || 'N/A'}
-Service Date: ${bookingDate}
-Duration: ${booking.duration || booking.serviceType?.estimatedDurationHours || 'N/A'} hours
-Assigned Nurse: ${booking.nurse ? `${booking.nurse.firstName} ${booking.nurse.lastName}` : 'Not assigned yet'}
-Status: ${booking.status || 'N/A'}
-
-Service Description:
-${booking.serviceType?.description || 'N/A'}
-
-${booking.notes ? `Additional Notes:\n${booking.notes}` : ''}
-
---------------------------------------------------------------------------------
-COST BREAKDOWN:
---------------------------------------------------------------------------------
-Service Duration: ${booking.duration || booking.serviceType?.estimatedDurationHours || 0} hours
-Rate per Hour: $${booking.serviceType?.basePricePerHour || 0}
-${booking.finalCost ? `Base Amount: $${booking.estimatedCost || 0}` : ''}
-${booking.finalCost ? `Adjustments: $${(booking.finalCost - booking.estimatedCost).toFixed(2)}` : ''}
-
-                                                    TOTAL: $${invoice.amount.toFixed(2)}
-
---------------------------------------------------------------------------------
-PAYMENT INFORMATION:
---------------------------------------------------------------------------------
-Invoice Status: ${invoice.status}
-${invoice.status === 'PAID' ? `Payment Date: ${formatter.format(new Date())}` : `Payment Due: ${dueDate}`}
-
---------------------------------------------------------------------------------
-TERMS & CONDITIONS:
---------------------------------------------------------------------------------
-1. Payment is due within 30 days of invoice date.
-2. Late payments may incur additional charges.
-3. For payment inquiries, please contact our billing department.
-4. All services are provided by licensed healthcare professionals.
-
-================================================================================
-                     Thank you for choosing Home Nursing Service!
-                          For inquiries: support@homenursing.com
-                                   Phone: 1-800-NURSING
-================================================================================
-`;
+      pdf.save(`${invoice.invoiceNumber || 'invoice'}.pdf`);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -250,7 +204,7 @@ TERMS & CONDITIONS:
     return null;
   }
 
-  const invoiceType = booking.status?.toLowerCase() === 'completed' ? 'FINAL INVOICE' : 'ESTIMATED INVOICE';
+  const invoiceType = booking.status?.toLowerCase() === 'completed' ? 'FINAL INVOICE' : 'INVOICE';
 
   return (
     <div className="customer-invoice-container">
@@ -265,11 +219,7 @@ TERMS & CONDITIONS:
           <div className="invoice-actions">
             <button onClick={handleDownload} className="btn-action btn-download">
               <Download size={18} />
-              Download
-            </button>
-            <button onClick={handlePrint} className="btn-action btn-print">
-              <Printer size={18} />
-              Print
+              Download PDF
             </button>
           </div>
         </div>
