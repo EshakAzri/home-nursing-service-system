@@ -2,17 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import {
-  Calendar,
   User,
-  FileText,
   LogOut,
   Home,
-  Heart,
-  Menu
+  Stethoscope,
+  Menu,
+  ClipboardList
 } from 'lucide-react';
-import './CustomerSidebar.css';
+import './NurseSidebar.css';
 
-const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
+const NurseSidebar = ({ onLogout, isOpen, onToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userInfo, setUserInfo] = useState({ username: '', email: '' });
@@ -24,12 +23,12 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         setUserInfo({
-          username: payload.username || payload.sub || payload.name || 'User',
+          username: payload.username || payload.sub || payload.name || 'Nurse',
           email: payload.email || payload.userEmail || payload.mail || ''
         });
       } catch (error) {
         console.error('Error decoding token:', error);
-        setUserInfo({ username: 'User', email: '' });
+        setUserInfo({ username: 'Nurse', email: '' });
       }
 
       // Then fetch full user details from API
@@ -38,7 +37,7 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
       })
       .then(response => {
         setUserInfo({
-          username: response.data.username || response.data.name || 'User',
+          username: response.data.username || response.data.name || 'Nurse',
           email: response.data.email || ''
         });
       })
@@ -53,54 +52,48 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
     {
       icon: Home,
       label: 'Dashboard',
-      path: '/customer/dashboard',
-      active: location.pathname === '/customer/dashboard'
+      path: '/nurse/dashboard',
+      active: location.pathname === '/nurse/dashboard'
     },
     {
-      icon: Calendar,
-      label: 'Book Service',
-      path: '/customer/booking',
-      active: location.pathname === '/customer/booking'
-    },
-    {
-      icon: FileText,
-      label: 'My Bookings',
-      path: '/customer/bookings',
-      active: location.pathname === '/customer/bookings'
+      icon: ClipboardList,
+      label: 'My Assignments',
+      path: '/nurse/assignments',
+      active: location.pathname === '/nurse/assignments'
     },
     {
       icon: User,
       label: 'Profile',
-      path: '/customer/profile',
-      active: location.pathname === '/customer/profile'
+      path: '/nurse/profile',
+      active: location.pathname === '/nurse/profile'
     }
   ];
 
   return (
-    <div className={`customer-sidebar ${!isOpen ? 'hidden' : ''}`}>
-      <div className="customer-sidebar-header">
-        <div className="customer-sidebar-logo">
-          <Heart size={24} color="#374151" />
+    <div className={`nurse-sidebar ${!isOpen ? 'hidden' : ''}`}>
+      <div className="nurse-sidebar-header">
+        <div className="nurse-sidebar-logo">
+          <Stethoscope size={24} color="#374151" />
         </div>
-        <span className="customer-sidebar-title">CareLink</span>
-        <span className="customer-sidebar-subtitle">Customer Portal</span>
-        <div className="customer-sidebar-user">
+        <span className="nurse-sidebar-title">CareLink</span>
+        <span className="nurse-sidebar-subtitle">Nurse Portal</span>
+        <div className="nurse-sidebar-user">
           <div className="user-avatar">
             {userInfo.username.charAt(0).toUpperCase()}
           </div>
           <div className="user-info">
-            <div className="customer-sidebar-username">{userInfo.username}</div>
-            <div className="customer-sidebar-email">{userInfo.email || 'Loading...'}</div>
+            <div className="nurse-sidebar-username">{userInfo.username}</div>
+            <div className="nurse-sidebar-email">{userInfo.email || 'Loading...'}</div>
           </div>
         </div>
         <button className="sidebar-close" onClick={onToggle}><Menu size={20} /></button>
       </div>
 
-      <nav className="customer-sidebar-nav">
+      <nav className="nurse-sidebar-nav">
         {menuItems.map((item, index) => (
           <button
             key={index}
-            className={`customer-sidebar-item ${item.active ? 'active' : ''}`}
+            className={`nurse-sidebar-item ${item.active ? 'active' : ''}`}
             onClick={() => navigate(item.path)}
           >
             <item.icon size={18} />
@@ -109,9 +102,9 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
         ))}
       </nav>
 
-      <div className="customer-sidebar-footer">
+      <div className="nurse-sidebar-footer">
         <button
-          className="customer-sidebar-logout"
+          className="nurse-sidebar-logout"
           onClick={onLogout}
         >
           <LogOut size={18} />
@@ -122,4 +115,4 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
   );
 };
 
-export default CustomerSidebar;
+export default NurseSidebar;

@@ -1,15 +1,20 @@
 package com.example.homenursing.service;
 
-import com.example.homenursing.entity.Booking;
-import com.example.homenursing.entity.Booking.BookingStatus;
-import com.example.homenursing.repository.BookingRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.homenursing.entity.Booking;
+import com.example.homenursing.entity.Booking.BookingStatus;
+import com.example.homenursing.entity.Nurse;
+import com.example.homenursing.entity.User;
+import com.example.homenursing.repository.BookingRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +24,40 @@ public class BookingService {
     private final BookingRepository bookingRepository;
 
     public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+        return bookingRepository.findAllWithNurseAndBranch();
+    }
+
+    public List<Booking> getAllBookings(String fromDate, String toDate) {
+        List<Booking> bookings = bookingRepository.findAllWithNurseAndBranch();
+        
+        // Apply date filtering if dates are provided
+        if ((fromDate != null && !fromDate.isEmpty()) || (toDate != null && !toDate.isEmpty())) {
+            LocalDateTime startDate = null;
+            LocalDateTime endDate = null;
+            
+            if (fromDate != null && !fromDate.isEmpty()) {
+                startDate = LocalDate.parse(fromDate).atStartOfDay();
+            }
+            
+            if (toDate != null && !toDate.isEmpty()) {
+                endDate = LocalDate.parse(toDate).atTime(23, 59, 59);
+            }
+            
+            final LocalDateTime finalStartDate = startDate;
+            final LocalDateTime finalEndDate = endDate;
+            
+            bookings = bookings.stream()
+                .filter(booking -> {
+                    boolean afterStart = finalStartDate == null || 
+                        booking.getBookingDateTime().isAfter(finalStartDate.minusSeconds(1));
+                    boolean beforeEnd = finalEndDate == null || 
+                        booking.getBookingDateTime().isBefore(finalEndDate.plusSeconds(1));
+                    return afterStart && beforeEnd;
+                })
+                .collect(java.util.stream.Collectors.toList());
+        }
+        
+        return bookings;
     }
 
     public Optional<Booking> getBookingById(Long id) {
@@ -49,6 +87,9 @@ public class BookingService {
             existingBooking.setDuration(bookingDetails.getDuration());
             existingBooking.setNotes(bookingDetails.getNotes());
             existingBooking.setEstimatedCost(bookingDetails.getEstimatedCost());
+            existingBooking.setNurseRate(bookingDetails.getNurseRate());
+            existingBooking.setServiceFee(bookingDetails.getServiceFee());
+            existingBooking.setFuelCost(bookingDetails.getFuelCost());
             existingBooking.setFinalCost(bookingDetails.getFinalCost());
             existingBooking.setStatus(bookingDetails.getStatus());
 
@@ -92,6 +133,16 @@ public class BookingService {
         if (booking.getDuration() <= 0) {
             throw new IllegalArgumentException("Duration must be positive");
         }
+    }
+
+    // Get all bookings for a specific user
+    public List<Booking> getUserBookings(User user) {
+        return bookingRepository.findByUserOrderByBookingDateTimeDesc(user);
+    }
+
+    // Get all bookings/assignments for a specific nurse
+    public List<Booking> getBookingsByNurse(Nurse nurse) {
+        return bookingRepository.findByNurseOrderByBookingDateTimeDesc(nurse);
     }
 
     // Additional query methods can be added here as needed

@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "service_configurations")
@@ -20,6 +22,7 @@ public class ServiceConfiguration {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nurse_id", nullable = false)
+    @JsonProperty(access = Access.WRITE_ONLY)
     private Nurse nurse;
 
     @ManyToOne(fetch = FetchType.LAZY)

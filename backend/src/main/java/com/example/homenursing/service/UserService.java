@@ -51,6 +51,78 @@ public class UserService implements UserDetailsService {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
+    public String encodePassword(String rawPassword) {
+        return passwordEncoder.encode(rawPassword);
+    }
+
+    public User updateProfile(String currentUsername, String newUsername, String newEmail) {
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if new username is taken by another user
+        if (!currentUsername.equals(newUsername)) {
+            if (userRepository.findByUsername(newUsername).isPresent()) {
+                throw new RuntimeException("Username already taken");
+            }
+            user.setUsername(newUsername);
+        }
+
+        // Check if new email is taken by another user
+        if (!user.getEmail().equals(newEmail)) {
+            Optional<User> existingUser = userRepository.findByEmail(newEmail);
+            if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+                throw new RuntimeException("Email already in use");
+            }
+            user.setEmail(newEmail);
+        }
+
+        return userRepository.save(user);
+    }
+
+    public User updateProfile(String currentUsername, String newUsername, String newEmail, String address) {
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if new username is taken by another user
+        if (!currentUsername.equals(newUsername)) {
+            if (userRepository.findByUsername(newUsername).isPresent()) {
+                throw new RuntimeException("Username already taken");
+            }
+            user.setUsername(newUsername);
+        }
+
+        // Check if new email is taken by another user
+        if (!user.getEmail().equals(newEmail)) {
+            Optional<User> existingUser = userRepository.findByEmail(newEmail);
+            if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+                throw new RuntimeException("Email already in use");
+            }
+            user.setEmail(newEmail);
+        }
+
+        if (address != null) {
+            user.setAddress(address);
+        }
+
+        return userRepository.save(user);
+    }
+
+    public void changePassword(String username, String currentPassword, String newPassword) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+        if (newPassword.length() < 6) {
+            throw new RuntimeException("New password must be at least 6 characters");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)

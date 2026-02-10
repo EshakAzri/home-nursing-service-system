@@ -102,13 +102,11 @@ const Register = () => {
 
   const roleIcons = {
     PATIENT: Users,
-    NURSE: Stethoscope,
     ADMIN: Shield
   };
 
   const roleDescriptions = {
     PATIENT: 'For individuals seeking home nursing services',
-    NURSE: 'For qualified healthcare professionals',
     ADMIN: 'For system administrators and managers'
   };
 
