@@ -196,11 +196,28 @@
   transform: translateY(0);
 }
 
+/* Sidebar overlay for mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+@media (min-width: 769px) {
+  .sidebar-overlay {
+    display: none;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .nurse-sidebar {
-    width: 100%;
-    transform: translateX(-100%);
+    width: 280px;
+    max-width: 85vw;
   }
 
   .nurse-sidebar.hidden {

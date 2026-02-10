@@ -10,6 +10,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
 .customer-sidebar.hidden {
@@ -207,44 +208,36 @@
   color: white;
 }
 
+/* Sidebar overlay for mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+@media (min-width: 769px) {
+  .sidebar-overlay {
+    display: none;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .customer-sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    flex-direction: row;
-    padding: 0;
+    width: 280px;
+    max-width: 85vw;
   }
 
-  .customer-sidebar-header {
-    padding: 16px;
-    flex: 1;
+  .customer-sidebar.hidden {
+    transform: translateX(-100%);
   }
 
-  .customer-sidebar-nav {
-    display: flex;
-    flex: 3;
-    padding: 0;
-  }
-
-  .customer-sidebar-item {
-    flex: 1;
-    padding: 12px;
-    justify-content: center;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 12px;
-  }
-
-  .customer-sidebar-footer {
-    padding: 16px;
-    flex: 1;
-  }
-
-  .customer-sidebar-logout {
-    padding: 10px;
-    font-size: 12px;
+  .customer-sidebar:not(.hidden) {
+    transform: translateX(0);
   }
 }
 
