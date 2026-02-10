@@ -51,6 +51,37 @@ The Home Nursing Service System is designed to streamline home-based nursing ser
 - **Charts**: Recharts
 - **Styling**: CSS3
 
+## Installation Guide
+
+### Prerequisites
+- Java JDK 17+
+- Node.js 18+
+- MySQL 8.0+
+- Maven 3.8+
+
+### Setup
+
+1. **Database**
+   ```sql
+   CREATE DATABASE home_nursing_db;
+   ```
+
+2. **Backend**
+   ```bash
+   cd backend
+   # Configure database in src/main/resources/application.properties
+   ./mvnw spring-boot:run
+   ```
+   Backend runs on `http://localhost:8080`
+
+3. **Frontend**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+   Frontend runs on `http://localhost:5173`
+
 ## User Roles
 
 1. **CUSTOMER**: Can book services, view booking history, manage profile, access invoices
