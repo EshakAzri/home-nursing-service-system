@@ -8,7 +8,8 @@ import {
   LogOut,
   Home,
   Heart,
-  Menu
+  Menu,
+  X
 } from 'lucide-react';
 import './CustomerSidebar.css';
 
@@ -102,7 +103,7 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
             <div className="customer-sidebar-email">{userInfo.email || 'Loading...'}</div>
           </div>
         </div>
-        <button className="sidebar-close" onClick={onToggle}><Menu size={20} /></button>
+        <button className="sidebar-close" onClick={onToggle}><X size={20} /></button>
       </div>
 
       <nav className="customer-sidebar-nav">
