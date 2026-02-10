@@ -2,6 +2,26 @@
 
 A comprehensive full-stack web application for managing home nursing services and bookings. This system connects patients with qualified nurses, enabling efficient scheduling and service management.
 
+## Preview
+
+### Homepage
+![Homepage](./screenshots/homepage.png)
+
+### Login / Register
+![Login Register](./screenshots/login.png)
+
+### Customer Dashboard
+![Customer](./screenshots/customerdashboard.png)
+
+### Nurse Dashboard
+![Nurse](./screenshots/nursedashboard.png)
+
+### Admin Dashboard
+![Admin](./screenshots/admindashboard.png)
+
+### Mobile View
+![Mobile](./screenshots/mobileview.png)
+
 ## Project Overview
 
 The Home Nursing Service System is designed to streamline home-based nursing service operations with three main user roles:
