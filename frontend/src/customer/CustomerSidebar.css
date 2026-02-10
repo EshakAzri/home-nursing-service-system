@@ -10,6 +10,8 @@
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
 }
 
 .customer-sidebar.hidden {
@@ -20,6 +22,7 @@
   padding: 24px 20px;
   border-bottom: 1px solid #e2e8f0;
   text-align: center;
+  position: relative;
 }
 
 .customer-sidebar-logo {
@@ -207,44 +210,92 @@
   color: white;
 }
 
+/* Sidebar overlay for mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+@media (min-width: 769px) {
+  .sidebar-overlay {
+    display: none;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .customer-sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    flex-direction: row;
-    padding: 0;
+    width: 280px;
+    max-width: 85vw;
+  }
+
+  .customer-sidebar.hidden {
+    transform: translateX(-100%);
+  }
+
+  .customer-sidebar:not(.hidden) {
+    transform: translateX(0);
   }
 
   .customer-sidebar-header {
-    padding: 16px;
-    flex: 1;
+    padding: 16px 16px 12px;
+  }
+
+  .customer-sidebar-logo {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+
+  .customer-sidebar-title {
+    font-size: 17px;
+    margin-bottom: 2px;
+  }
+
+  .customer-sidebar-subtitle {
+    font-size: 11px;
+  }
+
+  .customer-sidebar-user {
+    padding: 10px;
+    margin: 10px 0 0;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .customer-sidebar-username {
+    font-size: 13px;
+  }
+
+  .customer-sidebar-email {
+    font-size: 11px;
   }
 
   .customer-sidebar-nav {
-    display: flex;
-    flex: 3;
-    padding: 0;
+    padding: 10px 0;
   }
 
   .customer-sidebar-item {
-    flex: 1;
-    padding: 12px;
-    justify-content: center;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 12px;
+    padding: 11px 20px;
+    font-size: 13px;
   }
 
   .customer-sidebar-footer {
-    padding: 16px;
-    flex: 1;
+    padding: 12px 16px 16px;
   }
 
   .customer-sidebar-logout {
-    padding: 10px;
-    font-size: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
   }
 }
 

@@ -7,6 +7,7 @@ import {
   Home,
   Stethoscope,
   Menu,
+  X,
   ClipboardList
 } from 'lucide-react';
 import './NurseSidebar.css';
@@ -69,7 +70,16 @@ const NurseSidebar = ({ onLogout, isOpen, onToggle }) => {
     }
   ];
 
+  const handleNavClick = (path) => {
+    navigate(path);
+    if (window.innerWidth <= 768) {
+      onToggle();
+    }
+  };
+
   return (
+    <>
+    {isOpen && <div className="sidebar-overlay" onClick={onToggle} />}
     <div className={`nurse-sidebar ${!isOpen ? 'hidden' : ''}`}>
       <div className="nurse-sidebar-header">
         <div className="nurse-sidebar-logo">
@@ -86,7 +96,7 @@ const NurseSidebar = ({ onLogout, isOpen, onToggle }) => {
             <div className="nurse-sidebar-email">{userInfo.email || 'Loading...'}</div>
           </div>
         </div>
-        <button className="sidebar-close" onClick={onToggle}><Menu size={20} /></button>
+        <button className="sidebar-close" onClick={onToggle}><X size={20} /></button>
       </div>
 
       <nav className="nurse-sidebar-nav">
@@ -94,7 +104,7 @@ const NurseSidebar = ({ onLogout, isOpen, onToggle }) => {
           <button
             key={index}
             className={`nurse-sidebar-item ${item.active ? 'active' : ''}`}
-            onClick={() => navigate(item.path)}
+            onClick={() => handleNavClick(item.path)}
           >
             <item.icon size={18} />
             <span>{item.label}</span>
@@ -112,6 +122,7 @@ const NurseSidebar = ({ onLogout, isOpen, onToggle }) => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

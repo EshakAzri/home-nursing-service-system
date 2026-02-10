@@ -78,7 +78,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, onLogout }) => {
             </div>
           </div>
           <button className="sidebar-close" onClick={toggleSidebar}>
-            <Menu size={20} />
+            <X size={20} />
           </button>
         </div>
 

@@ -2,47 +2,40 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
-  User, Mail, Lock, UserCheck, UserCircle, Loader2, 
+  User, Mail, Lock, UserCheck, Loader2, 
   ArrowRight, Eye, EyeOff, CheckCircle, XCircle,
-  Shield, Stethoscope, Users, ChevronDown
+  Shield, Users, Heart, Clock, Star, ShieldCheck
 } from 'lucide-react';
 import './Register.css';
 
 const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, availability, checking, usernameValue, emailValue, ...props }) => {
   const isPassword = type === 'password';
-  const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="register-form-group">
-      <label className="register-label">
-        {label}
-      </label>
-      <div className={`register-input-wrapper ${error && isTouched ? 'error' : ''}`}>
-        <Icon className="register-input-icon" size={18} />
+    <div className="reg-field">
+      <label className="reg-field-label">{label}</label>
+      <div className={`reg-input-box ${error && isTouched ? 'has-error' : ''} ${!error && availability === true && isTouched ? 'has-success' : ''}`}>
+        <Icon className="reg-input-icon" size={18} />
         <input
           {...props}
           type={isPassword && showPassword ? 'text' : type}
-          className="register-input"
-          onFocus={() => setIsFocused(true)}
+          className="reg-input"
           onBlur={(e) => {
-            setIsFocused(false);
             props.onBlur && props.onBlur(e);
           }}
-          aria-describedby={error && isTouched ? `${props.name}-error` : undefined}
-          aria-invalid={error && isTouched ? 'true' : 'false'}
         />
         {checking && (
-          <div className="register-input-status">
+          <div className="reg-input-status">
             <Loader2 className="spinner" size={16} />
           </div>
         )}
         {!checking && availability !== null && (props.name === 'username' || props.name === 'email') && (
-          <div className="register-input-status">
+          <div className="reg-input-status">
             {availability ? (
-              <CheckCircle size={16} color="#16a34a" />
+              <CheckCircle size={16} color="#10b981" />
             ) : (
-              <XCircle size={16} color="#dc2626" />
+              <XCircle size={16} color="#ef4444" />
             )}
           </div>
         )}
@@ -50,29 +43,20 @@ const InputField = ({ label, icon: Icon, type = 'text', error, isTouched, availa
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="register-password-toggle"
+            className="reg-eye-toggle"
           >
-            {showPassword ? 
-              <EyeOff size={18} color="#64748b" /> : 
-              <Eye size={18} color="#64748b" />
-            }
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         )}
       </div>
-      {error && isTouched && (
-        <span id={`${props.name}-error`} className="register-error-text">
-          {error}
-        </span>
-      )}
+      {error && isTouched && <span className="reg-error">{error}</span>}
       {!error && availability === false && (props.name === 'username' || props.name === 'email') && (
-        <span className="register-error-text">
-          {props.name === 'username' ? 'This username is already taken' : 'This email address is already registered'}
+        <span className="reg-error">
+          {props.name === 'username' ? 'Username is already taken' : 'Email is already registered'}
         </span>
       )}
       {!error && availability === true && ((props.name === 'username' && usernameValue && usernameValue.length >= 3) || (props.name === 'email' && emailValue && emailValue.includes('@'))) && (
-        <span className="register-success-text">
-          {props.name === 'username' ? 'Username is available' : 'Email address is available'}
-        </span>
+        <span className="reg-success">Available</span>
       )}
     </div>
   );
@@ -405,231 +389,234 @@ const Register = () => {
   };
 
   return (
-    <div className="register-container">
-      {/* Background elements */}
-      <div className="register-blob1"></div>
-      <div className="register-blob2"></div>
-      <div className="register-blob3"></div>
-      
-      <div className="register-card">
-        <div className="register-header">
-          <div className="register-logo-container">
-            <div className="register-logo">
-              <UserCheck size={24} color="#4f46e5" />
-            </div>
-            <span className="register-logo-text">CareLink</span>
-          </div>
-          <h1 className="register-title">Join Our Healthcare Community</h1>
-          <p className="register-subtitle">
-            Register to access personalized home nursing services and professional care
-          </p>
+    <div className="reg-page">
+      {/* Left Branding Panel */}
+      <div className="reg-brand-panel">
+        <div className="reg-brand-shapes">
+          <div className="reg-shape reg-shape-1"></div>
+          <div className="reg-shape reg-shape-2"></div>
+          <div className="reg-shape reg-shape-3"></div>
         </div>
+        <div className="reg-brand-content">
+          <Link to="/" className="reg-brand-logo">
+            <span className="reg-brand-icon">+</span>
+            <span className="reg-brand-name">HomeNurse</span>
+          </Link>
+          <h2 className="reg-brand-headline">Start Your Healthcare Journey Today</h2>
+          <p className="reg-brand-desc">
+            Join thousands of families who trust HomeNurse for professional, 
+            compassionate care delivered right at home.
+          </p>
+          <div className="reg-brand-features">
+            <div className="reg-brand-feature">
+              <div className="reg-brand-feature-icon"><Heart size={18} /></div>
+              <div>
+                <strong>500+ Verified Nurses</strong>
+                <span>Licensed & background-checked professionals</span>
+              </div>
+            </div>
+            <div className="reg-brand-feature">
+              <div className="reg-brand-feature-icon"><Clock size={18} /></div>
+              <div>
+                <strong>24/7 Availability</strong>
+                <span>Book care anytime, day or night</span>
+              </div>
+            </div>
+            <div className="reg-brand-feature">
+              <div className="reg-brand-feature-icon"><Star size={18} /></div>
+              <div>
+                <strong>4.9/5 Patient Rating</strong>
+                <span>Trusted by 15,000+ home visits</span>
+              </div>
+            </div>
+            <div className="reg-brand-feature">
+              <div className="reg-brand-feature-icon"><ShieldCheck size={18} /></div>
+              <div>
+                <strong>100% Secure</strong>
+                <span>Your data is encrypted & protected</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="register-form-grid">
-            <InputField
-              label="Username"
-              icon={User}
-              type="text"
-              name="username"
-              placeholder="Enter your username"
-              value={formData.username}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={formErrors.username}
-              isTouched={touched.username}
-              availability={usernameAvailable}
-              checking={checkingUsername}
-              usernameValue={formData.username}
-              required
-              autoComplete="username"
-            />
-
-            <InputField
-              label="Email Address"
-              icon={Mail}
-              type="email"
-              name="email"
-              placeholder="Enter your email address"
-              value={formData.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={formErrors.email}
-              isTouched={touched.email}
-              availability={emailAvailable}
-              checking={checkingEmail}
-              emailValue={formData.email}
-              required
-              autoComplete="email"
-            />
+      {/* Right Form Panel */}
+      <div className="reg-form-panel">
+        <div className="reg-form-wrapper">
+          <div className="reg-form-header">
+            <h1 className="reg-form-title">Create Your Account</h1>
+            <p className="reg-form-subtitle">Fill in your details to get started</p>
           </div>
 
-          <InputField
-            label="Password"
-            icon={Lock}
-            type="password"
-            name="password"
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={formErrors.password}
-            isTouched={touched.password}
-            required
-            autoComplete="new-password"
-          />
+          <form onSubmit={handleSubmit} className="reg-form">
+            <div className="reg-row">
+              <InputField
+                label="Username"
+                icon={User}
+                type="text"
+                name="username"
+                placeholder="Choose a username"
+                value={formData.username}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={formErrors.username}
+                isTouched={touched.username}
+                availability={usernameAvailable}
+                checking={checkingUsername}
+                usernameValue={formData.username}
+                required
+                autoComplete="username"
+              />
+              <InputField
+                label="Email Address"
+                icon={Mail}
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={formErrors.email}
+                isTouched={touched.email}
+                availability={emailAvailable}
+                checking={checkingEmail}
+                emailValue={formData.email}
+                required
+                autoComplete="email"
+              />
+            </div>
 
-          <InputField
-            label="Confirm Password"
-            icon={Lock}
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm your password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={formErrors.confirmPassword}
-            isTouched={touched.confirmPassword}
-            required
-            autoComplete="new-password"
-          />
+            <div className="reg-row">
+              <InputField
+                label="Password"
+                icon={Lock}
+                type="password"
+                name="password"
+                placeholder="Min 8 characters"
+                value={formData.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={formErrors.password}
+                isTouched={touched.password}
+                required
+                autoComplete="new-password"
+              />
+              <InputField
+                label="Confirm Password"
+                icon={Lock}
+                type="password"
+                name="confirmPassword"
+                placeholder="Re-enter password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={formErrors.confirmPassword}
+                isTouched={touched.confirmPassword}
+                required
+                autoComplete="new-password"
+              />
+            </div>
 
-          {/* Password Strength Indicator */}
-          {formData.password && (
-            <div className="register-password-strength">
-              <div className="register-strength-bar">
-                <div 
-                  className={`register-strength-fill ${passwordStrength <= 33 ? 'weak' : passwordStrength <= 66 ? 'medium' : 'strong'}`}
-                  style={{ width: `${passwordStrength}%` }}
-                />
-              </div>
-              <div className="register-strength-text">
-                Password Strength: <span className={passwordStrength <= 33 ? 'weak' : passwordStrength <= 66 ? 'medium' : 'strong'}>
-                  {passwordStrength <= 33 ? 'Weak' : passwordStrength <= 66 ? 'Medium' : 'Strong'}
-                </span>
-              </div>
-              <div className="register-requirements">
-                {passwordRequirements.map((req, index) => {
-                  const meetsRequirement = req.regex.test(formData.password);
-                  return (
-                    <div key={index} className="register-requirement">
-                      <span className="register-requirement-icon">
-                        {meetsRequirement ? '✓' : ''}
-                      </span>
-                      <span className={meetsRequirement ? 'met' : ''}>
+            {/* Password Strength */}
+            {formData.password && (
+              <div className="reg-pw-strength">
+                <div className="reg-pw-bar-track">
+                  <div
+                    className={`reg-pw-bar-fill ${passwordStrength <= 33 ? 'weak' : passwordStrength <= 66 ? 'medium' : 'strong'}`}
+                    style={{ width: `${passwordStrength}%` }}
+                  />
+                </div>
+                <div className="reg-pw-reqs">
+                  {passwordRequirements.map((req, i) => {
+                    const met = req.regex.test(formData.password);
+                    return (
+                      <span key={i} className={`reg-pw-req ${met ? 'met' : ''}`}>
+                        {met ? <CheckCircle size={12} /> : <span className="reg-pw-req-dot" />}
                         {req.label}
                       </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Role Selection */}
+            <div className="reg-field">
+              <label className="reg-field-label">Account Type</label>
+              <div className="reg-roles">
+                {Object.entries(roleIcons).map(([role, Icon]) => {
+                  const RoleIcon = Icon;
+                  const selected = formData.role === role;
+                  return (
+                    <div
+                      key={role}
+                      className={`reg-role ${selected ? 'selected' : ''}`}
+                      onClick={() => setFormData(prev => ({ ...prev, role }))}
+                    >
+                      <div className="reg-role-icon-wrap">
+                        <RoleIcon size={20} />
+                      </div>
+                      <div className="reg-role-info">
+                        <strong>{role.charAt(0) + role.slice(1).toLowerCase()}</strong>
+                        <span>{roleDescriptions[role]}</span>
+                      </div>
+                      {selected && <CheckCircle size={18} className="reg-role-check" />}
                     </div>
                   );
                 })}
               </div>
             </div>
-          )}
 
-          {/* Role Selection */}
-          <div className="register-form-group">
-            <label className="register-label">Select Your Role</label>
-            <div className="register-role-grid">
-              {Object.entries(roleIcons).map(([role, Icon]) => {
-                const RoleIcon = Icon;
-                const isSelected = formData.role === role;
-                return (
-                  <div
-                    key={role}
-                    className={`register-role-card ${isSelected ? 'selected' : ''}`}
-                    onClick={() => setFormData(prev => ({ ...prev, role }))}
-                  >
-                    <RoleIcon 
-                      size={24} 
-                      color={isSelected ? '#3b82f6' : '#64748b'} 
-                    />
-                    <div className="register-role-content">
-                      <h4 className="register-role-title">
-                        {role.charAt(0) + role.slice(1).toLowerCase()}
-                        {isSelected && <CheckCircle size={16} color="#3b82f6" />}
-                      </h4>
-                      <p className="register-role-description">
-                        {roleDescriptions[role]}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Terms and Conditions */}
-          <div className="register-terms-container">
-            <input
-              type="checkbox"
-              id="terms"
-              className="register-checkbox"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
-              required
-            />
-            <label htmlFor="terms" className="register-terms-text">
-              I agree to the{' '}
-              <a href="/terms" className="register-terms-link" target="_blank" rel="noopener noreferrer">
-                Terms of Service
-              </a>{' '}
-              and{' '}
-              <a href="/privacy" className="register-terms-link" target="_blank" rel="noopener noreferrer">
-                Privacy Policy
-              </a>
+            {/* Terms */}
+            <label className="reg-terms">
+              <input
+                type="checkbox"
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+                required
+              />
+              <span>
+                I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+              </span>
             </label>
-          </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="register-button"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="spinner" size={20} />
-                <span style={{ marginLeft: '8px' }}>Creating Account...</span>
-              </>
-            ) : (
-              <>
-                <span>Create Account</span>
-                <ArrowRight size={18} style={{ marginLeft: '8px' }} />
-              </>
-            )}
-          </button>
-        </form>
+            {/* Submit */}
+            <button type="submit" disabled={loading} className="reg-submit">
+              {loading ? (
+                <>
+                  <Loader2 className="spinner" size={20} />
+                  <span>Creating Account...</span>
+                </>
+              ) : (
+                <>
+                  <span>Create Account</span>
+                  <ArrowRight size={18} />
+                </>
+              )}
+            </button>
 
-        {/* Footer */}
-        <div className="register-links">
-          <p className="register-footer-text">
-            Already have an account?{' '}
-            <Link to="/login" className="register-link">
-              <strong>Sign in here</strong>
-            </Link>
-          </p>
+            <p className="reg-footer-text">
+              Already have an account?{' '}
+              <Link to="/login" className="reg-link">Sign in</Link>
+            </p>
+          </form>
         </div>
       </div>
 
-      {/* Modal Popup */}
+      {/* Modal */}
       {showModal && message.text && (
-        <div className="register-modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="register-modal" onClick={(e) => e.stopPropagation()}>
-            <div className={`register-modal-content ${message.type}`}>
-              <div className="register-modal-icon">
+        <div className="reg-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="reg-modal" onClick={(e) => e.stopPropagation()}>
+            <div className={`reg-modal-body ${message.type}`}>
+              <div className="reg-modal-icon">
                 {message.type === 'success' ? 
-                  <CheckCircle size={48} color="#166534" /> : 
-                  <XCircle size={48} color="#dc2626" />
+                  <CheckCircle size={48} color="#10b981" /> : 
+                  <XCircle size={48} color="#ef4444" />
                 }
               </div>
-              <h3 className="register-modal-title">
-                {message.type === 'success' ? 'Success!' : (message.title || 'Error')}
-              </h3>
-              <p className="register-modal-message">{message.text}</p>
-              <button 
-                className="register-modal-close"
-                onClick={() => setShowModal(false)}
-              >
+              <h3>{message.type === 'success' ? 'Success!' : (message.title || 'Error')}</h3>
+              <p>{message.text}</p>
+              <button onClick={() => setShowModal(false)} className="reg-modal-btn">
                 Close
               </button>
             </div>

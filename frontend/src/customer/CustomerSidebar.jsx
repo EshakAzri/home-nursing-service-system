@@ -8,7 +8,8 @@ import {
   LogOut,
   Home,
   Heart,
-  Menu
+  Menu,
+  X
 } from 'lucide-react';
 import './CustomerSidebar.css';
 
@@ -76,7 +77,16 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
     }
   ];
 
+  const handleNavClick = (path) => {
+    navigate(path);
+    if (window.innerWidth <= 768) {
+      onToggle();
+    }
+  };
+
   return (
+    <>
+    {isOpen && <div className="sidebar-overlay" onClick={onToggle} />}
     <div className={`customer-sidebar ${!isOpen ? 'hidden' : ''}`}>
       <div className="customer-sidebar-header">
         <div className="customer-sidebar-logo">
@@ -93,7 +103,7 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
             <div className="customer-sidebar-email">{userInfo.email || 'Loading...'}</div>
           </div>
         </div>
-        <button className="sidebar-close" onClick={onToggle}><Menu size={20} /></button>
+        <button className="sidebar-close" onClick={onToggle}><X size={20} /></button>
       </div>
 
       <nav className="customer-sidebar-nav">
@@ -101,7 +111,7 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
           <button
             key={index}
             className={`customer-sidebar-item ${item.active ? 'active' : ''}`}
-            onClick={() => navigate(item.path)}
+            onClick={() => handleNavClick(item.path)}
           >
             <item.icon size={18} />
             <span>{item.label}</span>
@@ -119,6 +129,7 @@ const CustomerSidebar = ({ onLogout, isOpen, onToggle }) => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

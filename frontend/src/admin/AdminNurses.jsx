@@ -11,7 +11,15 @@ import AdminSidebar from './AdminSidebar';
 import './AdminNurses.css';
 
 const AdminNurses = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) setSidebarOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [nurses, setNurses] = useState([]);
   const [filteredNurses, setFilteredNurses] = useState([]);
   const [branches, setBranches] = useState([]);

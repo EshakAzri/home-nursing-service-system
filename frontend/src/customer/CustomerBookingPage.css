@@ -502,13 +502,6 @@
   }
 }
 
-/* Hide toggle on mobile since sidebar is bottom bar */
-@media (max-width: 768px) {
-  .sidebar-toggle {
-    display: none;
-  }
-}
-
 /* Progress Indicator Styles */
 .booking-progress {
   display: flex;
