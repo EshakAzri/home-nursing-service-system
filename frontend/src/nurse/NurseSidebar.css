@@ -227,4 +227,57 @@
   .nurse-sidebar:not(.hidden) {
     transform: translateX(0);
   }
+
+  .nurse-sidebar-header {
+    padding: 16px 16px 12px;
+  }
+
+  .nurse-sidebar-logo {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+
+  .nurse-sidebar-title {
+    font-size: 17px;
+    margin-bottom: 2px;
+  }
+
+  .nurse-sidebar-subtitle {
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+
+  .nurse-sidebar-user {
+    padding: 10px;
+    margin: 5px 0 0;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .nurse-sidebar-username {
+    font-size: 13px;
+  }
+
+  .nurse-sidebar-email {
+    font-size: 11px;
+  }
+
+  .nurse-sidebar-item {
+    padding: 11px 20px;
+    font-size: 14px;
+  }
+
+  .nurse-sidebar-footer {
+    padding: 12px 16px 16px;
+  }
+
+  .nurse-sidebar-logout {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
 }
