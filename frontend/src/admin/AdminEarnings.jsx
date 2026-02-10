@@ -9,7 +9,15 @@ import AdminSidebar from './AdminSidebar';
 import './AdminEarnings.css';
 
 const AdminEarnings = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) setSidebarOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [earnings, setEarnings] = useState([]);
   const [filteredEarnings, setFilteredEarnings] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(() => {

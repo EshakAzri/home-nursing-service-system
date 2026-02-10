@@ -5,7 +5,7 @@
 
   color-scheme: light;
   color: rgba(0, 0, 0, 0.87);
-  background-color: #e0f2fe;
+  background-color: #f8fafc;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -24,11 +24,11 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #e0f2fe;
+  width: 100%;
+  background-color: #f8fafc;
+  overflow-x: hidden;
 }
 
 html {
@@ -62,7 +62,7 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #e0f2fe;
+    background-color: #f8fafc;
   }
   a:hover {
     color: #747bff;

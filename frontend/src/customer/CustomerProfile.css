@@ -188,8 +188,14 @@
 /* Profile Content */
 .profile-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.5rem;
+}
+
+@media (min-width: 960px) {
+  .profile-content {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* Profile Card */
@@ -476,12 +482,6 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-  .profile-content {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 768px) {
   .profile-container {
     padding: 1rem;
@@ -500,10 +500,6 @@
   .btn-edit {
     width: 100%;
     justify-content: center;
-  }
-
-  .profile-content {
-    grid-template-columns: 1fr;
   }
 
   .feedback-popup {

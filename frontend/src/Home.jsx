@@ -5,6 +5,7 @@ import './Home.css';
 const Home = () => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -21,13 +22,21 @@ const Home = () => {
             <span className="logo-icon">+</span>
             <span className="logo-text">HomeNurse</span>
           </div>
-          <div className="nav-links">
-            <a href="#features">Features</a>
-            <a href="#services">Services</a>
-            <a href="#how-it-works">How It Works</a>
-            <a href="#testimonials">Testimonials</a>
+          <div className={`nav-links ${mobileMenuOpen ? 'nav-links-open' : ''}`}>
+            <a href="#features" onClick={() => setMobileMenuOpen(false)}>Features</a>
+            <a href="#services" onClick={() => setMobileMenuOpen(false)}>Services</a>
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
+            <a href="#testimonials" onClick={() => setMobileMenuOpen(false)}>Testimonials</a>
+            <div className="nav-actions-mobile">
+              <button className="nav-btn nav-btn-outline" onClick={() => navigate('/login')}>
+                Sign In
+              </button>
+              <button className="nav-btn nav-btn-solid" onClick={() => navigate('/register')}>
+                Get Started
+              </button>
+            </div>
           </div>
-          <div className="nav-actions">
+          <div className="nav-actions nav-actions-desktop">
             <button className="nav-btn nav-btn-outline" onClick={() => navigate('/login')}>
               Sign In
             </button>
@@ -35,6 +44,9 @@ const Home = () => {
               Get Started
             </button>
           </div>
+          <button className="nav-hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
         </div>
       </nav>
 

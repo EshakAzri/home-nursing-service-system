@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
-  User, Lock, UserCheck, Loader2, 
-  ArrowRight, CheckCircle, XCircle
+  User, Lock, Loader2, 
+  ArrowRight, CheckCircle, XCircle,
+  Heart, Clock, Star, ShieldCheck
 } from 'lucide-react';
 import './Login.css';
 
@@ -136,117 +137,143 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      {/* Background elements */}
-      <div className="login-blob1"></div>
-      <div className="login-blob2"></div>
-      <div className="login-blob3"></div>
-      
-      <div className="login-card">
-        <div className="login-header">
-          <div className="login-logo-container">
-            <div className="login-logo">
-              <UserCheck size={24} color="#ffffff" />
-            </div>
-            <span className="login-logo-text">CareLink</span>
-          </div>
-          <h1 className="login-title">Welcome Back</h1>
-          <p className="login-subtitle">
-            Sign in to access your healthcare dashboard
-          </p>
+    <div className="login-page">
+      {/* Left Branding Panel */}
+      <div className="login-brand-panel">
+        <div className="login-brand-shapes">
+          <div className="login-shape login-shape-1"></div>
+          <div className="login-shape login-shape-2"></div>
+          <div className="login-shape login-shape-3"></div>
         </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="login-form-group">
-            <label className="login-label">Username</label>
-            <div className="login-input-wrapper">
-              <User className="login-input-icon" size={18} />
-              <input
-                type="text"
-                name="username"
-                placeholder="Enter your username"
-                value={formData.username}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={`login-input ${formErrors.username && touched.username ? 'error' : ''}`}
-                required
-                autoComplete="username"
-              />
-            </div>
-            {formErrors.username && touched.username && (
-              <span className="login-error-text">{formErrors.username}</span>
-            )}
-          </div>
-
-          <div className="login-form-group">
-            <label className="login-label">Password</label>
-            <div className="login-input-wrapper">
-              <Lock className="login-input-icon" size={18} />
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={`login-input ${formErrors.password && touched.password ? 'error' : ''}`}
-                required
-                autoComplete="current-password"
-              />
-            </div>
-            {formErrors.password && touched.password && (
-              <span className="login-error-text">{formErrors.password}</span>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="login-button"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="spinner" size={20} />
-                <span style={{ marginLeft: '8px' }}>Signing In...</span>
-              </>
-            ) : (
-              <>
-                <span>Sign In</span>
-                <ArrowRight size={18} style={{ marginLeft: '8px' }} />
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="login-links">
-          <p className="login-footer-text">
-            Don't have an account?{' '}
-            <Link to="/register" className="login-link">
-              <strong>Register here</strong>
-            </Link>
+        <div className="login-brand-content">
+          <Link to="/" className="login-brand-logo">
+            <span className="login-brand-icon">+</span>
+            <span className="login-brand-name">HomeNurse</span>
+          </Link>
+          <h2 className="login-brand-headline">Welcome Back to HomeNurse</h2>
+          <p className="login-brand-desc">
+            Sign in to manage your bookings, connect with nurses, and access your healthcare dashboard.
           </p>
+          <div className="login-brand-features">
+            <div className="login-brand-feature">
+              <div className="login-brand-feature-icon"><Heart size={18} /></div>
+              <div>
+                <strong>500+ Verified Nurses</strong>
+                <span>Licensed & background-checked</span>
+              </div>
+            </div>
+            <div className="login-brand-feature">
+              <div className="login-brand-feature-icon"><Clock size={18} /></div>
+              <div>
+                <strong>24/7 Availability</strong>
+                <span>Book care anytime</span>
+              </div>
+            </div>
+            <div className="login-brand-feature">
+              <div className="login-brand-feature-icon"><Star size={18} /></div>
+              <div>
+                <strong>4.9/5 Rating</strong>
+                <span>15,000+ home visits</span>
+              </div>
+            </div>
+            <div className="login-brand-feature">
+              <div className="login-brand-feature-icon"><ShieldCheck size={18} /></div>
+              <div>
+                <strong>100% Secure</strong>
+                <span>Encrypted & protected</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Modal Popup */}
+      {/* Right Form Panel */}
+      <div className="login-form-panel">
+        <div className="login-form-wrapper">
+          <div className="login-header">
+            <h1 className="login-title">Sign In</h1>
+            <p className="login-subtitle">Enter your credentials to continue</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="login-field">
+              <label className="login-label">Username</label>
+              <div className={`login-input-box ${formErrors.username && touched.username ? 'has-error' : ''}`}>
+                <User className="login-input-icon" size={18} />
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Enter your username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className="login-input"
+                  required
+                  autoComplete="username"
+                />
+              </div>
+              {formErrors.username && touched.username && (
+                <span className="login-error">{formErrors.username}</span>
+              )}
+            </div>
+
+            <div className="login-field">
+              <label className="login-label">Password</label>
+              <div className={`login-input-box ${formErrors.password && touched.password ? 'has-error' : ''}`}>
+                <Lock className="login-input-icon" size={18} />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className="login-input"
+                  required
+                  autoComplete="current-password"
+                />
+              </div>
+              {formErrors.password && touched.password && (
+                <span className="login-error">{formErrors.password}</span>
+              )}
+            </div>
+
+            <button type="submit" disabled={loading} className="login-submit">
+              {loading ? (
+                <>
+                  <Loader2 className="spinner" size={20} />
+                  <span>Signing In...</span>
+                </>
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight size={18} />
+                </>
+              )}
+            </button>
+
+            <p className="login-footer-text">
+              Don't have an account?{' '}
+              <Link to="/register" className="login-link">Create one</Link>
+            </p>
+          </form>
+        </div>
+      </div>
+
+      {/* Modal */}
       {showModal && message.text && (
         <div className="login-modal-overlay" onClick={() => setShowModal(false)}>
           <div className="login-modal" onClick={(e) => e.stopPropagation()}>
-            <div className={`login-modal-content ${message.type}`}>
+            <div className={`login-modal-body ${message.type}`}>
               <div className="login-modal-icon">
                 {message.type === 'success' ? 
-                  <CheckCircle size={48} color="#166534" /> : 
-                  <XCircle size={48} color="#dc2626" />
+                  <CheckCircle size={48} color="#10b981" /> : 
+                  <XCircle size={48} color="#ef4444" />
                 }
               </div>
-              <h3 className="login-modal-title">
-                {message.type === 'success' ? 'Success!' : (message.title || 'Error')}
-              </h3>
-              <p className="login-modal-message">{message.text}</p>
-              <button 
-                className="login-modal-close"
-                onClick={() => setShowModal(false)}
-              >
+              <h3>{message.type === 'success' ? 'Success!' : (message.title || 'Error')}</h3>
+              <p>{message.text}</p>
+              <button onClick={() => setShowModal(false)} className="login-modal-btn">
                 Close
               </button>
             </div>

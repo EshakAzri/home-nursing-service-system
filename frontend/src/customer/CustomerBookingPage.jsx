@@ -34,7 +34,7 @@ const CustomerBookingPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [touched, setTouched] = useState({});
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [nurseFilterLoading, setNurseFilterLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -42,6 +42,14 @@ const CustomerBookingPage = () => {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) setSidebarOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!token) {

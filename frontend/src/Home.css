@@ -113,6 +113,25 @@
   gap: 0.75rem;
 }
 
+.nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.4rem;
+  z-index: 1001;
+}
+
+.navbar-scrolled .nav-hamburger {
+  color: #333;
+}
+
+.nav-actions-mobile {
+  display: none;
+}
+
 .nav-btn {
   padding: 0.6rem 1.4rem;
   font-size: 0.9rem;
@@ -818,7 +837,58 @@
 }
 
 @media (max-width: 768px) {
+  .nav-hamburger {
+    display: block;
+  }
+
   .nav-links {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 26, 46, 0.98);
+    backdrop-filter: blur(12px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    z-index: 1000;
+  }
+
+  .nav-links.nav-links-open {
+    display: flex;
+  }
+
+  .nav-links a {
+    font-size: 1.2rem;
+    color: white;
+  }
+
+  .navbar-scrolled .nav-links a {
+    color: white;
+  }
+
+  .nav-links a::after {
+    background: white;
+  }
+
+  .nav-actions-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    width: 200px;
+  }
+
+  .nav-actions-mobile .nav-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .nav-actions-desktop {
     display: none;
   }
 
@@ -889,22 +959,26 @@
   }
 
   .hero-title {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
 
   .hero-subtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .features-section,
   .services-section,
   .how-it-works-section,
   .testimonials-section {
-    padding: 4rem 1rem;
+    padding: 3rem 1rem;
   }
 
   .section-title {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
+  }
+
+  .section-desc {
+    font-size: 1rem;
   }
 
   .nav-actions {
@@ -914,5 +988,29 @@
   .nav-btn {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
+  }
+
+  .cta-section {
+    padding: 4rem 1rem;
+  }
+
+  .cta-section h2 {
+    font-size: 1.6rem;
+  }
+
+  .cta-section p {
+    font-size: 1rem;
+  }
+
+  .feature-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .hero-stat strong {
+    font-size: 1.5rem;
+  }
+
+  .home-footer {
+    padding: 3rem 1rem 0;
   }
 }
